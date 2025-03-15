@@ -1,6 +1,17 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/and_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/input.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/nand_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/nor_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/not_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/or_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/output.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/xor_gate.dart';
+import 'package:flutter_logic_gate_simulator/components/pin.dart';
+import 'package:flutter_logic_gate_simulator/components/wire.dart';
+import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
+import 'package:flutter_logic_gate_simulator/widgets/grid_painter.dart';
 
 void main() {
   runApp(const LogicGateSimulator());
@@ -30,7 +41,7 @@ class SimulatorCanvas extends StatefulWidget {
 
 class _SimulatorCanvasState extends State<SimulatorCanvas> {
   // List of components on the canvas
-  final List<LogicComponent> _components = [];
+  final List<BaseLogicComponent> _components = [];
 
   // List of wires connecting components
   final List<Wire> _wires = [];
@@ -46,12 +57,12 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   // Calculate all component outputs in the correct order
   void _calculateAllOutputs() {
     // Reset all visited flags
-    for (var component in _components) {
+    for (final component in _components) {
       component.resetVisited();
     }
 
     // Start calculation from each component
-    for (var component in _components) {
+    for (final component in _components) {
       _calculateOutput(component);
     }
 
@@ -60,7 +71,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   }
 
   // Recursive calculation of output for a component and its dependencies
-  void _calculateOutput(LogicComponent component) {
+  void _calculateOutput(BaseLogicComponent component) {
     // If already calculated, return
     if (component.visited) return;
 
@@ -68,9 +79,9 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     component.visited = true;
 
     // Calculate inputs first
-    for (var pin in component.inputPins) {
+    for (final pin in component.inputPins) {
       // Find connected wires
-      for (var wire in _wires) {
+      for (final wire in _wires) {
         if (wire.endPin == pin) {
           // Calculate output of the source component first
           _calculateOutput(wire.startPin.component);
@@ -88,32 +99,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Logic Gate Simulator'),
-        actions: [
-          // Toggle delete mode
-          IconButton(
-            icon: Icon(
-              _isDeleteMode ? Icons.delete_forever : Icons.delete_outline,
-            ),
-            onPressed: () {
-              setState(() {
-                _isDeleteMode = !_isDeleteMode;
-              });
-            },
-          ),
-          // Clear all
-          IconButton(
-            icon: const Icon(Icons.clear_all),
-            onPressed: () {
-              setState(() {
-                _components.clear();
-                _wires.clear();
-              });
-            },
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(),
       body: Column(
         children: [
           // Canvas for components and wires
@@ -128,11 +114,13 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                   });
                 }
               },
-              child: DragTarget<LogicComponent>(
+              child: DragTarget<BaseLogicComponent>(
                 onWillAcceptWithDetails: (data) => true,
                 onAcceptWithDetails: (data) {
-                  LogicComponent newComponent = data.data;
-                  newComponent.position = data.offset + Offset(0, -60);
+                  final newComponent =
+                      data.data
+                        ..position =
+                            data.offset - const Offset(0, CustomAppBar.height);
                   setState(() {
                     _components.add(newComponent);
                   });
@@ -170,7 +158,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                             start: _wireStartPin!.position,
                             end: _wireEndPosition!,
                             isActive: _wireStartPin!.value,
-                            isDashed: true,
                           ),
                           size: Size.infinite,
                         ),
@@ -326,7 +313,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 _buildComponentDraggable(
                   'Input Switch',
                   Icons.toggle_on,
-                  () => InputSwitch(position: Offset.zero, id: _getNextId()),
+                  () => Input(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
                   'AND Gate',
@@ -361,7 +348,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 _buildComponentDraggable(
                   'Output Lamp',
                   Icons.lightbulb,
-                  () => OutputLamp(position: Offset.zero, id: _getNextId()),
+                  () => Output(position: Offset.zero, id: _getNextId()),
                 ),
               ],
             ),
@@ -375,9 +362,9 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   Widget _buildComponentDraggable(
     String label,
     IconData icon,
-    LogicComponent Function() createComponent,
+    BaseLogicComponent Function() createComponent,
   ) {
-    return Draggable<LogicComponent>(
+    return Draggable<BaseLogicComponent>(
       data: createComponent(),
       feedback: Material(
         color: Colors.transparent,
@@ -417,808 +404,12 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
   // Generate a unique ID for new components
   int _getNextId() {
-    int maxId = 0;
-    for (var component in _components) {
+    var maxId = 0;
+    for (final component in _components) {
       if (component.id > maxId) {
         maxId = component.id;
       }
     }
     return maxId + 1;
-  }
-}
-
-// Grid painter for the background
-class GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint =
-        Paint()
-          ..color = Colors.grey[800]!
-          ..strokeWidth = 0.5;
-
-    double gridSize = 20;
-
-    for (double i = 0; i < size.width; i += gridSize) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-
-    for (double i = 0; i < size.height; i += gridSize) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// Wire painter
-class WirePainter extends CustomPainter {
-  final Offset start;
-  final Offset end;
-  final bool isActive;
-  final bool isDashed;
-
-  WirePainter({
-    required this.start,
-    required this.end,
-    required this.isActive,
-    this.isDashed = false,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint =
-        Paint()
-          ..color = isActive ? Colors.green : Colors.grey
-          ..strokeWidth = 2.0
-          ..style = PaintingStyle.stroke;
-
-    // Calculate control points for the curve
-    final double midX = (start.dx + end.dx) / 2;
-
-    final Path path =
-        Path()
-          ..moveTo(start.dx, start.dy)
-          ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
-
-    if (isDashed) {
-      // Draw dashed line
-      final p = dashPath(
-        path,
-        dashArray: CircularIntervalList<double>([5.0, 5.0]),
-      );
-      canvas.drawPath(p, paint);
-    } else {
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  Path dashPath(
-    Path source, {
-    required CircularIntervalList<double> dashArray,
-  }) {
-    final Path dest = Path();
-    for (final PathMetric metric in source.computeMetrics()) {
-      double distance = 0;
-      bool draw = true;
-      while (distance < metric.length) {
-        final double len = dashArray.next;
-        if (draw) {
-          dest.addPath(
-            metric.extractPath(distance, distance + len),
-            Offset.zero,
-          );
-        }
-        distance += len;
-        draw = !draw;
-      }
-    }
-    return dest;
-  }
-
-  @override
-  bool shouldRepaint(covariant WirePainter oldDelegate) =>
-      oldDelegate.start != start ||
-      oldDelegate.end != end ||
-      oldDelegate.isActive != isActive ||
-      oldDelegate.isDashed != isDashed;
-}
-
-// Circular interval list for dash pattern
-class CircularIntervalList<T> {
-  final List<T> _items;
-  int _index = 0;
-
-  CircularIntervalList(this._items);
-
-  T get next {
-    if (_items.isEmpty) {
-      throw Exception('Cannot get next from empty list');
-    }
-    final T item = _items[_index];
-    _index = (_index + 1) % _items.length;
-    return item;
-  }
-}
-
-// Base class for all logic components
-abstract class LogicComponent {
-  Offset position;
-  final int id;
-  final List<Pin> inputPins = [];
-  final List<Pin> outputPins = [];
-  bool visited = false;
-
-  LogicComponent({required this.position, required this.id});
-
-  // Size of the component
-  Size get size;
-
-  // Reset visited flag for calculation
-  void resetVisited() {
-    visited = false;
-  }
-
-  // Calculate output based on inputs
-  void calculateOutput();
-
-  // Build the component's widget
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  });
-
-  // Create a new instance of the component
-  LogicComponent clone();
-}
-
-// Pin class for input and output connections
-class Pin {
-  final LogicComponent component;
-  final bool isOutput;
-  final int index;
-  bool value = false;
-
-  Pin({required this.component, required this.isOutput, required this.index});
-
-  // Position of the pin relative to the canvas
-  Offset get position {
-    if (isOutput) {
-      return component.position +
-          Offset(
-            component.size.width,
-            component.size.height /
-                (component.outputPins.length + 1) *
-                (index + 1),
-          );
-    } else {
-      return component.position +
-          Offset(
-            0,
-            component.size.height /
-                (component.inputPins.length + 1) *
-                (index + 1),
-          );
-    }
-  }
-
-  // Build the pin's widget
-  Widget build({required Function(Pin) onTap}) {
-    return GestureDetector(
-      onTap: () => onTap(this),
-      child: Container(
-        width: 10,
-        height: 10,
-        decoration: BoxDecoration(
-          color: value ? Colors.green : Colors.grey,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 1),
-        ),
-      ),
-    );
-  }
-}
-
-// Wire class for connections between pins
-class Wire {
-  final Pin startPin;
-  final Pin endPin;
-
-  Wire({required this.startPin, required this.endPin});
-
-  Offset get startPosition => startPin.position;
-  Offset get endPosition => endPin.position;
-}
-
-// Input switch component
-class InputSwitch extends LogicComponent {
-  bool isOn = false;
-
-  InputSwitch({required super.position, required super.id}) {
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(60, 40);
-
-  @override
-  void calculateOutput() {
-    outputPins[0].value = isOn;
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Switch
-          GestureDetector(
-            onTap: () {
-              isOn = !isOn;
-              onInputToggle();
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey[700],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Center(
-                child: Icon(
-                  isOn ? Icons.toggle_on : Icons.toggle_off,
-                  color: isOn ? Colors.green : Colors.grey,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
-
-          // Output pin
-          ...outputPins.map((pin) => pin.build(onTap: onPinTap)),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return InputSwitch(position: position, id: id);
-  }
-}
-
-// Output lamp component
-class OutputLamp extends LogicComponent {
-  OutputLamp({required super.position, required super.id}) {
-    // Create input pin
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-  }
-
-  @override
-  Size get size => const Size(60, 40);
-
-  @override
-  void calculateOutput() {
-    // Nothing to calculate for output lamp
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Input pin
-          ...inputPins.map((pin) => pin.build(onTap: onPinTap)),
-
-          // Lamp
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey[700],
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                Icons.lightbulb,
-                color: inputPins[0].value ? Colors.yellow : Colors.grey[600],
-                size: 24,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return OutputLamp(position: position, id: id);
-  }
-}
-
-// AND gate component
-class AndGate extends LogicComponent {
-  AndGate({required super.position, required super.id}) {
-    // Create input pins
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-    inputPins.add(Pin(component: this, isOutput: false, index: 1));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 60);
-
-  @override
-  void calculateOutput() {
-    // AND gate logic
-    outputPins[0].value = inputPins[0].value && inputPins[1].value;
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.blue[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'AND',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return AndGate(position: position, id: id);
-  }
-}
-
-// OR gate component
-class OrGate extends LogicComponent {
-  OrGate({required super.position, required super.id}) {
-    // Create input pins
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-    inputPins.add(Pin(component: this, isOutput: false, index: 1));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 60);
-
-  @override
-  void calculateOutput() {
-    // OR gate logic
-    outputPins[0].value = inputPins[0].value || inputPins[1].value;
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.orange[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'OR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return OrGate(position: position, id: id);
-  }
-}
-
-// NOT gate component
-class NotGate extends LogicComponent {
-  NotGate({required super.position, required super.id}) {
-    // Create input pin
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 40);
-
-  @override
-  void calculateOutput() {
-    // NOT gate logic
-    outputPins[0].value = !inputPins[0].value;
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 30,
-              decoration: BoxDecoration(
-                color: Colors.red[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'NOT',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return NotGate(position: position, id: id);
-  }
-}
-
-// NAND gate component
-class NandGate extends LogicComponent {
-  NandGate({required super.position, required super.id}) {
-    // Create input pins
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-    inputPins.add(Pin(component: this, isOutput: false, index: 1));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 60);
-
-  @override
-  void calculateOutput() {
-    // NAND gate logic
-    outputPins[0].value = !(inputPins[0].value && inputPins[1].value);
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.purple[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'NAND',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return NandGate(position: position, id: id);
-  }
-}
-
-// NOR gate component
-class NorGate extends LogicComponent {
-  NorGate({required super.position, required super.id}) {
-    // Create input pins
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-    inputPins.add(Pin(component: this, isOutput: false, index: 1));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 60);
-
-  @override
-  void calculateOutput() {
-    // NOR gate logic
-    outputPins[0].value = !(inputPins[0].value || inputPins[1].value);
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.teal[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'NOR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return NorGate(position: position, id: id);
-  }
-}
-
-// XOR gate component
-class XorGate extends LogicComponent {
-  XorGate({required super.position, required super.id}) {
-    // Create input pins
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
-    inputPins.add(Pin(component: this, isOutput: false, index: 1));
-
-    // Create output pin
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
-  }
-
-  @override
-  Size get size => const Size(80, 60);
-
-  @override
-  void calculateOutput() {
-    // XOR gate logic
-    outputPins[0].value = inputPins[0].value != inputPins[1].value;
-  }
-
-  @override
-  Widget build({
-    required VoidCallback onInputToggle,
-    required Function(Pin) onPinTap,
-  }) {
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: [
-          // Gate body
-          Center(
-            child: Container(
-              width: 60,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.amber[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Center(
-                child: Text(
-                  'XOR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Input pins
-          ...inputPins.map(
-            (pin) => Positioned(
-              left: 0,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-
-          // Output pins
-          ...outputPins.map(
-            (pin) => Positioned(
-              left: size.width - 10,
-              top: pin.position.dy - position.dy - 5,
-              child: pin.build(onTap: onPinTap),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  LogicComponent clone() {
-    return XorGate(position: position, id: id);
   }
 }
