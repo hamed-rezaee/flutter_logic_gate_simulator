@@ -43,22 +43,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   // Track if we're in delete mode
   bool _isDeleteMode = false;
 
-  @override
-  void initState() {
-    super.initState();
-
-    // Add some initial components for testing
-    _components.add(InputSwitch(position: const Offset(100, 100), id: 1));
-    _components.add(InputSwitch(position: const Offset(100, 200), id: 2));
-    _components.add(AndGate(position: const Offset(250, 150), id: 3));
-    _components.add(OrGate(position: const Offset(400, 150), id: 4));
-    _components.add(NotGate(position: const Offset(250, 300), id: 5));
-    _components.add(OutputLamp(position: const Offset(550, 150), id: 6));
-
-    // Calculate initial states
-    _calculateAllOutputs();
-  }
-
   // Calculate all component outputs in the correct order
   void _calculateAllOutputs() {
     // Reset all visited flags
@@ -132,57 +116,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       ),
       body: Column(
         children: [
-          // Component palette
-          Container(
-            padding: const EdgeInsets.all(10),
-            color: Colors.grey[800],
-            height: 80,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildComponentDraggable(
-                  'Input Switch',
-                  Icons.toggle_on,
-                  () => InputSwitch(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'AND Gate',
-                  Icons.all_inclusive,
-                  () => AndGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'OR Gate',
-                  Icons.change_history,
-                  () => OrGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'NOT Gate',
-                  Icons.block,
-                  () => NotGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'NAND Gate',
-                  Icons.shield,
-                  () => NandGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'NOR Gate',
-                  Icons.lens_blur,
-                  () => NorGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'XOR Gate',
-                  Icons.change_circle,
-                  () => XorGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'Output Lamp',
-                  Icons.lightbulb,
-                  () => OutputLamp(position: Offset.zero, id: _getNextId()),
-                ),
-              ],
-            ),
-          ),
           // Canvas for components and wires
           Expanded(
             child: GestureDetector(
@@ -196,18 +129,14 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 }
               },
               child: DragTarget<LogicComponent>(
-                onWillAcceptWithDetails: (data) {
+                onWillAcceptWithDetails: (data) => true,
+                onAcceptWithDetails: (data) {
+                  LogicComponent newComponent = data.data;
+                  newComponent.position = data.offset + Offset(0, -60);
                   setState(() {
-                    // Clone the component at the dropped position
-                    LogicComponent newComponent = data.data;
-                    newComponent.position = _wireEndPosition ?? Offset.zero;
                     _components.add(newComponent);
-                    _calculateAllOutputs();
                   });
-
-                  return true;
                 },
-                onAcceptWithDetails: (data) => data is LogicComponent,
                 builder: (context, candidateData, rejectedData) {
                   return Stack(
                     children: [
@@ -386,6 +315,57 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               ),
             ),
           ),
+          // Component palette
+          Container(
+            padding: const EdgeInsets.all(10),
+            color: Colors.grey[800],
+            height: 80,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildComponentDraggable(
+                  'Input Switch',
+                  Icons.toggle_on,
+                  () => InputSwitch(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'AND Gate',
+                  Icons.all_inclusive,
+                  () => AndGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'OR Gate',
+                  Icons.change_history,
+                  () => OrGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'NOT Gate',
+                  Icons.block,
+                  () => NotGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'NAND Gate',
+                  Icons.shield,
+                  () => NandGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'NOR Gate',
+                  Icons.lens_blur,
+                  () => NorGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'XOR Gate',
+                  Icons.change_circle,
+                  () => XorGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  'Output Lamp',
+                  Icons.lightbulb,
+                  () => OutputLamp(position: Offset.zero, id: _getNextId()),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -400,11 +380,12 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     return Draggable<LogicComponent>(
       data: createComponent(),
       feedback: Material(
-        elevation: 4.0,
+        color: Colors.transparent,
+        elevation: 4,
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.8),
+            color: Colors.grey.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Column(
