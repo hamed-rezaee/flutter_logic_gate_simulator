@@ -14,5 +14,5 @@ export 'pin.dart';
 export 'seven_segment.dart';
 export 'seven_segment_decoder.dart';
 export 'wire.dart';
-export 'xand_gate.dart';
+export 'xnor_gate.dart';
 export 'xor_gate.dart';

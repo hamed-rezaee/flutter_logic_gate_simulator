@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class XandGate extends BaseLogicComponent {
-  XandGate({required super.id, required super.position}) {
+class XnorGate extends BaseLogicComponent {
+  XnorGate({required super.id, required super.position}) {
     inputPins
       ..add(Pin(component: this, isOutput: false, index: 0))
       ..add(Pin(component: this, isOutput: false, index: 1));
@@ -16,7 +16,7 @@ class XandGate extends BaseLogicComponent {
     required void Function(Pin) onPinTap,
   }) => ComponentBuilder(
     id: id,
-    child: const LogicGate(gateType: LogicGateType.xand),
+    child: const LogicGate(gateType: LogicGateType.xnor),
     inputPins: inputPins,
     outputPins: outputPins,
     position: position,
@@ -30,5 +30,5 @@ class XandGate extends BaseLogicComponent {
       outputPins[0].value = inputPins[0].value == inputPins[1].value;
 
   @override
-  BaseLogicComponent clone() => XandGate(position: position, id: id);
+  BaseLogicComponent clone() => XnorGate(position: position, id: id);
 }

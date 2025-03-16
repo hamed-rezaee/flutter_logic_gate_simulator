@@ -21,6 +21,61 @@ class Toolbar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.not),
+            LogicGateType.not.name.toUpperCase(),
+            () => NotGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.and),
+            LogicGateType.and.name.toUpperCase(),
+            () => AndGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.nand),
+            LogicGateType.nand.name.toUpperCase(),
+            () => NandGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.or),
+            LogicGateType.or.name.toUpperCase(),
+            () =>
+                OrGate(position: Offset.zero, id: simulatorManager.getNextId()),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.nor),
+            LogicGateType.nor.name.toUpperCase(),
+            () => NorGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.xor),
+            LogicGateType.xor.name.toUpperCase(),
+            () => XorGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const LogicGate(gateType: LogicGateType.xnor),
+            LogicGateType.xnor.name.toUpperCase(),
+            () => XnorGate(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          VerticalDivider(color: Colors.grey[500]),
+          _buildComponentDraggable(
             const Icon(Icons.input, size: 32),
             'INPUT',
             () =>
@@ -38,6 +93,16 @@ class Toolbar extends StatelessWidget {
             () =>
                 Clock(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
+          VerticalDivider(color: Colors.grey[500]),
+          _buildComponentDraggable(
+            const Icon(Icons.flip, size: 32),
+            'JK FF',
+            () => JkFlipFlop(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          VerticalDivider(color: Colors.grey[500]),
           _buildComponentDraggable(
             const Icon(Icons.filter_7, size: 32),
             '7-SEG',
@@ -50,68 +115,6 @@ class Toolbar extends StatelessWidget {
             const Icon(Icons.blur_linear, size: 32),
             '7-SEG DEC',
             () => SevenSegmentDecoder(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.not),
-            LogicGateType.not.name.toUpperCase(),
-            () => NotGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.and),
-            LogicGateType.and.name.toUpperCase(),
-            () => AndGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.or),
-            LogicGateType.or.name.toUpperCase(),
-            () =>
-                OrGate(position: Offset.zero, id: simulatorManager.getNextId()),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.nand),
-            LogicGateType.nand.name.toUpperCase(),
-            () => NandGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.nor),
-            LogicGateType.nor.name.toUpperCase(),
-            () => NorGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.xand),
-            LogicGateType.xand.name.toUpperCase(),
-            () => XandGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.xor),
-            LogicGateType.xor.name.toUpperCase(),
-            () => XorGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.flip, size: 32),
-            'JK FF',
-            () => JkFlipFlop(
               position: Offset.zero,
               id: simulatorManager.getNextId(),
             ),

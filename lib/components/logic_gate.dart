@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-enum LogicGateType { and, or, not, nand, nor, xor, xand }
+enum LogicGateType { and, or, not, nand, nor, xor, xnor }
 
 class LogicGate extends StatelessWidget {
   const LogicGate({
@@ -113,8 +113,8 @@ class _LogicGatesPainter extends CustomPainter {
           gateWidth,
           gateHeight,
         );
-      case LogicGateType.xand:
-        _drawXandGate(
+      case LogicGateType.xnor:
+        _drawXnorGate(
           canvas,
           size,
           paint,
@@ -299,7 +299,7 @@ class _LogicGatesPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
-  void _drawXandGate(
+  void _drawXnorGate(
     Canvas canvas,
     Size size,
     Paint paint,
@@ -308,40 +308,19 @@ class _LogicGatesPainter extends CustomPainter {
     double gateWidth,
     double gateHeight,
   ) {
-    final leftX = centerX - gateWidth / 2;
-    final topY = centerY - gateHeight / 2;
-    final bottomY = centerY + gateHeight / 2;
-
-    final xorPath =
-        Path()
-          ..moveTo(leftX - gateWidth * 0.2, topY)
-          ..quadraticBezierTo(
-            leftX - gateWidth * 0.1 + gateWidth * 0.15,
-            centerY,
-            leftX - gateWidth * 0.2,
-            bottomY,
-          );
-
-    canvas.drawPath(xorPath, paint);
+    _drawXorGate(
+      canvas,
+      size,
+      paint,
+      centerX,
+      centerY,
+      gateWidth - gateHeight / 4,
+      gateHeight,
+    );
 
     final rightX = centerX + gateWidth / 2;
 
-    canvas
-      ..drawLine(Offset(leftX, topY), Offset(leftX, bottomY), paint)
-      ..drawLine(
-        Offset(leftX, topY),
-        Offset(rightX - gateHeight / 2, topY),
-        paint,
-      )
-      ..drawLine(
-        Offset(leftX, bottomY),
-        Offset(rightX - gateHeight / 2, bottomY),
-        paint,
-      );
-
-    final rect = Rect.fromLTRB(rightX - gateHeight, topY, rightX, bottomY);
-
-    canvas.drawArc(rect, -pi / 2, pi, false, paint);
+    canvas.drawCircle(Offset(rightX, centerY), gateHeight / 8, paint);
   }
 
   @override
