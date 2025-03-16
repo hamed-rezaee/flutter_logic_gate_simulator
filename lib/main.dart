@@ -36,6 +36,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Colors.black,
     appBar: CustomAppBar(),
     body: Column(children: [Expanded(child: _buildSimulatorCanvas())]),
   );
@@ -165,7 +166,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   Widget _buildToolbar() => Align(
     alignment: Alignment.bottomCenter,
     child: Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Toolbar(simulatorManager: _simulatorManager),
     ),
   );

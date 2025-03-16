@@ -2,143 +2,171 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 
-class Toolbar extends StatelessWidget {
+class Toolbar extends StatefulWidget {
   const Toolbar({required this.simulatorManager, super.key});
 
   final SimulatorManager simulatorManager;
 
   @override
-  Widget build(BuildContext context) => Container(
-    height: 80,
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      color: Colors.grey[700],
-      borderRadius: const BorderRadius.all(Radius.circular(4)),
-    ),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+  State<Toolbar> createState() => _ToolbarState();
+}
+
+class _ToolbarState extends State<Toolbar> {
+  String? _expandedGroup;
+
+  static final Map<String, List<ComponentDefinition>> _componentGroups = {
+    'Basic Gates': [
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.not),
+        label: 'NOT',
+        createComponent: (id) => NotGate(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.and),
+        label: 'AND',
+        createComponent: (id) => AndGate(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.or),
+        label: 'OR',
+        createComponent: (id) => OrGate(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.xor),
+        label: 'XOR',
+        createComponent: (id) => XorGate(position: Offset.zero, id: id),
+      ),
+    ],
+    'Inverted Gates': [
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.nand),
+        label: 'NAND',
+        createComponent: (id) => NandGate(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.nor),
+        label: 'NOR',
+        createComponent: (id) => NorGate(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const LogicGate(gateType: LogicGateType.xnor),
+        label: 'XNOR',
+        createComponent: (id) => XnorGate(position: Offset.zero, id: id),
+      ),
+    ],
+    'I/O': [
+      ComponentDefinition(
+        widget: const Icon(Icons.input_rounded, size: 32),
+        label: 'INPUT',
+        createComponent: (id) => Input(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.output_rounded, size: 32),
+        label: 'OUTPUT',
+        createComponent: (id) => Output(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.timer_outlined, size: 32),
+        label: 'CLOCK',
+        createComponent: (id) => Clock(position: Offset.zero, id: id),
+      ),
+    ],
+    'Encoders/Decoders': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'ENC 4x2',
+        createComponent: (id) => Encoder(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'DEC 2x4',
+        createComponent: (id) => Decoder(position: Offset.zero, id: id),
+      ),
+    ],
+    'Memory': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'JK FF',
+        createComponent: (id) => JkFlipFlop(position: Offset.zero, id: id),
+      ),
+    ],
+    'Display': [
+      ComponentDefinition(
+        widget: const Icon(Icons.filter_7, size: 32),
+        label: '7-SEG',
+        createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: '7-SEG DEC',
+        createComponent:
+            (id) => SevenSegmentDecoder(position: Offset.zero, id: id),
+      ),
+    ],
+  };
+
+  @override
+  Widget build(BuildContext context) => TapRegion(
+    onTapOutside: (_) => setState(() => _expandedGroup = null),
+    child: SizedBox(
+      height: 100,
       child: Row(
-        spacing: 4,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.not),
-            LogicGateType.not.name.toUpperCase(),
-            () => NotGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.and),
-            LogicGateType.and.name.toUpperCase(),
-            () => AndGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.nand),
-            LogicGateType.nand.name.toUpperCase(),
-            () => NandGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.or),
-            LogicGateType.or.name.toUpperCase(),
-            () =>
-                OrGate(position: Offset.zero, id: simulatorManager.getNextId()),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.nor),
-            LogicGateType.nor.name.toUpperCase(),
-            () => NorGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.xor),
-            LogicGateType.xor.name.toUpperCase(),
-            () => XorGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const LogicGate(gateType: LogicGateType.xnor),
-            LogicGateType.xnor.name.toUpperCase(),
-            () => XnorGate(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          VerticalDivider(color: Colors.grey[500]),
-          _buildComponentDraggable(
-            const Icon(Icons.input_rounded, size: 32),
-            'INPUT',
-            () =>
-                Input(position: Offset.zero, id: simulatorManager.getNextId()),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.output_rounded, size: 32),
-            'OUTPUT',
-            () =>
-                Output(position: Offset.zero, id: simulatorManager.getNextId()),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.timer_outlined, size: 32),
-            'CLOCK',
-            () =>
-                Clock(position: Offset.zero, id: simulatorManager.getNextId()),
-          ),
-          VerticalDivider(color: Colors.grey[500]),
-          _buildComponentDraggable(
-            const Icon(Icons.apps_rounded, size: 32),
-            'ENC 4x2',
-            () => Encoder(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.apps_rounded, size: 32),
-            'DEC 2x4',
-            () => Decoder(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.apps_rounded, size: 32),
-            'JK FF',
-            () => JkFlipFlop(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          VerticalDivider(color: Colors.grey[500]),
-          _buildComponentDraggable(
-            const Icon(Icons.filter_7, size: 32),
-            '7-SEG',
-            () => SevenSegment(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
-          _buildComponentDraggable(
-            const Icon(Icons.apps_rounded, size: 32),
-            '7-SEG DEC',
-            () => SevenSegmentDecoder(
-              position: Offset.zero,
-              id: simulatorManager.getNextId(),
-            ),
-          ),
+          ..._componentGroups.entries.map((entry) {
+            final groupName = entry.key;
+            final components = entry.value;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: GestureDetector(
+                onTap: () => _toggleGroup(groupName),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 100),
+                    alignment: Alignment.center,
+                    crossFadeState:
+                        _expandedGroup == groupName
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                    firstChild: _buildGroups(groupName),
+                    secondChild: _buildSubgroup(components),
+                  ),
+                ),
+              ),
+            );
+          }),
         ],
       ),
     ),
+  );
+
+  Widget _buildGroups(String groupName) => Padding(
+    padding: const EdgeInsets.all(4),
+    child: Text(
+      groupName.toUpperCase(),
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+    ),
+  );
+
+  Widget _buildSubgroup(List<ComponentDefinition> components) => Wrap(
+    spacing: 8,
+    children:
+        components
+            .map(
+              (comp) => _buildComponentDraggable(
+                comp.widget,
+                comp.label,
+                () => comp.createComponent(widget.simulatorManager.getNextId()),
+              ),
+            )
+            .toList(),
   );
 
   Widget _buildComponentDraggable(
@@ -174,4 +202,23 @@ class Toolbar extends StatelessWidget {
       ],
     ),
   );
+
+  void _toggleGroup(String groupName) => setState(
+    () =>
+        _expandedGroup == groupName
+            ? _expandedGroup = null
+            : _expandedGroup = groupName,
+  );
+}
+
+class ComponentDefinition {
+  const ComponentDefinition({
+    required this.widget,
+    required this.label,
+    required this.createComponent,
+  });
+
+  final Widget widget;
+  final String label;
+  final BaseLogicComponent Function(int id) createComponent;
 }

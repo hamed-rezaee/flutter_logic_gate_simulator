@@ -33,7 +33,7 @@ class ComponentBuilder extends StatelessWidget {
           child: Container(
             width: 60,
             decoration: BoxDecoration(
-              color: Colors.grey[700],
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(4),
             ),
             child: Center(child: child),

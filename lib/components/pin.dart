@@ -34,7 +34,7 @@ class Pin {
       height: 10,
       decoration: BoxDecoration(
         color: value ? Colors.green : Colors.white,
-        border: Border.all(color: Colors.grey[700]!, width: 3),
+        border: Border.all(color: Colors.grey[800]!, width: 3),
       ),
     ),
   );
