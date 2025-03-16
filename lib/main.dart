@@ -9,8 +9,8 @@ import 'package:flutter_logic_gate_simulator/components/logic_components/or_gate
 import 'package:flutter_logic_gate_simulator/components/logic_components/output.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/xand_gate.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/xor_gate.dart';
-import 'package:flutter_logic_gate_simulator/components/pin.dart';
 import 'package:flutter_logic_gate_simulator/components/wire.dart';
+import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
 import 'package:flutter_logic_gate_simulator/widgets/gate_painter.dart';
 import 'package:flutter_logic_gate_simulator/widgets/grid_painter.dart';
@@ -33,7 +33,6 @@ class LogicGateSimulator extends StatelessWidget {
   }
 }
 
-// Main simulator canvas
 class SimulatorCanvas extends StatefulWidget {
   const SimulatorCanvas({super.key});
 
@@ -42,62 +41,9 @@ class SimulatorCanvas extends StatefulWidget {
 }
 
 class _SimulatorCanvasState extends State<SimulatorCanvas> {
-  // List of components on the canvas
-  final List<BaseLogicComponent> _components = [];
+  final SimulatorManager _simulatorManager = SimulatorManager();
 
-  // List of wires connecting components
-  final List<Wire> _wires = [];
-
-  // Track if we're drawing a wire
-  bool _isDrawingWire = false;
-  Pin? _wireStartPin;
-  Offset? _wireEndPosition;
-
-  // Track if we're in delete mode
   bool _isDeleteMode = false;
-
-  // Calculate all component outputs in the correct order
-  void _calculateAllOutputs() {
-    // Reset all visited flags
-    for (final component in _components) {
-      component.resetVisited();
-    }
-
-    // Start calculation from each component
-
-    for (final component in _components) {
-      _calculateOutput(component);
-    }
-
-    // Update the UI
-    setState(() {});
-  }
-
-  // Recursive calculation of output for a component and its dependencies
-  void _calculateOutput(BaseLogicComponent component) {
-    // If already calculated, return
-    if (component.visited) return;
-
-    // Mark as visited
-    component.visited = true;
-
-    // Calculate inputs first
-    for (final pin in component.inputPins) {
-      // Find connected wires
-      for (final wire in _wires) {
-        if (wire.endPin == pin) {
-          // Calculate output of the source component first
-          _calculateOutput(wire.startPin.component);
-
-          // Set input value based on connected output
-          pin.value = wire.startPin.value;
-        }
-      }
-    }
-
-    // Now calculate this component's output
-    component.calculateOutput();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +51,14 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       appBar: CustomAppBar(),
       body: Column(
         children: [
-          // Canvas for components and wires
           Expanded(
             child: GestureDetector(
               onTapUp: (details) {
-                if (_isDrawingWire) {
+                if (_simulatorManager.isDrawingWire) {
                   setState(() {
-                    _isDrawingWire = false;
-                    _wireStartPin = null;
-                    _wireEndPosition = null;
+                    _simulatorManager.isDrawingWire = false;
+                    _simulatorManager.wireStartPin = null;
+                    _simulatorManager.wireEndPosition = null;
                   });
                 }
               },
@@ -125,23 +70,21 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                         ..position =
                             data.offset - const Offset(0, CustomAppBar.height);
                   setState(() {
-                    _components.add(newComponent);
+                    _simulatorManager.components.add(newComponent);
                   });
                 },
                 builder: (context, candidateData, rejectedData) {
                   return Stack(
                     children: [
-                      // Background
                       Container(
                         color: Colors.grey[900],
                         width: double.infinity,
                         height: double.infinity,
-                        // Grid pattern
+
                         child: CustomPaint(painter: GridPainter()),
                       ),
 
-                      // Draw all the permanent wires
-                      ...(_wires.map(
+                      ...(_simulatorManager.wires.map(
                         (wire) => CustomPaint(
                           painter: WirePainter(
                             start: wire.startPosition,
@@ -152,21 +95,19 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                         ),
                       )),
 
-                      // Draw the wire being created
-                      if (_isDrawingWire &&
-                          _wireStartPin != null &&
-                          _wireEndPosition != null)
+                      if (_simulatorManager.isDrawingWire &&
+                          _simulatorManager.wireStartPin != null &&
+                          _simulatorManager.wireEndPosition != null)
                         CustomPaint(
                           painter: WirePainter(
-                            start: _wireStartPin!.position,
-                            end: _wireEndPosition!,
-                            isActive: _wireStartPin!.value,
+                            start: _simulatorManager.wireStartPin!.position,
+                            end: _simulatorManager.wireEndPosition!,
+                            isActive: _simulatorManager.wireStartPin!.value,
                           ),
                           size: Size.infinite,
                         ),
 
-                      // Draw all the components
-                      ...(_components.map((component) {
+                      ...(_simulatorManager.components.map((component) {
                         return Positioned(
                           left: component.position.dx,
                           top: component.position.dy,
@@ -174,74 +115,86 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                             onPanUpdate: (details) {
                               setState(() {
                                 component.position += details.delta;
-                                _calculateAllOutputs();
+                                _simulatorManager.calculateAllOutputs();
                               });
                             },
                             child: component.build(
                               onInputToggle: () {
-                                setState(_calculateAllOutputs);
+                                setState(_simulatorManager.calculateAllOutputs);
                               },
                               onPinTap: (pin) {
                                 if (_isDeleteMode) {
-                                  // Delete connected wires in delete mode
                                   setState(() {
-                                    _wires.removeWhere(
+                                    _simulatorManager.wires.removeWhere(
                                       (wire) =>
                                           wire.startPin == pin ||
                                           wire.endPin == pin,
                                     );
-                                    _calculateAllOutputs();
+                                    _simulatorManager.calculateAllOutputs();
                                   });
                                   return;
                                 }
 
-                                if (!_isDrawingWire) {
-                                  // Start drawing a wire
+                                if (!_simulatorManager.isDrawingWire) {
                                   setState(() {
-                                    _isDrawingWire = true;
-                                    _wireStartPin = pin;
-                                    _wireEndPosition = pin.position;
+                                    _simulatorManager.isDrawingWire = true;
+                                    _simulatorManager.wireStartPin = pin;
+                                    _simulatorManager.wireEndPosition =
+                                        pin.position;
                                   });
-                                } else if (_wireStartPin != null) {
-                                  // Finish drawing a wire if types are compatible
-                                  if (_wireStartPin!.isOutput &&
+                                } else if (_simulatorManager.wireStartPin !=
+                                    null) {
+                                  if (_simulatorManager
+                                          .wireStartPin!
+                                          .isOutput &&
                                       !pin.isOutput) {
-                                    if (_wireStartPin!.component != component) {
+                                    if (_simulatorManager
+                                            .wireStartPin!
+                                            .component !=
+                                        component) {
                                       setState(() {
-                                        _wires.add(
+                                        _simulatorManager.wires.add(
                                           Wire(
-                                            startPin: _wireStartPin!,
+                                            startPin:
+                                                _simulatorManager.wireStartPin!,
                                             endPin: pin,
                                           ),
                                         );
-                                        _isDrawingWire = false;
-                                        _wireStartPin = null;
-                                        _wireEndPosition = null;
-                                        _calculateAllOutputs();
+                                        _simulatorManager.isDrawingWire = false;
+                                        _simulatorManager.wireStartPin = null;
+                                        _simulatorManager.wireEndPosition =
+                                            null;
+                                        _simulatorManager.calculateAllOutputs();
                                       });
                                     }
-                                  } else if (!_wireStartPin!.isOutput &&
+                                  } else if (!_simulatorManager
+                                          .wireStartPin!
+                                          .isOutput &&
                                       pin.isOutput) {
-                                    if (_wireStartPin!.component != component) {
+                                    if (_simulatorManager
+                                            .wireStartPin!
+                                            .component !=
+                                        component) {
                                       setState(() {
-                                        _wires.add(
+                                        _simulatorManager.wires.add(
                                           Wire(
                                             startPin: pin,
-                                            endPin: _wireStartPin!,
+                                            endPin:
+                                                _simulatorManager.wireStartPin!,
                                           ),
                                         );
-                                        _isDrawingWire = false;
-                                        _wireStartPin = null;
-                                        _wireEndPosition = null;
-                                        _calculateAllOutputs();
+                                        _simulatorManager.isDrawingWire = false;
+                                        _simulatorManager.wireStartPin = null;
+                                        _simulatorManager.wireEndPosition =
+                                            null;
+                                        _simulatorManager.calculateAllOutputs();
                                       });
                                     }
                                   } else {
-                                    // Cancel wire creation if types are incompatible
                                     setState(() {
-                                      _isDrawingWire = false;
-                                      _wireStartPin = null;
-                                      _wireEndPosition = null;
+                                      _simulatorManager.isDrawingWire = false;
+                                      _simulatorManager.wireStartPin = null;
+                                      _simulatorManager.wireEndPosition = null;
                                     });
                                   }
                                 }
@@ -251,25 +204,24 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                         );
                       })),
 
-                      // Delete mode overlay for components
                       if (_isDeleteMode)
-                        ...(_components.map((component) {
+                        ...(_simulatorManager.components.map((component) {
                           return Positioned(
                             left: component.position.dx,
                             top: component.position.dy,
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  // Remove all connected wires first
-                                  _wires.removeWhere(
+                                  _simulatorManager.wires.removeWhere(
                                     (wire) =>
                                         wire.startPin.component == component ||
                                         wire.endPin.component == component,
                                   );
 
-                                  // Remove the component
-                                  _components.remove(component);
-                                  _calculateAllOutputs();
+                                  _simulatorManager.components.remove(
+                                    component,
+                                  );
+                                  _simulatorManager.calculateAllOutputs();
                                 });
                               },
                               child: Container(
@@ -294,16 +246,16 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                   );
                 },
                 onMove: (details) {
-                  if (_isDrawingWire) {
+                  if (_simulatorManager.isDrawingWire) {
                     setState(() {
-                      _wireEndPosition = details.offset;
+                      _simulatorManager.wireEndPosition = details.offset;
                     });
                   }
                 },
               ),
             ),
           ),
-          // Component palette
+
           Container(
             padding: const EdgeInsets.all(10),
             color: Colors.grey[800],
@@ -312,49 +264,76 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.and),
-                  LogicGateType.and.name.toUpperCase(),
-                  () => AndGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.or),
-                  LogicGateType.or.name.toUpperCase(),
-                  () => OrGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.not),
-                  LogicGateType.not.name.toUpperCase(),
-                  () => NotGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.nand),
-                  LogicGateType.nand.name.toUpperCase(),
-                  () => NandGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.nor),
-                  LogicGateType.nor.name.toUpperCase(),
-                  () => NorGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.xand),
-                  LogicGateType.xand.name.toUpperCase(),
-                  () => XandGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  const LogicGateView(gateType: LogicGateType.xor),
-                  LogicGateType.xor.name.toUpperCase(),
-                  () => XorGate(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
                   const Icon(Icons.input),
                   'INPUT',
-                  () => Input(position: Offset.zero, id: _getNextId()),
+                  () => Input(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
                 ),
                 _buildComponentDraggable(
                   const Icon(Icons.output),
                   'OUTPUT',
-                  () => Output(position: Offset.zero, id: _getNextId()),
+                  () => Output(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.and),
+                  LogicGateType.and.name.toUpperCase(),
+                  () => AndGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.or),
+                  LogicGateType.or.name.toUpperCase(),
+                  () => OrGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.not),
+                  LogicGateType.not.name.toUpperCase(),
+                  () => NotGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.nand),
+                  LogicGateType.nand.name.toUpperCase(),
+                  () => NandGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.nor),
+                  LogicGateType.nor.name.toUpperCase(),
+                  () => NorGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.xand),
+                  LogicGateType.xand.name.toUpperCase(),
+                  () => XandGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.xor),
+                  LogicGateType.xor.name.toUpperCase(),
+                  () => XorGate(
+                    position: Offset.zero,
+                    id: _simulatorManager.getNextId(),
+                  ),
                 ),
               ],
             ),
@@ -364,7 +343,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     );
   }
 
-  // Helper to create draggable component for the palette
   Widget _buildComponentDraggable(
     Widget widget,
     String label,
@@ -405,15 +383,4 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       ],
     ),
   );
-
-  // Generate a unique ID for new components
-  int _getNextId() {
-    var maxId = 0;
-    for (final component in _components) {
-      if (component.id > maxId) {
-        maxId = component.id;
-      }
-    }
-    return maxId + 1;
-  }
 }
