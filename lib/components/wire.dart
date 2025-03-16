@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
 
-class Wire {
-  const Wire({required this.startPin, required this.endPin});
+class Wire extends StatelessWidget {
+  const Wire({
+    required this.startPosition,
+    required this.endPosition,
+    required this.isActive,
+    super.key,
+  });
 
-  final Pin startPin;
-  final Pin endPin;
+  final Offset startPosition;
+  final Offset endPosition;
+  final bool isActive;
 
-  Offset get startPosition => startPin.position;
-
-  Offset get endPosition => endPin.position;
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    size: Size.infinite,
+    painter: _WirePainter(
+      start: startPosition,
+      end: endPosition,
+      isActive: isActive,
+    ),
+  );
 }
 
-class WirePainter extends CustomPainter {
-  const WirePainter({
+class _WirePainter extends CustomPainter {
+  const _WirePainter({
     required this.start,
     required this.end,
     required this.isActive,
@@ -43,4 +55,15 @@ class WirePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class WireModel {
+  const WireModel({required this.startPin, required this.endPin});
+
+  final Pin startPin;
+  final Pin endPin;
+
+  Offset get startPosition => startPin.position;
+
+  Offset get endPosition => endPin.position;
 }

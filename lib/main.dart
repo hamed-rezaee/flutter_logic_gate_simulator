@@ -2,26 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
 import 'package:flutter_logic_gate_simulator/components/wire.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
+import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
-import 'package:flutter_logic_gate_simulator/widgets/grid_painter.dart';
 import 'package:flutter_logic_gate_simulator/widgets/toolbar.dart';
 
-void main() {
-  runApp(const LogicGateSimulator());
-}
+void main() => runApp(const LogicGateSimulator());
 
 class LogicGateSimulator extends StatelessWidget {
   const LogicGateSimulator({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Logic Gate Simulator',
-      theme: ThemeData(primarySwatch: Colors.blue, brightness: Brightness.dark),
-      home: const SimulatorCanvas(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    title: 'Logic Gate Simulator',
+    theme: ThemeData(
+      primarySwatch: Colors.blueGrey,
+      brightness: Brightness.dark,
+    ),
+    home: const SimulatorCanvas(),
+    debugShowCheckedModeBanner: false,
+  );
 }
 
 class SimulatorCanvas extends StatefulWidget {
@@ -43,11 +42,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
           child: GestureDetector(
             onTapUp: (details) {
               if (_simulatorManager.isDrawingWire) {
-                setState(() {
-                  _simulatorManager.isDrawingWire = false;
-                  _simulatorManager.wireStartPin = null;
-                  _simulatorManager.wireEndPosition = null;
-                });
+                setState(_simulatorManager.cancelWireDrawing);
               }
             },
             child: DragTarget<BaseLogicComponent>(
@@ -63,37 +58,23 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               builder:
                   (context, candidateData, rejectedData) => Stack(
                     children: [
-                      Container(
-                        color: Colors.grey[900],
-                        width: double.infinity,
-                        height: double.infinity,
-
-                        child: CustomPaint(painter: GridPainter()),
-                      ),
-
+                      const BackgroundGrid(),
                       ...(_simulatorManager.wires.map(
-                        (wire) => CustomPaint(
-                          painter: WirePainter(
-                            start: wire.startPosition,
-                            end: wire.endPosition,
-                            isActive: wire.startPin.value,
-                          ),
-                          size: Size.infinite,
+                        (wire) => Wire(
+                          startPosition: wire.startPin.position,
+                          endPosition: wire.endPin.position,
+                          isActive: wire.startPin.value,
                         ),
                       )),
-
                       if (_simulatorManager.isDrawingWire &&
                           _simulatorManager.wireStartPin != null &&
                           _simulatorManager.wireEndPosition != null)
-                        CustomPaint(
-                          painter: WirePainter(
-                            start: _simulatorManager.wireStartPin!.position,
-                            end: _simulatorManager.wireEndPosition!,
-                            isActive: _simulatorManager.wireStartPin!.value,
-                          ),
-                          size: Size.infinite,
+                        Wire(
+                          startPosition:
+                              _simulatorManager.wireStartPin!.position,
+                          endPosition: _simulatorManager.wireEndPosition!,
+                          isActive: _simulatorManager.wireStartPin!.value,
                         ),
-
                       ...(_simulatorManager.components.map((component) {
                         return Positioned(
                           left: component.position.dx,
@@ -136,17 +117,15 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                                         component) {
                                       setState(() {
                                         _simulatorManager.wires.add(
-                                          Wire(
+                                          WireModel(
                                             startPin:
                                                 _simulatorManager.wireStartPin!,
                                             endPin: pin,
                                           ),
                                         );
-                                        _simulatorManager.isDrawingWire = false;
-                                        _simulatorManager.wireStartPin = null;
-                                        _simulatorManager.wireEndPosition =
-                                            null;
-                                        _simulatorManager.calculateAllOutputs();
+                                        _simulatorManager
+                                          ..cancelWireDrawing()
+                                          ..calculateAllOutputs();
                                       });
                                     }
                                   } else if (!_simulatorManager
@@ -159,25 +138,21 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                                         component) {
                                       setState(() {
                                         _simulatorManager.wires.add(
-                                          Wire(
+                                          WireModel(
                                             startPin: pin,
                                             endPin:
                                                 _simulatorManager.wireStartPin!,
                                           ),
                                         );
-                                        _simulatorManager.isDrawingWire = false;
-                                        _simulatorManager.wireStartPin = null;
-                                        _simulatorManager.wireEndPosition =
-                                            null;
-                                        _simulatorManager.calculateAllOutputs();
+                                        _simulatorManager
+                                          ..cancelWireDrawing()
+                                          ..calculateAllOutputs();
                                       });
                                     }
                                   } else {
-                                    setState(() {
-                                      _simulatorManager.isDrawingWire = false;
-                                      _simulatorManager.wireStartPin = null;
-                                      _simulatorManager.wireEndPosition = null;
-                                    });
+                                    setState(
+                                      _simulatorManager.cancelWireDrawing,
+                                    );
                                   }
                                 }
                               },
@@ -185,12 +160,18 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                           ),
                         );
                       })),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Toolbar(simulatorManager: _simulatorManager),
+                        ),
+                      ),
                     ],
                   ),
             ),
           ),
         ),
-        Toolbar(simulatorManager: _simulatorManager),
       ],
     ),
   );

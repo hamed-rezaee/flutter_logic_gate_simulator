@@ -5,7 +5,7 @@ import 'package:flutter_logic_gate_simulator/components/wire.dart';
 
 class SimulatorManager {
   final List<BaseLogicComponent> components = [];
-  final List<Wire> wires = [];
+  final List<WireModel> wires = [];
 
   bool isDrawingWire = false;
   Pin? wireStartPin;
@@ -84,12 +84,12 @@ class SimulatorManager {
     }
 
     if (wireStartPin!.isOutput && !endPin.isOutput) {
-      wires.add(Wire(startPin: wireStartPin!, endPin: endPin));
+      wires.add(WireModel(startPin: wireStartPin!, endPin: endPin));
       cancelWireDrawing();
       calculateAllOutputs();
       return true;
     } else if (!wireStartPin!.isOutput && endPin.isOutput) {
-      wires.add(Wire(startPin: endPin, endPin: wireStartPin!));
+      wires.add(WireModel(startPin: endPin, endPin: wireStartPin!));
       cancelWireDrawing();
       calculateAllOutputs();
       return true;

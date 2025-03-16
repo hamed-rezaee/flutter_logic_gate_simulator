@@ -2,7 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class GridPainter extends CustomPainter {
+class BackgroundGrid extends StatelessWidget {
+  const BackgroundGrid({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const CustomPaint(size: Size.infinite, painter: _GridPainter());
+}
+
+class _GridPainter extends CustomPainter {
+  const _GridPainter();
+
   static const gridSize = 20;
 
   @override

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
-import 'package:flutter_logic_gate_simulator/widgets/gate_painter.dart';
+import 'package:flutter_logic_gate_simulator/widgets/logic_gate.dart';
 
 class NandGate extends BaseLogicComponent {
   NandGate({required super.id, required super.position}) {
@@ -19,7 +19,7 @@ class NandGate extends BaseLogicComponent {
     required void Function(Pin) onPinTap,
   }) => ComponentBuilder(
     id: id,
-    child: const LogicGateView(gateType: LogicGateType.nand),
+    child: const LogicGate(gateType: LogicGateType.nand),
     inputPins: inputPins,
     outputPins: outputPins,
     position: position,

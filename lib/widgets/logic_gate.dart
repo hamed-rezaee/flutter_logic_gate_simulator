@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 enum LogicGateType { and, or, not, nand, nor, xor, xand }
 
-class LogicGateView extends StatelessWidget {
-  const LogicGateView({
+class LogicGate extends StatelessWidget {
+  const LogicGate({
     required this.gateType,
     this.gateColor = Colors.white,
     this.strokeWidth = 3,
@@ -19,7 +19,7 @@ class LogicGateView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox.expand(
     child: CustomPaint(
-      painter: LogicGatesPainter(
+      painter: _LogicGatesPainter(
         gateType: gateType,
         gateColor: gateColor,
         strokeWidth: strokeWidth,
@@ -28,8 +28,8 @@ class LogicGateView extends StatelessWidget {
   );
 }
 
-class LogicGatesPainter extends CustomPainter {
-  LogicGatesPainter({
+class _LogicGatesPainter extends CustomPainter {
+  _LogicGatesPainter({
     required this.gateType,
     required this.gateColor,
     required this.strokeWidth,
@@ -345,7 +345,7 @@ class LogicGatesPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(LogicGatesPainter oldDelegate) =>
+  bool shouldRepaint(_LogicGatesPainter oldDelegate) =>
       oldDelegate.gateType != gateType ||
       oldDelegate.gateColor != gateColor ||
       oldDelegate.strokeWidth != strokeWidth;
