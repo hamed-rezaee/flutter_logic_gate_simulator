@@ -34,6 +34,12 @@ class Toolbar extends StatelessWidget {
                 Output(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
           _buildComponentDraggable(
+            const Icon(Icons.access_time, size: 32),
+            'CLOCK',
+            () =>
+                Clock(position: Offset.zero, id: simulatorManager.getNextId()),
+          ),
+          _buildComponentDraggable(
             const Icon(Icons.filter_7, size: 32),
             '7-SEG',
             () => SevenSegmentDisplay(

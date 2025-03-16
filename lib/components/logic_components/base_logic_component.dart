@@ -23,4 +23,6 @@ abstract class BaseLogicComponent {
   BaseLogicComponent clone() => throw UnimplementedError();
 
   void resetVisited() => visited = false;
+
+  void dispose() {}
 }

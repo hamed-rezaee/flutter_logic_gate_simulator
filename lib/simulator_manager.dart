@@ -35,6 +35,7 @@ class SimulatorManager {
     );
 
     components.remove(component);
+    component.dispose();
 
     calculateAllOutputs();
   }
