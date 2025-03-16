@@ -23,24 +23,6 @@ class SimulatorManager {
     }
   }
 
-  void _calculateOutput(BaseLogicComponent component) {
-    if (component.visited) return;
-
-    component.visited = true;
-
-    for (final pin in component.inputPins) {
-      for (final wire in wires) {
-        if (wire.endPin == pin) {
-          _calculateOutput(wire.startPin.component);
-
-          pin.value = wire.startPin.value;
-        }
-      }
-    }
-
-    component.calculateOutput();
-  }
-
   void addComponent(BaseLogicComponent component) {
     components.add(component);
   }
@@ -104,10 +86,6 @@ class SimulatorManager {
     calculateAllOutputs();
   }
 
-  void toggleDeleteMode() {
-    isDeleteMode = !isDeleteMode;
-  }
-
   int getNextId() {
     var maxId = 0;
     for (final component in components) {
@@ -116,5 +94,23 @@ class SimulatorManager {
       }
     }
     return maxId + 1;
+  }
+
+  void _calculateOutput(BaseLogicComponent component) {
+    if (component.visited) return;
+
+    component.visited = true;
+
+    for (final pin in component.inputPins) {
+      for (final wire in wires) {
+        if (wire.endPin == pin) {
+          _calculateOutput(wire.startPin.component);
+
+          pin.value = wire.startPin.value;
+        }
+      }
+    }
+
+    component.calculateOutput();
   }
 }

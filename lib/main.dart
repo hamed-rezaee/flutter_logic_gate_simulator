@@ -40,25 +40,32 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     body: Column(children: [Expanded(child: _buildSimulatorCanvas())]),
   );
 
-  Widget _buildSimulatorCanvas() => GestureDetector(
-    onTapUp: (details) {
+  Widget _buildSimulatorCanvas() => MouseRegion(
+    onHover: (event) {
       if (_simulatorManager.isDrawingWire) {
-        setState(_simulatorManager.cancelWireDrawing);
+        setState(() => _simulatorManager.wireEndPosition = event.localPosition);
       }
     },
-    child: DragTarget<BaseLogicComponent>(
-      onWillAcceptWithDetails: (data) => true,
-      onAcceptWithDetails: _handleComponentDrop,
-      builder:
-          (context, candidateData, rejectedData) => Stack(
-            children: [
-              const BackgroundGrid(),
-              ..._buildWires(),
-              if (_simulatorManager.isDrawingWire) _buildActiveWire(),
-              ..._buildComponents(),
-              _buildToolbar(),
-            ],
-          ),
+    child: GestureDetector(
+      onTapUp: (details) {
+        if (_simulatorManager.isDrawingWire) {
+          setState(_simulatorManager.cancelWireDrawing);
+        }
+      },
+      child: DragTarget<BaseLogicComponent>(
+        onWillAcceptWithDetails: (data) => true,
+        onAcceptWithDetails: _handleComponentDrop,
+        builder:
+            (context, candidateData, rejectedData) => Stack(
+              children: [
+                const BackgroundGrid(),
+                ..._buildWires(),
+                if (_simulatorManager.isDrawingWire) _buildActiveWire(),
+                ..._buildComponents(),
+                _buildToolbar(),
+              ],
+            ),
+      ),
     ),
   );
 
@@ -123,11 +130,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
   void _handlePinTap(Pin pin, BaseLogicComponent component) {
     if (!_simulatorManager.isDrawingWire) {
-      setState(() {
-        _simulatorManager.isDrawingWire = true;
-        _simulatorManager.wireStartPin = pin;
-        _simulatorManager.wireEndPosition = pin.position;
-      });
+      setState(() => _simulatorManager.startWireDrawing(pin));
     } else if (_simulatorManager.wireStartPin != null) {
       _tryConnectWire(pin, component);
     }
