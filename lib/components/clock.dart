@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
-import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
-import 'package:flutter_logic_gate_simulator/components/pin.dart';
+import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Clock extends BaseLogicComponent {
   Clock({required super.id, required super.position}) {
@@ -34,7 +32,7 @@ class Clock extends BaseLogicComponent {
               Padding(
                 padding: const EdgeInsets.all(4),
                 child: Icon(
-                  Icons.timer,
+                  Icons.timer_sharp,
                   color: isOn ? Colors.green : Colors.grey,
                   size: 30,
                 ),

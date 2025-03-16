@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
-import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
-import 'package:flutter_logic_gate_simulator/components/pin.dart';
+import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Input extends BaseLogicComponent {
   Input({required super.id, required super.position}) {

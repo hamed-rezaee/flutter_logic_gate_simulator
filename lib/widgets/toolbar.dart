@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/logic_components/logic_components.dart';
+import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
-import 'package:flutter_logic_gate_simulator/widgets/logic_gate.dart';
 
 class Toolbar extends StatelessWidget {
   const Toolbar({required this.simulatorManager, super.key});
