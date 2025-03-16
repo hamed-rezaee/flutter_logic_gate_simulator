@@ -17,7 +17,7 @@ class SevenSegment extends BaseLogicComponent {
     required void Function(Pin) onPinTap,
   }) => ComponentBuilder(
     id: id,
-    child: _SevenSegmentWidget(
+    child: _SevenSegmentView(
       a: inputPins[0].value,
       b: inputPins[1].value,
       c: inputPins[2].value,
@@ -41,8 +41,8 @@ class SevenSegment extends BaseLogicComponent {
   BaseLogicComponent clone() => SevenSegment(position: position, id: id);
 }
 
-class _SevenSegmentWidget extends StatelessWidget {
-  const _SevenSegmentWidget({
+class _SevenSegmentView extends StatelessWidget {
+  const _SevenSegmentView({
     required this.a,
     required this.b,
     required this.c,
