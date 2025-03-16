@@ -42,7 +42,15 @@ class Toolbar extends StatelessWidget {
           _buildComponentDraggable(
             const Icon(Icons.filter_7, size: 32),
             '7-SEG',
-            () => SevenSegmentDisplay(
+            () => SevenSegment(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const Icon(Icons.blur_linear, size: 32),
+            '7-SEG DEC',
+            () => SevenSegmentDecoder(
               position: Offset.zero,
               id: simulatorManager.getNextId(),
             ),

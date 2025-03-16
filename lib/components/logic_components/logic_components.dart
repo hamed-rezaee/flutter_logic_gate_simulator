@@ -8,6 +8,7 @@ export 'nor_gate.dart';
 export 'not_gate.dart';
 export 'or_gate.dart';
 export 'output.dart';
-export 'seven_segment_display.dart';
+export 'seven_segment.dart';
+export 'seven_segment_decoder.dart';
 export 'xand_gate.dart';
 export 'xor_gate.dart';

@@ -3,8 +3,8 @@ import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
 
-class SevenSegmentDisplay extends BaseLogicComponent {
-  SevenSegmentDisplay({required super.id, required super.position}) {
+class SevenSegment extends BaseLogicComponent {
+  SevenSegment({required super.id, required super.position}) {
     for (var i = 0; i < 7; i++) {
       inputPins.add(Pin(component: this, isOutput: false, index: i));
     }
@@ -40,7 +40,7 @@ class SevenSegmentDisplay extends BaseLogicComponent {
   void calculateOutput() {}
 
   @override
-  BaseLogicComponent clone() => SevenSegmentDisplay(position: position, id: id);
+  BaseLogicComponent clone() => SevenSegment(position: position, id: id);
 }
 
 class _SevenSegmentWidget extends StatelessWidget {
@@ -99,13 +99,13 @@ class _SevenSegmentPainter extends CustomPainter {
 
     final activePaint =
         Paint()
-          ..color = Colors.red
+          ..color = Colors.green
           ..style = PaintingStyle.fill
           ..maskFilter = const MaskFilter.blur(BlurStyle.solid, 8);
 
     final inactivePaint =
         Paint()
-          ..color = Colors.grey
+          ..color = Colors.grey.withValues(alpha: 0.2)
           ..style = PaintingStyle.fill;
 
     _drawHorizontalSegment(
