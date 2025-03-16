@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
+import 'package:flutter_logic_gate_simulator/widgets/gate_painter.dart';
 
 class NorGate extends BaseLogicComponent {
   NorGate({required super.id, required super.position}) {
@@ -18,10 +19,7 @@ class NorGate extends BaseLogicComponent {
     required void Function(Pin) onPinTap,
   }) => ComponentBuilder(
     id: id,
-    child: const Text(
-      'NOR',
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    ),
+    child: const LogicGateView(gateType: LogicGateType.nor),
     inputPins: inputPins,
     outputPins: outputPins,
     position: position,

@@ -7,10 +7,12 @@ import 'package:flutter_logic_gate_simulator/components/logic_components/nor_gat
 import 'package:flutter_logic_gate_simulator/components/logic_components/not_gate.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/or_gate.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/output.dart';
+import 'package:flutter_logic_gate_simulator/components/logic_components/xand_gate.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/xor_gate.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
 import 'package:flutter_logic_gate_simulator/components/wire.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
+import 'package:flutter_logic_gate_simulator/widgets/gate_painter.dart';
 import 'package:flutter_logic_gate_simulator/widgets/grid_painter.dart';
 
 void main() {
@@ -62,6 +64,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     }
 
     // Start calculation from each component
+
     for (final component in _components) {
       _calculateOutput(component);
     }
@@ -176,9 +179,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                             },
                             child: component.build(
                               onInputToggle: () {
-                                setState(() {
-                                  _calculateAllOutputs();
-                                });
+                                setState(_calculateAllOutputs);
                               },
                               onPinTap: (pin) {
                                 if (_isDeleteMode) {
@@ -311,43 +312,48 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildComponentDraggable(
-                  'Input Switch',
-                  Icons.toggle_on,
-                  () => Input(position: Offset.zero, id: _getNextId()),
-                ),
-                _buildComponentDraggable(
-                  'AND Gate',
-                  Icons.all_inclusive,
+                  const LogicGateView(gateType: LogicGateType.and),
+                  LogicGateType.and.name.toUpperCase(),
                   () => AndGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'OR Gate',
-                  Icons.change_history,
+                  const LogicGateView(gateType: LogicGateType.or),
+                  LogicGateType.or.name.toUpperCase(),
                   () => OrGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'NOT Gate',
-                  Icons.block,
+                  const LogicGateView(gateType: LogicGateType.not),
+                  LogicGateType.not.name.toUpperCase(),
                   () => NotGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'NAND Gate',
-                  Icons.shield,
+                  const LogicGateView(gateType: LogicGateType.nand),
+                  LogicGateType.nand.name.toUpperCase(),
                   () => NandGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'NOR Gate',
-                  Icons.lens_blur,
+                  const LogicGateView(gateType: LogicGateType.nor),
+                  LogicGateType.nor.name.toUpperCase(),
                   () => NorGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'XOR Gate',
-                  Icons.change_circle,
+                  const LogicGateView(gateType: LogicGateType.xand),
+                  LogicGateType.xand.name.toUpperCase(),
+                  () => XandGate(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  const LogicGateView(gateType: LogicGateType.xor),
+                  LogicGateType.xor.name.toUpperCase(),
                   () => XorGate(position: Offset.zero, id: _getNextId()),
                 ),
                 _buildComponentDraggable(
-                  'Output Lamp',
-                  Icons.lightbulb,
+                  const Icon(Icons.input),
+                  'INPUT',
+                  () => Input(position: Offset.zero, id: _getNextId()),
+                ),
+                _buildComponentDraggable(
+                  const Icon(Icons.output),
+                  'OUTPUT',
                   () => Output(position: Offset.zero, id: _getNextId()),
                 ),
               ],
@@ -360,47 +366,45 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
   // Helper to create draggable component for the palette
   Widget _buildComponentDraggable(
+    Widget widget,
     String label,
-    IconData icon,
     BaseLogicComponent Function() createComponent,
-  ) {
-    return Draggable<BaseLogicComponent>(
-      data: createComponent(),
-      feedback: Material(
-        color: Colors.transparent,
-        elevation: 4,
-        child: Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: Colors.white),
-              Text(label, style: const TextStyle(color: Colors.white)),
-            ],
-          ),
+  ) => Draggable<BaseLogicComponent>(
+    data: createComponent(),
+    feedback: Material(
+      color: Colors.transparent,
+      elevation: 4,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(8),
         ),
+        child: SizedBox(width: 60, height: 40, child: widget),
       ),
-      childWhenDragging: Opacity(
-        opacity: 0.3,
-        child: Column(
-          children: [
-            Icon(icon),
-            Text(label, style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-      ),
+    ),
+    childWhenDragging: Opacity(
+      opacity: 0.3,
       child: Column(
         children: [
-          Icon(icon),
-          Text(label, style: const TextStyle(fontSize: 12)),
+          SizedBox(width: 60, height: 40, child: widget),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
-    );
-  }
+    ),
+    child: Column(
+      children: [
+        SizedBox(width: 60, height: 40, child: widget),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
+  );
 
   // Generate a unique ID for new components
   int _getNextId() {

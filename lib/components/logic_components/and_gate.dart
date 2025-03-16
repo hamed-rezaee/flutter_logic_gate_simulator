@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/component_builder.dart';
 import 'package:flutter_logic_gate_simulator/components/logic_components/base_logic_component.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
+import 'package:flutter_logic_gate_simulator/widgets/gate_painter.dart';
 
 class AndGate extends BaseLogicComponent {
   AndGate({required super.id, required super.position}) {
@@ -18,10 +19,7 @@ class AndGate extends BaseLogicComponent {
     required void Function(Pin) onPinTap,
   }) => ComponentBuilder(
     id: id,
-    child: const Text(
-      'AND',
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    ),
+    child: const LogicGateView(gateType: LogicGateType.and),
     inputPins: inputPins,
     outputPins: outputPins,
     position: position,
