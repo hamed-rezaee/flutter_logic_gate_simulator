@@ -95,6 +95,14 @@ class Toolbar extends StatelessWidget {
               id: simulatorManager.getNextId(),
             ),
           ),
+          _buildComponentDraggable(
+            const Icon(Icons.flip, size: 32),
+            'JK FF',
+            () => JkFlipFlop(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
         ],
       ),
     ),

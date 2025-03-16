@@ -1,6 +1,7 @@
 export 'and_gate.dart';
 export 'base_logic_component.dart';
 export 'input.dart';
+export 'jk_flip_flop.dart';
 export 'nand_gate.dart';
 export 'nor_gate.dart';
 export 'not_gate.dart';
