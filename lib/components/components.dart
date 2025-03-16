@@ -2,6 +2,8 @@ export 'and_gate.dart';
 export 'base_logic_component.dart';
 export 'clock.dart';
 export 'component_builder.dart';
+export 'decoder.dart';
+export 'encoder.dart';
 export 'input.dart';
 export 'jk_flip_flop.dart';
 export 'logic_gate.dart';

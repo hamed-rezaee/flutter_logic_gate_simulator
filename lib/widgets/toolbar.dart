@@ -18,6 +18,7 @@ class Toolbar extends StatelessWidget {
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
+        spacing: 4,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildComponentDraggable(
@@ -76,26 +77,42 @@ class Toolbar extends StatelessWidget {
           ),
           VerticalDivider(color: Colors.grey[500]),
           _buildComponentDraggable(
-            const Icon(Icons.input, size: 32),
+            const Icon(Icons.input_rounded, size: 32),
             'INPUT',
             () =>
                 Input(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
           _buildComponentDraggable(
-            const Icon(Icons.output, size: 32),
+            const Icon(Icons.output_rounded, size: 32),
             'OUTPUT',
             () =>
                 Output(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
           _buildComponentDraggable(
-            const Icon(Icons.access_time, size: 32),
+            const Icon(Icons.timer_outlined, size: 32),
             'CLOCK',
             () =>
                 Clock(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
           VerticalDivider(color: Colors.grey[500]),
           _buildComponentDraggable(
-            const Icon(Icons.flip, size: 32),
+            const Icon(Icons.apps_rounded, size: 32),
+            'ENC 4x2',
+            () => Encoder(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const Icon(Icons.apps_rounded, size: 32),
+            'DEC 2x4',
+            () => Decoder(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
+            const Icon(Icons.apps_rounded, size: 32),
             'JK FF',
             () => JkFlipFlop(
               position: Offset.zero,
@@ -112,7 +129,7 @@ class Toolbar extends StatelessWidget {
             ),
           ),
           _buildComponentDraggable(
-            const Icon(Icons.blur_linear, size: 32),
+            const Icon(Icons.apps_rounded, size: 32),
             '7-SEG DEC',
             () => SevenSegmentDecoder(
               position: Offset.zero,
