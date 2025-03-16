@@ -40,15 +40,17 @@ class Encoder extends BaseLogicComponent {
 
   @override
   void calculateOutput() {
-    final inputIndex = inputPins.indexWhere((pin) => pin.value);
+    var value = 0;
 
-    if (inputIndex == -1) {
-      outputPins[1].value = false;
-      outputPins[0].value = false;
-    } else {
-      outputPins[1].value = (inputIndex & 0x2) != 0;
-      outputPins[0].value = (inputIndex & 0x1) != 0;
+    for (var i = inputPins.length - 1; i >= 0; i--) {
+      if (inputPins[i].value) {
+        value = i;
+        break;
+      }
     }
+
+    outputPins[1].value = (value & 0x02) != 0;
+    outputPins[0].value = (value & 0x01) != 0;
   }
 
   @override
