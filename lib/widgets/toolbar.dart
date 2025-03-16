@@ -34,6 +34,14 @@ class Toolbar extends StatelessWidget {
                 Output(position: Offset.zero, id: simulatorManager.getNextId()),
           ),
           _buildComponentDraggable(
+            const Icon(Icons.filter_7, size: 32),
+            '7-SEG',
+            () => SevenSegmentDisplay(
+              position: Offset.zero,
+              id: simulatorManager.getNextId(),
+            ),
+          ),
+          _buildComponentDraggable(
             const LogicGate(gateType: LogicGateType.not),
             LogicGateType.not.name.toUpperCase(),
             () => NotGate(
