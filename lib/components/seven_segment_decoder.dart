@@ -13,7 +13,7 @@ class SevenSegmentDecoder extends BaseLogicComponent {
   }
 
   @override
-  Size get size => const Size(80, 110);
+  Size get size => const Size(80, 125);
 
   @override
   Widget build({

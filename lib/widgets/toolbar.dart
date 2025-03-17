@@ -36,8 +36,6 @@ class _ToolbarState extends State<Toolbar> {
         label: 'XOR',
         createComponent: (id) => XorGate(position: Offset.zero, id: id),
       ),
-    ],
-    'Inverted Gates': [
       ComponentDefinition(
         widget: const LogicGate(gateType: LogicGateType.nand),
         label: 'NAND',
@@ -71,7 +69,34 @@ class _ToolbarState extends State<Toolbar> {
         createComponent: (id) => Clock(position: Offset.zero, id: id),
       ),
     ],
-    'Encoders/Decoders': [
+    'Memory': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'D FF',
+        createComponent: (id) => DFlipFlop(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'T FF',
+        createComponent: (id) => TFlipFlop(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'SR FF',
+        createComponent: (id) => SRFlipFlop(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'JK FF',
+        createComponent: (id) => JKFlipFlop(position: Offset.zero, id: id),
+      ),
+    ],
+    'Other': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'ADDER',
+        createComponent: (id) => Adder(position: Offset.zero, id: id),
+      ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'ENC 4x2',
@@ -83,24 +108,17 @@ class _ToolbarState extends State<Toolbar> {
         createComponent: (id) => Decoder(position: Offset.zero, id: id),
       ),
     ],
-    'Memory': [
-      ComponentDefinition(
-        widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'JK FF',
-        createComponent: (id) => JkFlipFlop(position: Offset.zero, id: id),
-      ),
-    ],
     'Display': [
-      ComponentDefinition(
-        widget: const Icon(Icons.filter_7, size: 32),
-        label: '7-SEG',
-        createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
-      ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: '7-SEG DEC',
         createComponent:
             (id) => SevenSegmentDecoder(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.filter_7, size: 32),
+        label: '7-SEG',
+        createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
       ),
     ],
   };

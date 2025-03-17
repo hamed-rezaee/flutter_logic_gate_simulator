@@ -1,7 +1,9 @@
+export 'adder.dart';
 export 'and_gate.dart';
 export 'base_logic_component.dart';
 export 'clock.dart';
 export 'component_builder.dart';
+export 'd_flip_flop.dart';
 export 'decoder.dart';
 export 'encoder.dart';
 export 'input.dart';
@@ -15,6 +17,8 @@ export 'output.dart';
 export 'pin.dart';
 export 'seven_segment.dart';
 export 'seven_segment_decoder.dart';
+export 'sr_flip_flop.dart';
+export 't_flip_flop.dart';
 export 'wire.dart';
 export 'xnor_gate.dart';
 export 'xor_gate.dart';
