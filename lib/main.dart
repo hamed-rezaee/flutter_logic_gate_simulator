@@ -105,6 +105,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       endPosition: _simulatorManager.wireEndPosition!,
       isActive: _simulatorManager.wireStartPin!.value,
       isSelected: false,
+      isDashed: true,
     );
   }
 

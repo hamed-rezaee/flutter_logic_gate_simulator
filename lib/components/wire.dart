@@ -8,6 +8,7 @@ class Wire extends StatelessWidget {
     required this.isActive,
     required this.isSelected,
     this.onTap,
+    this.isDashed = false,
     super.key,
   });
 
@@ -15,6 +16,7 @@ class Wire extends StatelessWidget {
   final Offset endPosition;
   final bool isActive;
   final bool isSelected;
+  final bool isDashed;
   final VoidCallback? onTap;
 
   @override
@@ -27,6 +29,7 @@ class Wire extends StatelessWidget {
         end: endPosition,
         isActive: isActive,
         isSelected: isSelected,
+        isDashed: isDashed,
       ),
     ),
   );
@@ -38,12 +41,14 @@ class _WirePainter extends CustomPainter {
     required this.end,
     required this.isActive,
     required this.isSelected,
+    this.isDashed = false,
   });
 
   final Offset start;
   final Offset end;
   final bool isActive;
   final bool isSelected;
+  final bool isDashed;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -55,12 +60,54 @@ class _WirePainter extends CustomPainter {
 
     final midX = (start.dx + end.dx) / 2;
 
-    final path =
-        Path()
-          ..moveTo(start.dx, start.dy)
-          ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+    if (isDashed) {
+      const dashWidth = 8;
+      const dashSpace = 4;
 
-    canvas.drawPath(path, paint);
+      final path =
+          Path()
+            ..moveTo(start.dx, start.dy)
+            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+
+      var distance = 0.0;
+      var drawLine = true;
+
+      final pathMetrics = path.computeMetrics().first;
+      final pathLength = pathMetrics.length;
+
+      while (distance < pathLength) {
+        final segmentLength = drawLine ? dashWidth : dashSpace;
+        final nextDistance = distance + segmentLength;
+
+        if (nextDistance > pathLength) {
+          if (drawLine) {
+            final start = pathMetrics.getTangentForOffset(distance)!.position;
+            final end = pathMetrics.getTangentForOffset(pathLength)!.position;
+
+            canvas.drawLine(start, end, paint);
+          }
+
+          break;
+        }
+
+        if (drawLine) {
+          final start = pathMetrics.getTangentForOffset(distance)!.position;
+          final end = pathMetrics.getTangentForOffset(nextDistance)!.position;
+
+          canvas.drawLine(start, end, paint);
+        }
+
+        distance = nextDistance;
+        drawLine = !drawLine;
+      }
+    } else {
+      final path =
+          Path()
+            ..moveTo(start.dx, start.dy)
+            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+
+      canvas.drawPath(path, paint);
+    }
 
     if (isSelected) {
       final highlightPaint =
@@ -68,6 +115,11 @@ class _WirePainter extends CustomPainter {
             ..color = Colors.blue.withValues(alpha: 0.5)
             ..style = PaintingStyle.stroke
             ..strokeWidth = 6;
+
+      final path =
+          Path()
+            ..moveTo(start.dx, start.dy)
+            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
       canvas.drawPath(path, highlightPaint);
     }
@@ -78,7 +130,8 @@ class _WirePainter extends CustomPainter {
       oldDelegate.start != start ||
       oldDelegate.end != end ||
       oldDelegate.isActive != isActive ||
-      oldDelegate.isSelected != isSelected;
+      oldDelegate.isSelected != isSelected ||
+      oldDelegate.isDashed != isDashed;
 }
 
 class WireModel {
