@@ -72,6 +72,10 @@ class _WirePainter extends CustomPainter {
       var distance = 0.0;
       var drawLine = true;
 
+      if (path.computeMetrics().isEmpty) {
+        return;
+      }
+
       final pathMetrics = path.computeMetrics().first;
       final pathLength = pathMetrics.length;
 
