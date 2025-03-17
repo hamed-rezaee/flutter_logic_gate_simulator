@@ -19,6 +19,7 @@ class Adder extends BaseLogicComponent {
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
+    bool isSelected = false,
   }) => ComponentBuilder(
     id: id,
     child: const Text(
@@ -28,6 +29,7 @@ class Adder extends BaseLogicComponent {
     ),
     inputPins: inputPins,
     outputPins: outputPins,
+    isSelected: isSelected,
     position: position,
     size: size,
     onInputToggle: onInputToggle,

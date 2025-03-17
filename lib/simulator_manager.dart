@@ -13,6 +13,9 @@ class SimulatorManager {
 
   bool isDeleteMode = false;
 
+  BaseLogicComponent? selectedComponent;
+  WireModel? selectedWire;
+
   void calculateAllOutputs() {
     for (final component in components) {
       component.resetVisited();
@@ -25,6 +28,8 @@ class SimulatorManager {
 
   void addComponent(BaseLogicComponent component) {
     components.add(component);
+
+    selectComponent(component);
   }
 
   void removeComponent(BaseLogicComponent component) {
@@ -37,7 +42,26 @@ class SimulatorManager {
     components.remove(component);
     component.dispose();
 
+    if (selectedComponent == component) {
+      selectedComponent = null;
+    }
+
     calculateAllOutputs();
+  }
+
+  void selectComponent(BaseLogicComponent component) {
+    selectedComponent = component;
+    selectedWire = null;
+  }
+
+  void selectWire(WireModel wire) {
+    selectedWire = wire;
+    selectedComponent = null;
+  }
+
+  void clearSelection() {
+    selectedComponent = null;
+    selectedWire = null;
   }
 
   void startWireDrawing(Pin startPin) {
@@ -67,19 +91,33 @@ class SimulatorManager {
     }
 
     if (wireStartPin!.isOutput && !endPin.isOutput) {
-      wires.add(WireModel(startPin: wireStartPin!, endPin: endPin));
+      final wire = WireModel(startPin: wireStartPin!, endPin: endPin);
+      wires.add(wire);
       cancelWireDrawing();
       calculateAllOutputs();
+      selectWire(wire);
       return true;
     } else if (!wireStartPin!.isOutput && endPin.isOutput) {
-      wires.add(WireModel(startPin: endPin, endPin: wireStartPin!));
+      final wire = WireModel(startPin: endPin, endPin: wireStartPin!);
+      wires.add(wire);
       cancelWireDrawing();
       calculateAllOutputs();
+      selectWire(wire);
       return true;
     }
 
     cancelWireDrawing();
     return false;
+  }
+
+  void removeWire(WireModel wire) {
+    wires.remove(wire);
+
+    if (selectedWire == wire) {
+      selectedWire = null;
+    }
+
+    calculateAllOutputs();
   }
 
   void removeWiresForPin(Pin pin) {

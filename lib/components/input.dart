@@ -12,6 +12,7 @@ class Input extends BaseLogicComponent {
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
+    bool isSelected = false,
   }) => ComponentBuilder(
     id: id,
     child: ScaleTransition(
@@ -27,6 +28,7 @@ class Input extends BaseLogicComponent {
     ),
     inputPins: inputPins,
     outputPins: outputPins,
+    isSelected: isSelected,
     position: position,
     size: size,
     onInputToggle: onInputToggle,

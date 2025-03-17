@@ -6,20 +6,28 @@ class Wire extends StatelessWidget {
     required this.startPosition,
     required this.endPosition,
     required this.isActive,
+    required this.isSelected,
+    this.onTap,
     super.key,
   });
 
   final Offset startPosition;
   final Offset endPosition;
   final bool isActive;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => CustomPaint(
-    size: Size.infinite,
-    painter: _WirePainter(
-      start: startPosition,
-      end: endPosition,
-      isActive: isActive,
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.translucent,
+    onTap: onTap,
+    child: CustomPaint(
+      painter: _WirePainter(
+        start: startPosition,
+        end: endPosition,
+        isActive: isActive,
+        isSelected: isSelected,
+      ),
     ),
   );
 }
@@ -29,11 +37,13 @@ class _WirePainter extends CustomPainter {
     required this.start,
     required this.end,
     required this.isActive,
+    required this.isSelected,
   });
 
   final Offset start;
   final Offset end;
   final bool isActive;
+  final bool isSelected;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -41,7 +51,7 @@ class _WirePainter extends CustomPainter {
         Paint()
           ..color = isActive ? Colors.green : Colors.grey
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2;
+          ..strokeWidth = isSelected ? 4 : 2;
 
     final midX = (start.dx + end.dx) / 2;
 
@@ -51,10 +61,24 @@ class _WirePainter extends CustomPainter {
           ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
     canvas.drawPath(path, paint);
+
+    if (isSelected) {
+      final highlightPaint =
+          Paint()
+            ..color = Colors.blue.withValues(alpha: 0.5)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 6;
+
+      canvas.drawPath(path, highlightPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(_WirePainter oldDelegate) =>
+      oldDelegate.start != start ||
+      oldDelegate.end != end ||
+      oldDelegate.isActive != isActive ||
+      oldDelegate.isSelected != isSelected;
 }
 
 class WireModel {

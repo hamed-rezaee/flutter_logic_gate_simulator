@@ -7,6 +7,7 @@ class ComponentBuilder extends StatelessWidget {
     required this.child,
     required this.inputPins,
     required this.outputPins,
+    required this.isSelected,
     required this.position,
     required this.size,
     required this.onInputToggle,
@@ -18,6 +19,7 @@ class ComponentBuilder extends StatelessWidget {
   final Widget child;
   final List<Pin> inputPins;
   final List<Pin> outputPins;
+  final bool isSelected;
   final Offset position;
   final Size size;
   final VoidCallback onInputToggle;
@@ -35,6 +37,10 @@ class ComponentBuilder extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey[800],
               borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.orange.withValues(alpha: isSelected ? 0.75 : 0),
+                width: 2,
+              ),
             ),
             child: Center(child: child),
           ),

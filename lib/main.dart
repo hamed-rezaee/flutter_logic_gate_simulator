@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/base_logic_component.dart';
-import 'package:flutter_logic_gate_simulator/components/pin.dart';
-import 'package:flutter_logic_gate_simulator/components/wire.dart';
+import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
@@ -51,6 +49,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       onTapUp: (details) {
         if (_simulatorManager.isDrawingWire) {
           setState(_simulatorManager.cancelWireDrawing);
+        } else {
+          setState(_simulatorManager.clearSelection);
         }
       },
       child: DragTarget<BaseLogicComponent>(
@@ -82,9 +82,14 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       _simulatorManager.wires
           .map(
             (wire) => Wire(
-              startPosition: wire.startPin.position,
-              endPosition: wire.endPin.position,
+              key: ValueKey(
+                'wire-${wire.startPin.component.id}-${wire.startPin.index}-${wire.endPin.component.id}-${wire.endPin.index}',
+              ),
+              startPosition: wire.startPosition,
+              endPosition: wire.endPosition,
               isActive: wire.startPin.value,
+              isSelected: wire == _simulatorManager.selectedWire,
+              onTap: () => setState(() => _simulatorManager.selectWire(wire)),
             ),
           )
           .toList();
@@ -99,6 +104,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       startPosition: _simulatorManager.wireStartPin!.position,
       endPosition: _simulatorManager.wireEndPosition!,
       isActive: _simulatorManager.wireStartPin!.value,
+      isSelected: false,
     );
   }
 
@@ -109,10 +115,21 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               left: component.position.dx,
               top: component.position.dy,
               child: GestureDetector(
-                onDoubleTap:
+                onTap:
                     () => setState(
-                      () => _simulatorManager.removeComponent(component),
+                      () => _simulatorManager.selectComponent(component),
                     ),
+                onDoubleTap: () {
+                  if (_simulatorManager.selectedComponent == component) {
+                    setState(
+                      () => _simulatorManager.removeComponent(component),
+                    );
+                  } else {
+                    setState(
+                      () => _simulatorManager.selectComponent(component),
+                    );
+                  }
+                },
                 onPanUpdate: (details) {
                   setState(() {
                     component.position += details.delta;
@@ -123,6 +140,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                   onInputToggle:
                       () => setState(_simulatorManager.calculateAllOutputs),
                   onPinTap: (pin) => _handlePinTap(pin, component),
+                  isSelected: component == _simulatorManager.selectedComponent,
                 ),
               ),
             ),
@@ -142,21 +160,26 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
     if (startPin.component == component) {
       setState(_simulatorManager.cancelWireDrawing);
-
       return;
     }
 
     setState(() {
       if (startPin.isOutput && !pin.isOutput) {
-        _simulatorManager.wires.add(WireModel(startPin: startPin, endPin: pin));
+        final wire = WireModel(startPin: startPin, endPin: pin);
+
+        _simulatorManager.wires.add(wire);
         _simulatorManager
           ..cancelWireDrawing()
-          ..calculateAllOutputs();
+          ..calculateAllOutputs()
+          ..selectWire(wire);
       } else if (!startPin.isOutput && pin.isOutput) {
-        _simulatorManager.wires.add(WireModel(startPin: pin, endPin: startPin));
+        final wire = WireModel(startPin: pin, endPin: startPin);
+
+        _simulatorManager.wires.add(wire);
         _simulatorManager
           ..cancelWireDrawing()
-          ..calculateAllOutputs();
+          ..calculateAllOutputs()
+          ..selectWire(wire);
       } else {
         _simulatorManager.cancelWireDrawing();
       }
@@ -167,7 +190,46 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     alignment: Alignment.bottomCenter,
     child: Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Toolbar(simulatorManager: _simulatorManager),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 150),
+            opacity:
+                _simulatorManager.selectedComponent != null ||
+                        _simulatorManager.selectedWire != null
+                    ? 1
+                    : 0,
+            child: _buildDeleteButton(),
+          ),
+          Toolbar(simulatorManager: _simulatorManager),
+        ],
+      ),
     ),
+  );
+
+  Widget _buildDeleteButton() => InkWell(
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: Colors.red.withValues(alpha: 0.5),
+      ),
+      child: const Text(
+        'DELETE SELECTED ITEM',
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+    ),
+    onTap: () {
+      setState(() {
+        if (_simulatorManager.selectedComponent != null) {
+          _simulatorManager.removeComponent(
+            _simulatorManager.selectedComponent!,
+          );
+        } else if (_simulatorManager.selectedWire != null) {
+          _simulatorManager.removeWire(_simulatorManager.selectedWire!);
+        }
+      });
+    },
   );
 }
