@@ -88,18 +88,21 @@ class SimulatorManager {
       return false;
     }
 
-    bool canConnect(Pin start, Pin end) => start.isOutput && !end.isOutput;
-
-    if (canConnect(wireStartPin!, endPin) ||
-        canConnect(endPin, wireStartPin!)) {
-      final wire = WireModel(
-        startPin: canConnect(wireStartPin!, endPin) ? wireStartPin! : endPin,
-        endPin: canConnect(wireStartPin!, endPin) ? endPin : wireStartPin!,
-      );
-
+    if (wireStartPin!.isOutput && !endPin.isOutput) {
+      final wire = WireModel(startPin: wireStartPin!, endPin: endPin);
       wires.add(wire);
 
       cancelWireDrawing();
+      calculateAllOutputs();
+      selectWire(wire);
+
+      return true;
+    } else if (!wireStartPin!.isOutput && endPin.isOutput) {
+      final wire = WireModel(startPin: endPin, endPin: wireStartPin!);
+
+      wires.add(wire);
+      cancelWireDrawing();
+      calculateAllOutputs();
       selectWire(wire);
 
       return true;
