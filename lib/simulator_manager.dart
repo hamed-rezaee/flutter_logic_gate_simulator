@@ -150,4 +150,18 @@ class SimulatorManager {
 
     component.calculateOutput();
   }
+
+  void clearAll() {
+    for (final component in components) {
+      component.dispose();
+    }
+
+    wires.clear();
+    components.clear();
+
+    selectedComponent = null;
+    selectedWire = null;
+
+    cancelWireDrawing();
+  }
 }

@@ -16,6 +16,7 @@ class LogicGateSimulator extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blueGrey,
           brightness: Brightness.dark,
+          useMaterial3: false,
         ),
         home: const SimulatorCanvas(),
         debugShowCheckedModeBanner: false,
@@ -43,7 +44,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Colors.black,
-        appBar: CustomAppBar(),
+        appBar: CustomAppBar(simulatorManager: _simulatorManager),
         body: Column(children: [Expanded(child: _buildSimulatorCanvas())]),
       );
 
