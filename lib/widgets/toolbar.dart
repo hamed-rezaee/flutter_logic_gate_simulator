@@ -15,6 +15,23 @@ class _ToolbarState extends State<Toolbar> {
   String? _expandedGroup;
 
   static final Map<String, List<ComponentDefinition>> _componentGroups = {
+    'I/O': [
+      ComponentDefinition(
+        widget: const Icon(Icons.input_rounded, size: 32),
+        label: 'INPUT',
+        createComponent: (id) => Input(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.output_rounded, size: 32),
+        label: 'OUTPUT',
+        createComponent: (id) => Output(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.timer_outlined, size: 32),
+        label: 'CLOCK',
+        createComponent: (id) => Clock(position: Offset.zero, id: id),
+      ),
+    ],
     'Basic Gates': [
       ComponentDefinition(
         widget: const LogicGate(gateType: LogicGateType.not),
@@ -52,21 +69,26 @@ class _ToolbarState extends State<Toolbar> {
         createComponent: (id) => XnorGate(position: Offset.zero, id: id),
       ),
     ],
-    'I/O': [
+    'Complex': [
       ComponentDefinition(
-        widget: const Icon(Icons.input_rounded, size: 32),
-        label: 'INPUT',
-        createComponent: (id) => Input(position: Offset.zero, id: id),
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'COUNTER',
+        createComponent: (id) => Counter(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const Icon(Icons.output_rounded, size: 32),
-        label: 'OUTPUT',
-        createComponent: (id) => Output(position: Offset.zero, id: id),
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'ADDER',
+        createComponent: (id) => Adder(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const Icon(Icons.timer_outlined, size: 32),
-        label: 'CLOCK',
-        createComponent: (id) => Clock(position: Offset.zero, id: id),
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'ENC 4x2',
+        createComponent: (id) => Encoder(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'DEC 2x4',
+        createComponent: (id) => Decoder(position: Offset.zero, id: id),
       ),
     ],
     'Memory': [
@@ -91,24 +113,12 @@ class _ToolbarState extends State<Toolbar> {
         createComponent: (id) => JKFlipFlop(position: Offset.zero, id: id),
       ),
     ],
-    'Other': [
-      ComponentDefinition(
-        widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'ADDER',
-        createComponent: (id) => Adder(position: Offset.zero, id: id),
-      ),
-      ComponentDefinition(
-        widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'ENC 4x2',
-        createComponent: (id) => Encoder(position: Offset.zero, id: id),
-      ),
-      ComponentDefinition(
-        widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'DEC 2x4',
-        createComponent: (id) => Decoder(position: Offset.zero, id: id),
-      ),
-    ],
     'Display': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'SCOPE',
+        createComponent: (id) => Oscilloscope(position: Offset.zero, id: id),
+      ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: '7-SEG DEC',
@@ -116,7 +126,7 @@ class _ToolbarState extends State<Toolbar> {
             (id) => SevenSegmentDecoder(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const Icon(Icons.filter_7, size: 32),
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: '7-SEG',
         createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
       ),
