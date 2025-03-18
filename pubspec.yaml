@@ -10,8 +10,11 @@ environment:
 
 dependencies:
   collection: ^1.19.1
+  file_picker: ^9.2.1
   flutter:
     sdk: flutter
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
   shared_preferences: ^2.5.2
 
 dev_dependencies:

@@ -36,6 +36,25 @@ class SimulatorSerializer {
     }
   }
 
+  static String serializeToJson(SimulatorManager simulatorManager) {
+    final data = _serialize(simulatorManager);
+
+    return jsonEncode(data);
+  }
+
+  static bool deserializeFromJson(
+    SimulatorManager simulatorManager,
+    String jsonString,
+  ) {
+    try {
+      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+
+      return _deserialize(simulatorManager, data);
+    } on Exception catch (_) {
+      return false;
+    }
+  }
+
   static Map<String, dynamic> _serialize(SimulatorManager simulatorManager) {
     final components = simulatorManager.components
         .map(
@@ -68,6 +87,10 @@ class SimulatorSerializer {
       'components': components,
       'wires': wires,
       'version': '1.0',
+      'metadata': {
+        'created': DateTime.now().toIso8601String(),
+        'appVersion': '1.0.0',
+      },
     };
   }
 
