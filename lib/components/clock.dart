@@ -3,7 +3,7 @@ import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Clock extends BaseLogicComponent {
   Clock({required super.id, required super.position}) {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 6; i++) {
       inputPins.add(Pin(component: this, isOutput: false, index: i));
     }
 
@@ -15,7 +15,7 @@ class Clock extends BaseLogicComponent {
   int _counter = 0;
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(80, 110);
 
   @override
   Widget build({
@@ -40,11 +40,11 @@ class Clock extends BaseLogicComponent {
 
   @override
   void calculateOutput() {
-    if (!inputPins[4].value) {
+    if (!inputPins[5].value) {
       outputPins[0].value = false;
       _counter = 0;
     } else {
-      final counterMultiplier = _binaryToDecimal(inputPins.sublist(0, 4)) * 100;
+      final counterMultiplier = _binaryToDecimal(inputPins.sublist(0, 5));
 
       if (_counter > counterMultiplier) {
         outputPins[0].value = !outputPins[0].value;
@@ -61,7 +61,7 @@ class Clock extends BaseLogicComponent {
   int _binaryToDecimal(List<Pin> input) {
     var result = 0;
 
-    for (var i = 0; i < input.length; i++) {
+    for (var i = input.length - 1; i >= 0; i--) {
       if (input[i].value) {
         result += 1 << i;
       }

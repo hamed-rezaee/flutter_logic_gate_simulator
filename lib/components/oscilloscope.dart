@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
@@ -8,8 +8,6 @@ class Oscilloscope extends BaseLogicComponent {
     for (var i = 0; i < 6; i++) {
       inputPins.add(Pin(index: i, isOutput: false, component: this));
     }
-
-    _startSampling();
   }
 
   final List<Queue<bool>> _signalHistory = List.generate(
@@ -28,31 +26,8 @@ class Oscilloscope extends BaseLogicComponent {
 
   final List<bool> _activeChannels = List.filled(6, false);
 
-  Timer? _samplingTimer;
-
   @override
-  Size get size => const Size(200, 150);
-
-  void _startSampling() {
-    _samplingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      for (var i = 0; i < inputPins.length; i++) {
-        if (_signalHistory[i].length >= 100) {
-          _signalHistory[i].removeFirst();
-        }
-        _signalHistory[i].add(inputPins[i].value);
-
-        if (inputPins[i].value) {
-          _activeChannels[i] = true;
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _samplingTimer?.cancel();
-    super.dispose();
-  }
+  Size get size => const Size(300, 110);
 
   @override
   Widget build({
@@ -78,10 +53,20 @@ class Oscilloscope extends BaseLogicComponent {
   }
 
   @override
-  void calculateOutput() {}
+  void calculateOutput() => _sampleInputs();
 
   @override
   BaseLogicComponent clone() => Oscilloscope(id: id, position: position);
+
+  void _sampleInputs() {
+    for (var i = 0; i < inputPins.length; i++) {
+      if (_signalHistory[i].length >= 300) _signalHistory[i].removeFirst();
+
+      _signalHistory[i].add(inputPins[i].value);
+
+      if (inputPins[i].value) _activeChannels[i] = true;
+    }
+  }
 }
 
 class OscilloscopeDisplay extends StatelessWidget {
@@ -109,12 +94,12 @@ class OscilloscopeDisplay extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(4),
                 child: CustomPaint(
+                  size: Size.infinite,
                   painter: OscilloscopePainter(
                     signalHistory: signalHistory,
                     signalColors: signalColors,
                     activeChannels: activeChannels,
                   ),
-                  size: const Size(170, 100),
                 ),
               ),
             ),
