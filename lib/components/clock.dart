@@ -1,66 +1,69 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Clock extends BaseLogicComponent {
   Clock({required super.id, required super.position}) {
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
+    for (var i = 0; i < 5; i++) {
+      inputPins.add(Pin(component: this, isOutput: false, index: i));
+    }
 
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
+    for (var i = 0; i < 1; i++) {
+      outputPins.add(Pin(component: this, isOutput: true, index: i));
+    }
   }
 
-  final Duration _interval = const Duration(seconds: 1);
+  int _counter = 0;
 
-  Timer? _timer;
+  @override
+  Size get size => const Size(80, 80);
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: StatefulBuilder(
-      builder: (context, setState) {
-        setState(() {
-          inputPins[0].value ? _startClock(onInputToggle) : _stopClock();
-        });
-
-        return const Icon(Icons.timer_sharp, color: Colors.white, size: 30);
-      },
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
-
-  void _startClock(VoidCallback onInputToggle) {
-    _timer?.cancel();
-
-    _timer = Timer.periodic(_interval, (timer) {
-      outputPins[0].value = !outputPins[0].value;
-      onInputToggle();
-    });
-  }
-
-  void _stopClock() {
-    outputPins[0].value = false;
-
-    _timer?.cancel();
-    _timer = null;
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: const Icon(Icons.timer_sharp, color: Colors.white, size: 30),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
-  void calculateOutput() {}
+  void calculateOutput() {
+    if (!inputPins[4].value) {
+      outputPins[0].value = false;
+      _counter = 0;
+    } else {
+      final counterMultiplier = _binaryToDecimal(inputPins.sublist(0, 4)) * 100;
+
+      if (_counter > counterMultiplier) {
+        outputPins[0].value = !outputPins[0].value;
+        _counter = 0;
+      }
+
+      _counter++;
+    }
+  }
 
   @override
   BaseLogicComponent clone() => Clock(position: position, id: id);
 
-  @override
-  void dispose() => _stopClock();
+  int _binaryToDecimal(List<Pin> input) {
+    var result = 0;
+
+    for (var i = 0; i < input.length; i++) {
+      if (input[i].value) {
+        result += 1 << i;
+      }
+    }
+
+    return result;
+  }
 }

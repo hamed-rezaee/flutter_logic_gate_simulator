@@ -27,21 +27,22 @@ class Counter extends BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: const Text(
-      'COUNTER',
-      textAlign: TextAlign.center,
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: const Text(
+          'COUNTER',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {
@@ -52,6 +53,7 @@ class Counter extends BaseLogicComponent {
     }
 
     final clockValue = inputPins[0].value;
+
     if (clockValue && !_lastClockState) {
       _increment();
       _updateOutputPins();
@@ -65,9 +67,7 @@ class Counter extends BaseLogicComponent {
     _updateOutputPins();
   }
 
-  void _increment() {
-    _count = (_count + 1) % 16;
-  }
+  void _increment() => _count = (_count + 1) % 16;
 
   void _updateOutputPins() {
     for (var i = 0; i < 4; i++) {
