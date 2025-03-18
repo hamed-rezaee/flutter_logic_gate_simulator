@@ -5,52 +5,48 @@ import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Oscilloscope extends BaseLogicComponent {
   Oscilloscope({required super.id, required super.position}) {
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, isOutput: false, component: this));
     }
   }
 
-  final List<Queue<bool>> _signalHistory = List.generate(
-    6,
-    (_) => Queue<bool>()..addAll(List.filled(100, false)),
-  );
+  static const sampleLength = 300;
 
-  final List<Color> _signalColors = [
+  static const List<Color> _signalColors = [
     Colors.red,
     Colors.green,
     Colors.blue,
-    Colors.yellow,
-    Colors.purple,
     Colors.orange,
   ];
 
-  final List<bool> _activeChannels = List.filled(6, false);
+  final List<Queue<bool>> _signalHistory = List.generate(
+    4,
+    (_) => Queue<bool>()..addAll(List.filled(sampleLength, false)),
+  );
 
   @override
-  Size get size => const Size(300, 110);
+  Size get size => const Size(300, 80);
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) {
-    return ComponentBuilder(
-      id: id,
-      child: OscilloscopeDisplay(
-        signalHistory: _signalHistory,
-        signalColors: _signalColors,
-        activeChannels: _activeChannels,
-      ),
-      inputPins: inputPins,
-      outputPins: outputPins,
-      isSelected: isSelected,
-      position: position,
-      size: size,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: OscilloscopeDisplay(
+          signalHistory: _signalHistory,
+          signalColors: _signalColors,
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() => _sampleInputs();
@@ -60,11 +56,11 @@ class Oscilloscope extends BaseLogicComponent {
 
   void _sampleInputs() {
     for (var i = 0; i < inputPins.length; i++) {
-      if (_signalHistory[i].length >= 300) _signalHistory[i].removeFirst();
+      if (_signalHistory[i].length >= sampleLength) {
+        _signalHistory[i].removeFirst();
+      }
 
       _signalHistory[i].add(inputPins[i].value);
-
-      if (inputPins[i].value) _activeChannels[i] = true;
     }
   }
 }
@@ -73,13 +69,11 @@ class OscilloscopeDisplay extends StatelessWidget {
   const OscilloscopeDisplay({
     required this.signalHistory,
     required this.signalColors,
-    required this.activeChannels,
     super.key,
   });
 
   final List<Queue<bool>> signalHistory;
   final List<Color> signalColors;
-  final List<bool> activeChannels;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -98,7 +92,6 @@ class OscilloscopeDisplay extends StatelessWidget {
                   painter: OscilloscopePainter(
                     signalHistory: signalHistory,
                     signalColors: signalColors,
-                    activeChannels: activeChannels,
                   ),
                 ),
               ),
@@ -112,27 +105,23 @@ class OscilloscopePainter extends CustomPainter {
   OscilloscopePainter({
     required this.signalHistory,
     required this.signalColors,
-    required this.activeChannels,
   });
 
   final List<Queue<bool>> signalHistory;
   final List<Color> signalColors;
-  final List<bool> activeChannels;
 
   @override
   void paint(Canvas canvas, Size size) {
     _drawGrid(canvas, size);
 
     for (var i = 0; i < signalHistory.length; i++) {
-      if (activeChannels[i]) {
-        _drawSignal(
-          canvas,
-          size,
-          signalHistory[i].toList(),
-          signalColors[i],
-          i,
-        );
-      }
+      _drawSignal(
+        canvas,
+        size,
+        signalHistory[i].toList(),
+        signalColors[i],
+        i,
+      );
     }
   }
 

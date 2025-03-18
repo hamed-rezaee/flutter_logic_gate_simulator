@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/base_logic_component.dart';
-import 'package:flutter_logic_gate_simulator/components/pin.dart';
-import 'package:flutter_logic_gate_simulator/components/wire.dart';
+import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class SimulatorManager {
   final List<BaseLogicComponent> components = [];
