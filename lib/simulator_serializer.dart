@@ -183,6 +183,14 @@ class SimulatorSerializer {
         return SevenSegmentDecoder(id: id, position: position);
       case 'Oscilloscope':
         return Oscilloscope(id: id, position: position);
+      case 'Multiplexer':
+        return Multiplexer(id: id, position: position);
+      case 'ShiftRegister':
+        return ShiftRegister(id: id, position: position);
+      case 'Comparator':
+        return Comparator(id: id, position: position);
+      case 'LedMatrix':
+        return LedMatrix(id: id, position: position);
 
       default:
         return null;

@@ -82,6 +82,16 @@ class _ToolbarState extends State<Toolbar> {
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'MUX 4:1',
+        createComponent: (id) => Multiplexer(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'COMP',
+        createComponent: (id) => Comparator(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'ENC 4x2',
         createComponent: (id) => Encoder(position: Offset.zero, id: id),
       ),
@@ -92,6 +102,11 @@ class _ToolbarState extends State<Toolbar> {
       ),
     ],
     'Memory': [
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'SHIFT REG',
+        createComponent: (id) => ShiftRegister(position: Offset.zero, id: id),
+      ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'D FF',
@@ -129,6 +144,11 @@ class _ToolbarState extends State<Toolbar> {
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: '7-SEG',
         createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'LED MATRIX',
+        createComponent: (id) => LedMatrix(position: Offset.zero, id: id),
       ),
     ],
   };
