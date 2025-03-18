@@ -25,20 +25,21 @@ class JKFlipFlop extends BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: const Text(
-      'JK FF',
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: const Text(
+          'JK FF',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {

@@ -16,25 +16,26 @@ class SevenSegment extends BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: _SevenSegmentView(
-      a: inputPins[0].value,
-      b: inputPins[1].value,
-      c: inputPins[2].value,
-      d: inputPins[3].value,
-      e: inputPins[4].value,
-      f: inputPins[5].value,
-      g: inputPins[6].value,
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: _SevenSegmentView(
+          a: inputPins[0].value,
+          b: inputPins[1].value,
+          c: inputPins[2].value,
+          d: inputPins[3].value,
+          e: inputPins[4].value,
+          f: inputPins[5].value,
+          g: inputPins[6].value,
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {}
@@ -64,12 +65,13 @@ class _SevenSegmentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 50,
-    height: 75,
-    child: CustomPaint(
-      painter: _SevenSegmentPainter(a: a, b: b, c: c, d: d, e: e, f: f, g: g),
-    ),
-  );
+        width: 50,
+        height: 75,
+        child: CustomPaint(
+          painter:
+              _SevenSegmentPainter(a: a, b: b, c: c, d: d, e: e, f: f, g: g),
+        ),
+      );
 }
 
 class _SevenSegmentPainter extends CustomPainter {
@@ -97,16 +99,14 @@ class _SevenSegmentPainter extends CustomPainter {
     final height = size.height;
     final width = size.width;
 
-    final activePaint =
-        Paint()
-          ..color = Colors.green
-          ..style = PaintingStyle.fill
-          ..maskFilter = const MaskFilter.blur(BlurStyle.solid, 8);
+    final activePaint = Paint()
+      ..color = Colors.green
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.solid, 8);
 
-    final inactivePaint =
-        Paint()
-          ..color = Colors.grey.withValues(alpha: 0.2)
-          ..style = PaintingStyle.fill;
+    final inactivePaint = Paint()
+      ..color = Colors.grey.withValues(alpha: 0.2)
+      ..style = PaintingStyle.fill;
 
     _drawHorizontalSegment(
       canvas,
@@ -172,15 +172,14 @@ class _SevenSegmentPainter extends CustomPainter {
     double height,
     Paint paint,
   ) {
-    final path =
-        Path()
-          ..moveTo(offset.dx, offset.dy + height / 2)
-          ..lineTo(offset.dx + height / 2, offset.dy)
-          ..lineTo(offset.dx + width - height / 2, offset.dy)
-          ..lineTo(offset.dx + width, offset.dy + height / 2)
-          ..lineTo(offset.dx + width - height / 2, offset.dy + height)
-          ..lineTo(offset.dx + height / 2, offset.dy + height)
-          ..close();
+    final path = Path()
+      ..moveTo(offset.dx, offset.dy + height / 2)
+      ..lineTo(offset.dx + height / 2, offset.dy)
+      ..lineTo(offset.dx + width - height / 2, offset.dy)
+      ..lineTo(offset.dx + width, offset.dy + height / 2)
+      ..lineTo(offset.dx + width - height / 2, offset.dy + height)
+      ..lineTo(offset.dx + height / 2, offset.dy + height)
+      ..close();
 
     canvas.drawPath(path, paint);
   }
@@ -192,15 +191,14 @@ class _SevenSegmentPainter extends CustomPainter {
     double height,
     Paint paint,
   ) {
-    final path =
-        Path()
-          ..moveTo(offset.dx + width / 2, offset.dy)
-          ..lineTo(offset.dx + width, offset.dy + width / 2)
-          ..lineTo(offset.dx + width, offset.dy + height - width / 2)
-          ..lineTo(offset.dx + width / 2, offset.dy + height)
-          ..lineTo(offset.dx, offset.dy + height - width / 2)
-          ..lineTo(offset.dx, offset.dy + width / 2)
-          ..close();
+    final path = Path()
+      ..moveTo(offset.dx + width / 2, offset.dy)
+      ..lineTo(offset.dx + width, offset.dy + width / 2)
+      ..lineTo(offset.dx + width, offset.dy + height - width / 2)
+      ..lineTo(offset.dx + width / 2, offset.dy + height)
+      ..lineTo(offset.dx, offset.dy + height - width / 2)
+      ..lineTo(offset.dx, offset.dy + width / 2)
+      ..close();
 
     canvas.drawPath(path, paint);
   }

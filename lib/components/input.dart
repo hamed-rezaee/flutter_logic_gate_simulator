@@ -13,27 +13,28 @@ class Input extends BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: ScaleTransition(
-      scale: const AlwaysStoppedAnimation(0.7),
-      child: Switch(
-        value: isOn,
-        activeColor: Colors.green,
-        onChanged: (value) {
-          isOn = value;
-          onInputToggle();
-        },
-      ),
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: ScaleTransition(
+          scale: const AlwaysStoppedAnimation(0.7),
+          child: Switch(
+            value: isOn,
+            activeColor: Colors.green,
+            onChanged: (value) {
+              isOn = value;
+              onInputToggle();
+            },
+          ),
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() => outputPins[0].value = isOn;

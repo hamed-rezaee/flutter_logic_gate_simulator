@@ -11,21 +11,22 @@ class Output extends BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) => ComponentBuilder(
-    id: id,
-    child: Icon(
-      Icons.circle,
-      color: inputPins[0].value ? Colors.green : Colors.grey,
-      size: 25,
-    ),
-    inputPins: inputPins,
-    outputPins: outputPins,
-    isSelected: isSelected,
-    position: position,
-    size: size,
-    onInputToggle: onInputToggle,
-    onPinTap: onPinTap,
-  );
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: Icon(
+          Icons.circle,
+          color: inputPins[0].value ? Colors.green : Colors.grey,
+          size: 25,
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {}

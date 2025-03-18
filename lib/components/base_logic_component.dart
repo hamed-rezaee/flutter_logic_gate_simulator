@@ -17,7 +17,8 @@ abstract class BaseLogicComponent {
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) => throw UnimplementedError();
+  }) =>
+      throw UnimplementedError();
 
   void calculateOutput() => throw UnimplementedError();
 

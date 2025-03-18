@@ -18,14 +18,14 @@ class LogicGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox.expand(
-    child: CustomPaint(
-      painter: _LogicGatesPainter(
-        gateType: gateType,
-        gateColor: gateColor,
-        strokeWidth: strokeWidth,
-      ),
-    ),
-  );
+        child: CustomPaint(
+          painter: _LogicGatesPainter(
+            gateType: gateType,
+            gateColor: gateColor,
+            strokeWidth: strokeWidth,
+          ),
+        ),
+      );
 }
 
 class _LogicGatesPainter extends CustomPainter {
@@ -41,11 +41,10 @@ class _LogicGatesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = gateColor
-          ..strokeWidth = strokeWidth
-          ..style = PaintingStyle.stroke;
+    final paint = Paint()
+      ..color = gateColor
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
 
     final centerX = size.width / 2;
     final centerY = size.height / 2;
@@ -172,27 +171,25 @@ class _LogicGatesPainter extends CustomPainter {
     final topY = centerY - gateHeight / 2;
     final bottomY = centerY + gateHeight / 2;
 
-    final path =
-        Path()
-          ..moveTo(leftX, topY)
-          ..quadraticBezierTo(
-            leftX + gateWidth * 0.25,
-            centerY,
-            leftX,
-            bottomY,
-          );
+    final path = Path()
+      ..moveTo(leftX, topY)
+      ..quadraticBezierTo(
+        leftX + gateWidth * 0.25,
+        centerY,
+        leftX,
+        bottomY,
+      );
     canvas.drawPath(path, paint);
 
-    final rightSide =
-        Path()
-          ..moveTo(leftX, topY)
-          ..quadraticBezierTo(
-            leftX + gateWidth * 0.6,
-            topY,
-            rightX - gateHeight / 10,
-            centerY,
-          )
-          ..quadraticBezierTo(leftX + gateWidth * 0.6, bottomY, leftX, bottomY);
+    final rightSide = Path()
+      ..moveTo(leftX, topY)
+      ..quadraticBezierTo(
+        leftX + gateWidth * 0.6,
+        topY,
+        rightX - gateHeight / 10,
+        centerY,
+      )
+      ..quadraticBezierTo(leftX + gateWidth * 0.6, bottomY, leftX, bottomY);
 
     canvas.drawPath(rightSide, paint);
   }
@@ -211,12 +208,11 @@ class _LogicGatesPainter extends CustomPainter {
     final topY = centerY - gateHeight / 2;
     final bottomY = centerY + gateHeight / 2;
 
-    final path =
-        Path()
-          ..moveTo(leftX, topY)
-          ..lineTo(leftX, bottomY)
-          ..lineTo(rightX - gateHeight / 4, centerY)
-          ..close();
+    final path = Path()
+      ..moveTo(leftX, topY)
+      ..lineTo(leftX, bottomY)
+      ..lineTo(rightX - gateHeight / 4, centerY)
+      ..close();
 
     canvas
       ..drawPath(path, paint)
@@ -286,15 +282,14 @@ class _LogicGatesPainter extends CustomPainter {
     final topY = centerY - gateHeight / 2;
     final bottomY = centerY + gateHeight / 2;
 
-    final path =
-        Path()
-          ..moveTo(leftX - gateWidth * 0.1, topY)
-          ..quadraticBezierTo(
-            leftX - gateWidth * 0.1 + gateWidth * 0.15,
-            centerY,
-            leftX - gateWidth * 0.1,
-            bottomY,
-          );
+    final path = Path()
+      ..moveTo(leftX - gateWidth * 0.1, topY)
+      ..quadraticBezierTo(
+        leftX - gateWidth * 0.1 + gateWidth * 0.15,
+        centerY,
+        leftX - gateWidth * 0.1,
+        bottomY,
+      );
 
     canvas.drawPath(path, paint);
   }

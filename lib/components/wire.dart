@@ -21,18 +21,18 @@ class Wire extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    behavior: HitTestBehavior.translucent,
-    onTap: onTap,
-    child: CustomPaint(
-      painter: _WirePainter(
-        start: startPosition,
-        end: endPosition,
-        isActive: isActive,
-        isSelected: isSelected,
-        isDashed: isDashed,
-      ),
-    ),
-  );
+        behavior: HitTestBehavior.translucent,
+        onTap: onTap,
+        child: CustomPaint(
+          painter: _WirePainter(
+            start: startPosition,
+            end: endPosition,
+            isActive: isActive,
+            isSelected: isSelected,
+            isDashed: isDashed,
+          ),
+        ),
+      );
 }
 
 class _WirePainter extends CustomPainter {
@@ -52,11 +52,10 @@ class _WirePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = isActive ? Colors.green : Colors.grey
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = isSelected ? 4 : 2;
+    final paint = Paint()
+      ..color = isActive ? Colors.green : Colors.grey
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isSelected ? 4 : 2;
 
     final midX = (start.dx + end.dx) / 2;
 
@@ -64,10 +63,9 @@ class _WirePainter extends CustomPainter {
       const dashWidth = 8;
       const dashSpace = 4;
 
-      final path =
-          Path()
-            ..moveTo(start.dx, start.dy)
-            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+      final path = Path()
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
       var distance = 0.0;
       var drawLine = true;
@@ -105,25 +103,22 @@ class _WirePainter extends CustomPainter {
         drawLine = !drawLine;
       }
     } else {
-      final path =
-          Path()
-            ..moveTo(start.dx, start.dy)
-            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+      final path = Path()
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
       canvas.drawPath(path, paint);
     }
 
     if (isSelected) {
-      final highlightPaint =
-          Paint()
-            ..color = Colors.blue.withValues(alpha: 0.5)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 6;
+      final highlightPaint = Paint()
+        ..color = Colors.blue.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6;
 
-      final path =
-          Path()
-            ..moveTo(start.dx, start.dy)
-            ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
+      final path = Path()
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
       canvas.drawPath(path, highlightPaint);
     }

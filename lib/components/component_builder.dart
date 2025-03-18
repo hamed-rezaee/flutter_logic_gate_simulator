@@ -27,39 +27,40 @@ class ComponentBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: size.width,
-    height: size.height,
-    child: Stack(
-      children: [
-        Center(
-          child: Container(
-            width: size.width - 20,
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: Colors.orange.withValues(alpha: isSelected ? 0.75 : 0),
-                width: 2,
+        width: size.width,
+        height: size.height,
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color:
+                        Colors.orange.withValues(alpha: isSelected ? 0.75 : 0),
+                    width: 2,
+                  ),
+                ),
+                child: Center(child: child),
               ),
             ),
-            child: Center(child: child),
-          ),
+            ...inputPins.map(
+              (pin) => Positioned(
+                left: 0,
+                top: pin.position.dy - position.dy - 5,
+                child: pin.build(onTap: onPinTap),
+              ),
+            ),
+            ...outputPins.map(
+              (pin) => Positioned(
+                left: size.width - 10,
+                top: pin.position.dy - position.dy - 5,
+                child: pin.build(onTap: onPinTap),
+              ),
+            ),
+          ],
         ),
-        ...inputPins.map(
-          (pin) => Positioned(
-            left: 0,
-            top: pin.position.dy - position.dy - 5,
-            child: pin.build(onTap: onPinTap),
-          ),
-        ),
-        ...outputPins.map(
-          (pin) => Positioned(
-            left: size.width - 10,
-            top: pin.position.dy - position.dy - 5,
-            child: pin.build(onTap: onPinTap),
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 }

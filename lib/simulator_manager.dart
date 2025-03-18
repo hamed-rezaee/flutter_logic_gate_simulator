@@ -45,8 +45,6 @@ class SimulatorManager {
     if (selectedComponent == component) {
       selectedComponent = null;
     }
-
-    calculateAllOutputs();
   }
 
   void selectComponent(BaseLogicComponent component) {
@@ -90,19 +88,20 @@ class SimulatorManager {
       return false;
     }
 
-    if (wireStartPin!.isOutput && !endPin.isOutput) {
-      final wire = WireModel(startPin: wireStartPin!, endPin: endPin);
+    bool canConnect(Pin start, Pin end) => start.isOutput && !end.isOutput;
+
+    if (canConnect(wireStartPin!, endPin) ||
+        canConnect(endPin, wireStartPin!)) {
+      final wire = WireModel(
+        startPin: canConnect(wireStartPin!, endPin) ? wireStartPin! : endPin,
+        endPin: canConnect(wireStartPin!, endPin) ? endPin : wireStartPin!,
+      );
+
       wires.add(wire);
+
       cancelWireDrawing();
-      calculateAllOutputs();
       selectWire(wire);
-      return true;
-    } else if (!wireStartPin!.isOutput && endPin.isOutput) {
-      final wire = WireModel(startPin: endPin, endPin: wireStartPin!);
-      wires.add(wire);
-      cancelWireDrawing();
-      calculateAllOutputs();
-      selectWire(wire);
+
       return true;
     }
 
@@ -116,14 +115,10 @@ class SimulatorManager {
     if (selectedWire == wire) {
       selectedWire = null;
     }
-
-    calculateAllOutputs();
   }
 
-  void removeWiresForPin(Pin pin) {
-    wires.removeWhere((wire) => wire.startPin == pin || wire.endPin == pin);
-    calculateAllOutputs();
-  }
+  void removeWiresForPin(Pin pin) =>
+      wires.removeWhere((wire) => wire.startPin == pin || wire.endPin == pin);
 
   int getNextId() {
     var maxId = 0;

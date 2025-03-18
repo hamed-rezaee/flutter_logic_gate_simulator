@@ -98,29 +98,29 @@ class OscilloscopeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: Colors.black,
-      border: Border.all(color: Colors.grey[700]!, width: 2),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: CustomPaint(
-              painter: OscilloscopePainter(
-                signalHistory: signalHistory,
-                signalColors: signalColors,
-                activeChannels: activeChannels,
-              ),
-              size: const Size(170, 100),
-            ),
-          ),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          border: Border.all(color: Colors.grey[700]!, width: 2),
+          borderRadius: BorderRadius.circular(4),
         ),
-      ],
-    ),
-  );
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: CustomPaint(
+                  painter: OscilloscopePainter(
+                    signalHistory: signalHistory,
+                    signalColors: signalColors,
+                    activeChannels: activeChannels,
+                  ),
+                  size: const Size(170, 100),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 class OscilloscopePainter extends CustomPainter {
@@ -158,11 +158,10 @@ class OscilloscopePainter extends CustomPainter {
     Color color,
     int channelIndex,
   ) {
-    final signalPaint =
-        Paint()
-          ..color = color
-          ..strokeWidth = 1.5
-          ..style = PaintingStyle.stroke;
+    final signalPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
 
     if (signal.isEmpty) return;
 
@@ -199,10 +198,9 @@ class OscilloscopePainter extends CustomPainter {
   }
 
   void _drawGrid(Canvas canvas, Size size) {
-    final gridPaint =
-        Paint()
-          ..color = Colors.grey.withValues(alpha: 0.2)
-          ..strokeWidth = 0.5;
+    final gridPaint = Paint()
+      ..color = Colors.grey.withValues(alpha: 0.2)
+      ..strokeWidth = 0.5;
 
     for (var i = 0; i <= signalHistory.length; i++) {
       final y = i * (size.height / signalHistory.length);

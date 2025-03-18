@@ -25,7 +25,10 @@ class Clock extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Icon(Icons.timer_sharp, color: Colors.white, size: 30),
+        child: const Text(
+          'CLOCK',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
