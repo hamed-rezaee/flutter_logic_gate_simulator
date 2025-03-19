@@ -232,6 +232,8 @@ class SimulatorSerializer {
           }
         }
         return memory;
+      case 'Register':
+        return Register(id: id, position: position);
 
       default:
         return null;

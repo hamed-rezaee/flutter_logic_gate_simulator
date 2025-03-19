@@ -3,7 +3,7 @@ import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Memory extends BaseLogicComponent with PinNamingMixin {
   Memory({required super.id, required super.position}) {
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < 10; i++) {
       inputPins.add(Pin(index: i, component: this));
     }
 
@@ -11,12 +11,12 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
       outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
 
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < 16; i++) {
       memoryContent.add(List<bool>.filled(4, false));
     }
 
     setupDefaultPinNames(
-      inputNames: ['A0', 'A1', 'A2', 'D0', 'D1', 'D2', 'D3', 'WE', 'RE'],
+      inputNames: ['A0', 'A1', 'A2', 'A3', 'D0', 'D1', 'D2', 'D3', 'WE', 'RE'],
       outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
     );
   }
@@ -26,7 +26,7 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
   int _activeAddress = 0;
 
   @override
-  Size get size => const Size(170, 185);
+  Size get size => const Size(140, 230);
 
   @override
   Widget build({
@@ -47,17 +47,17 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
       );
 
   Widget _buildMemoryDisplay(VoidCallback onInputToggle) {
-    _activeAddress = (inputPins[2].value ? 4 : 0) +
+    _activeAddress = (inputPins[3].value ? 8 : 0) +
+        (inputPins[2].value ? 4 : 0) +
         (inputPins[1].value ? 2 : 0) +
         (inputPins[0].value ? 1 : 0);
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.black54,
-        border: Border.all(color: Colors.grey.shade700),
         borderRadius: BorderRadius.circular(2),
       ),
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       child: _buildMemoryMatrix(onInputToggle),
     );
   }
@@ -67,9 +67,10 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
         children: [
           TableRow(
             children: [
-              const SizedBox(width: 24),
-              ...List.generate(4, (bitIndex) {
-                return Container(
+              const SizedBox.shrink(),
+              ...List.generate(
+                4,
+                (bitIndex) => Container(
                   alignment: Alignment.center,
                   child: Text(
                     'D$bitIndex',
@@ -79,24 +80,24 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                );
-              }),
+                ),
+              ),
             ],
           ),
-          ...List.generate(8, (address) {
-            return TableRow(
+          ...List.generate(
+            16,
+            (address) => TableRow(
               decoration: BoxDecoration(
                 color: address == _activeAddress
-                    ? Colors.orange.withValues(alpha: 0.5)
+                    ? Colors.orange.withValues(alpha: 0.3)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(2),
               ),
               children: [
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 2),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text(
-                    'M$address',
+                    '0x0${address.toRadixString(16).toUpperCase()}',
                     style: TextStyle(
                       fontSize: 8,
                       color: address == _activeAddress
@@ -108,16 +109,16 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
                 ),
                 ...List.generate(4, (bitIndex) {
                   final isSet = memoryContent[address][bitIndex];
+
                   return GestureDetector(
                     onTap: () {
                       memoryContent[address][bitIndex] = !isSet;
                       onInputToggle();
                     },
                     child: Container(
-                      width: 18,
-                      height: 18,
-                      padding: const EdgeInsets.all(4),
-                      alignment: Alignment.center,
+                      width: 12,
+                      height: 12,
+                      padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Container(
                         decoration: BoxDecoration(
                           color: isSet ? Colors.green : Colors.grey.shade800,
@@ -131,24 +132,25 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
                   );
                 }),
               ],
-            );
-          }),
+            ),
+          ),
         ],
       );
 
   @override
   void calculateOutput() {
-    final address = (inputPins[2].value ? 4 : 0) +
+    final address = (inputPins[3].value ? 8 : 0) +
+        (inputPins[2].value ? 4 : 0) +
         (inputPins[1].value ? 2 : 0) +
         (inputPins[0].value ? 1 : 0);
 
-    if (inputPins[7].value) {
+    if (inputPins[8].value) {
       for (var i = 0; i < 4; i++) {
-        memoryContent[address][i] = inputPins[i + 3].value;
+        memoryContent[address][i] = inputPins[i + 4].value;
       }
     }
 
-    if (inputPins[8].value) {
+    if (inputPins[9].value) {
       for (var i = 0; i < 4; i++) {
         outputPins[i].value = memoryContent[address][i];
       }
