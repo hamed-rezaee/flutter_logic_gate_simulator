@@ -25,6 +25,7 @@ export 'logic_gate.dart';
 export 'memory/d_flip_flop.dart';
 export 'memory/jk_flip_flop.dart';
 export 'memory/memory.dart';
+export 'memory/register.dart';
 export 'memory/shift_register.dart';
 export 'memory/sr_flip_flop.dart';
 export 'memory/t_flip_flop.dart';

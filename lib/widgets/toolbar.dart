@@ -136,6 +136,11 @@ class _ToolbarState extends State<Toolbar> {
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'REGISTER',
+        createComponent: (id) => Register(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'SHIFT REGISTER',
         createComponent: (id) => ShiftRegister(position: Offset.zero, id: id),
       ),
