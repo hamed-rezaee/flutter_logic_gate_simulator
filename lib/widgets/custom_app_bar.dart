@@ -5,7 +5,6 @@ import 'package:flutter_logic_gate_simulator/simulator_serializer.dart';
 
 class CustomAppBar extends PreferredSize {
   CustomAppBar({
-    this.actions,
     this.title = 'Logic Gate Simulator',
     this.simulatorManager,
     super.key,
@@ -15,6 +14,7 @@ class CustomAppBar extends PreferredSize {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             height: height,
             child: Row(
+              spacing: 8,
               children: [
                 Text(
                   title,
@@ -25,26 +25,74 @@ class CustomAppBar extends PreferredSize {
                 ),
                 const Spacer(),
                 if (simulatorManager != null) ...[
+                  ClearButton(simulatorManager: simulatorManager),
                   SaveButton(simulatorManager: simulatorManager),
-                  const SizedBox(width: 8),
                   LoadButton(simulatorManager: simulatorManager),
-                  const SizedBox(width: 8),
                   ExportButton(simulatorManager: simulatorManager),
-                  const SizedBox(width: 8),
                   ImportButton(simulatorManager: simulatorManager),
-                  const SizedBox(width: 16),
                 ],
-                ...?actions,
               ],
             ),
           ),
         );
 
   final String title;
-  final List<Widget>? actions;
   final SimulatorManager? simulatorManager;
 
   static const double height = 60;
+}
+
+class ClearButton extends StatelessWidget {
+  const ClearButton({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        child:
+            const Icon(Icons.cleaning_services, size: 24, color: Colors.white),
+        onPressed: () async {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: const Text(
+                'Are you sure you want to clear the current simulator state?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (confirm != true) {
+            return;
+          }
+
+          simulatorManager.clearAll();
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Simulator state cleared successfully.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+      );
 }
 
 class SaveButton extends StatelessWidget {
