@@ -133,16 +133,22 @@ class SimulatorManager {
 
   void _calculateOutput(BaseLogicComponent component) {
     if (component.visited) return;
-
     component.visited = true;
 
     for (final pin in component.inputPins) {
-      for (final wire in wires) {
-        if (wire.endPin == pin) {
-          _calculateOutput(wire.startPin.component);
+      pin.value = false;
+    }
 
-          pin.value = wire.startPin.value;
-        }
+    final componentWires =
+        wires.where((wire) => wire.endPin.component == component);
+
+    for (final wire in componentWires) {
+      final startComponent = wire.startPin.component;
+
+      _calculateOutput(startComponent);
+
+      if (wire.startPin.value) {
+        wire.endPin.value = true;
       }
     }
 
