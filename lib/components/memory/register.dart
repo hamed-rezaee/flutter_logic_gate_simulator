@@ -12,7 +12,7 @@ class Register extends BaseLogicComponent with PinNamingMixin {
     }
 
     setupDefaultPinNames(
-      inputNames: ['D0', 'D1', 'D2', 'D3', 'CLK', 'LD', 'INC', 'RST'],
+      inputNames: ['D0', 'D1', 'D2', 'D3', 'CLK', 'LD', 'INC', 'CLR'],
       outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
     );
   }
@@ -47,9 +47,9 @@ class Register extends BaseLogicComponent with PinNamingMixin {
     final clock = inputPins[4].value;
     final load = inputPins[5].value;
     final increase = inputPins[6].value;
-    final reset = inputPins[7].value;
+    final clear = inputPins[7].value;
 
-    if (reset) {
+    if (clear) {
       _reset();
     } else if (clock && !previousClock) {
       if (load) {

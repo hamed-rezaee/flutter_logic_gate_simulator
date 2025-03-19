@@ -3,7 +3,7 @@ import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Encoder extends BaseLogicComponent with PinNamingMixin {
   Encoder({required super.id, required super.position}) {
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 5; i++) {
       inputPins.add(Pin(index: i, component: this));
     }
 
@@ -12,13 +12,13 @@ class Encoder extends BaseLogicComponent with PinNamingMixin {
     }
 
     setupDefaultPinNames(
-      inputNames: const ['I0', 'I1', 'I2', 'I3'],
+      inputNames: const ['I0', 'I1', 'I2', 'I3', 'EN'],
       outputNames: ['Y0', 'Y1'],
     );
   }
 
   @override
-  Size get size => const Size(105, 75);
+  Size get size => const Size(105, 85);
 
   @override
   Widget build({
@@ -40,6 +40,13 @@ class Encoder extends BaseLogicComponent with PinNamingMixin {
 
   @override
   void calculateOutput() {
+    if (!inputPins[4].value) {
+      outputPins[0].value = false;
+      outputPins[1].value = false;
+
+      return;
+    }
+
     var value = 0;
 
     for (var i = inputPins.length - 1; i >= 0; i--) {

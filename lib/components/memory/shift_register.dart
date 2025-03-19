@@ -12,7 +12,7 @@ class ShiftRegister extends BaseLogicComponent with PinNamingMixin {
     }
 
     setupDefaultPinNames(
-      inputNames: const ['IN', 'CLK', 'RST'],
+      inputNames: const ['IN', 'CLK', 'CLR'],
       outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
     );
   }
@@ -46,9 +46,9 @@ class ShiftRegister extends BaseLogicComponent with PinNamingMixin {
   void calculateOutput() {
     final dataIn = inputPins[0].value;
     final clock = inputPins[1].value;
-    final reset = inputPins[2].value;
+    final clear = inputPins[2].value;
 
-    if (reset) {
+    if (clear) {
       for (var i = 0; i < _register.length; i++) {
         _register[i] = false;
       }
