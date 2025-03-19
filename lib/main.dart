@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/components/components.dart';
+import 'package:flutter_logic_gate_simulator/simulator_canvas.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
-import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
 import 'package:flutter_logic_gate_simulator/widgets/toolbar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,19 +19,19 @@ class LogicGateSimulator extends StatelessWidget {
           brightness: Brightness.dark,
           fontFamily: GoogleFonts.spaceMono().fontFamily,
         ),
-        home: const SimulatorCanvas(),
+        home: const Simulator(),
         debugShowCheckedModeBanner: false,
       );
 }
 
-class SimulatorCanvas extends StatefulWidget {
-  const SimulatorCanvas({super.key});
+class Simulator extends StatefulWidget {
+  const Simulator({super.key});
 
   @override
-  State<SimulatorCanvas> createState() => _SimulatorCanvasState();
+  State<Simulator> createState() => _SimulatorState();
 }
 
-class _SimulatorCanvasState extends State<SimulatorCanvas> {
+class _SimulatorState extends State<Simulator> {
   final SimulatorManager _simulatorManager = SimulatorManager();
 
   @override
@@ -47,127 +46,16 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Colors.black,
         appBar: CustomAppBar(simulatorManager: _simulatorManager),
-        body: Column(children: [Expanded(child: _buildSimulatorCanvas())]),
-      );
-
-  Widget _buildSimulatorCanvas() => MouseRegion(
-        onHover: (event) {
-          if (_simulatorManager.isDrawingWire) {
-            _simulatorManager.wireEndPosition = event.localPosition;
-          }
-        },
-        child: GestureDetector(
-          onTapUp: (details) {
-            _simulatorManager.isDrawingWire
-                ? _simulatorManager.cancelWireDrawing()
-                : _simulatorManager.clearSelection();
-          },
-          child: DragTarget<BaseLogicComponent>(
-            onWillAcceptWithDetails: (data) => true,
-            onAcceptWithDetails: _handleComponentDrop,
-            builder: (context, candidateData, rejectedData) => Stack(
-              children: [
-                const BackgroundGrid(),
-                ..._buildWires(),
-                if (_simulatorManager.isDrawingWire) _buildActiveWire(),
-                ..._buildComponents(),
-                _buildToolbar(),
-              ],
+        body: Stack(
+          children: [
+            SimulatorCanvas(
+              appBarHeight: CustomAppBar.height,
+              simulatorManager: _simulatorManager,
             ),
-          ),
+            _buildToolbar(),
+          ],
         ),
       );
-
-  void _handleComponentDrop(DragTargetDetails<BaseLogicComponent> details) {
-    final newComponent = details.data
-      ..position = details.offset - const Offset(0, CustomAppBar.height);
-
-    _simulatorManager.addComponent(newComponent);
-  }
-
-  List<Widget> _buildWires() => _simulatorManager.wires
-      .map(
-        (wire) => Wire(
-          key: ValueKey(
-            'wire-${wire.startPin.component.id}-${wire.startPin.index}-${wire.endPin.component.id}-${wire.endPin.index}',
-          ),
-          startPosition: wire.startPosition,
-          endPosition: wire.endPosition,
-          isActive: wire.startPin.value,
-          isSelected: wire == _simulatorManager.selectedWire,
-          onTap: () => _simulatorManager.selectWire(wire),
-        ),
-      )
-      .toList();
-
-  Widget _buildActiveWire() {
-    if (_simulatorManager.wireStartPin == null ||
-        _simulatorManager.wireEndPosition == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Wire(
-      startPosition: _simulatorManager.wireStartPin!.position,
-      endPosition: _simulatorManager.wireEndPosition!,
-      isActive: _simulatorManager.wireStartPin!.value,
-      isSelected: false,
-      isDashed: true,
-    );
-  }
-
-  List<Widget> _buildComponents() => _simulatorManager.components
-      .map(
-        (component) => Positioned(
-          left: component.position.dx,
-          top: component.position.dy,
-          child: GestureDetector(
-            onTap: () => _simulatorManager.selectComponent(component),
-            onPanUpdate: (details) => component.position += details.delta,
-            child: component.build(
-              onInputToggle: _simulatorManager.calculateAllOutputs,
-              onPinTap: (pin) => _handlePinTap(pin, component),
-              isSelected: component == _simulatorManager.selectedComponent,
-            ),
-          ),
-        ),
-      )
-      .toList();
-
-  void _handlePinTap(Pin pin, BaseLogicComponent component) {
-    if (!_simulatorManager.isDrawingWire) {
-      _simulatorManager.startWireDrawing(pin);
-    } else if (_simulatorManager.wireStartPin != null) {
-      _tryConnectWire(pin, component);
-    }
-  }
-
-  void _tryConnectWire(Pin pin, BaseLogicComponent component) {
-    final startPin = _simulatorManager.wireStartPin!;
-
-    if (startPin.component == component) {
-      _simulatorManager.cancelWireDrawing();
-
-      return;
-    }
-
-    if (startPin.isOutput && !pin.isOutput) {
-      final wire = WireModel(startPin: startPin, endPin: pin);
-
-      _simulatorManager.wires.add(wire);
-      _simulatorManager
-        ..cancelWireDrawing()
-        ..selectWire(wire);
-    } else if (!startPin.isOutput && pin.isOutput) {
-      final wire = WireModel(startPin: pin, endPin: startPin);
-
-      _simulatorManager.wires.add(wire);
-      _simulatorManager
-        ..cancelWireDrawing()
-        ..selectWire(wire);
-    } else {
-      _simulatorManager.cancelWireDrawing();
-    }
-  }
 
   Widget _buildToolbar() => Align(
         alignment: Alignment.bottomCenter,
