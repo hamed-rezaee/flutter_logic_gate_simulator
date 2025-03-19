@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Counter extends BaseLogicComponent {
+class Counter extends BaseLogicComponent with PinNamingMixin {
   Counter({required super.id, required super.position}) {
-    inputPins
-      ..add(Pin(index: 0, isOutput: false, component: this))
-      ..add(Pin(index: 1, isOutput: false, component: this));
+    for (var i = 0; i < 2; i++) {
+      inputPins.add(Pin(index: i, component: this));
+    }
 
     for (var i = 0; i < 4; i++) {
       outputPins.add(Pin(index: i, isOutput: true, component: this));
     }
 
-    _resetCounter();
+    setupDefaultPinNames(
+      inputNames: const ['CLK', 'RST'],
+      outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
+    );
   }
 
   int _count = 0;
   bool _lastClockState = false;
 
   @override
-  Size get size => const Size(100, 80);
+  Size get size => const Size(110, 70);
 
   @override
   Widget build({
@@ -28,11 +31,7 @@ class Counter extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'COUNTER',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'Counter'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -72,7 +71,4 @@ class Counter extends BaseLogicComponent {
       outputPins[i].value = (_count & (1 << i)) != 0;
     }
   }
-
-  @override
-  BaseLogicComponent clone() => Counter(id: id, position: position);
 }

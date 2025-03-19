@@ -4,6 +4,7 @@ import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
 import 'package:flutter_logic_gate_simulator/widgets/toolbar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() => runApp(const LogicGateSimulator());
 
@@ -14,9 +15,10 @@ class LogicGateSimulator extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Logic Gate Simulator',
         theme: ThemeData(
+          useMaterial3: false,
           primarySwatch: Colors.blueGrey,
           brightness: Brightness.dark,
-          useMaterial3: false,
+          fontFamily: GoogleFonts.spaceMono().fontFamily,
         ),
         home: const SimulatorCanvas(),
         debugShowCheckedModeBanner: false,
@@ -37,7 +39,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   void initState() {
     super.initState();
 
-    Stream<void>.periodic(const Duration(milliseconds: 10))
+    Stream<void>.periodic(const Duration(milliseconds: 16))
         .listen((_) => setState(_simulatorManager.calculateAllOutputs));
   }
 
@@ -120,11 +122,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
           top: component.position.dy,
           child: GestureDetector(
             onTap: () => _simulatorManager.selectComponent(component),
-            onDoubleTap: () {
-              _simulatorManager.selectedComponent == component
-                  ? _simulatorManager.removeComponent(component)
-                  : _simulatorManager.selectComponent(component);
-            },
             onPanUpdate: (details) => component.position += details.delta,
             child: component.build(
               onInputToggle: _simulatorManager.calculateAllOutputs,

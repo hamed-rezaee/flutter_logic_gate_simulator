@@ -17,59 +17,80 @@ class _ToolbarState extends State<Toolbar> {
   static final Map<String, List<ComponentDefinition>> _componentGroups = {
     'I/O': [
       ComponentDefinition(
-        widget: const Icon(Icons.input_rounded, size: 32),
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'INPUT',
         createComponent: (id) => Input(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const Icon(Icons.output_rounded, size: 32),
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'OUTPUT',
         createComponent: (id) => Output(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const Icon(Icons.timer_outlined, size: 32),
+        widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'CLOCK',
         createComponent: (id) => Clock(position: Offset.zero, id: id),
       ),
     ],
-    'Basic Gates': [
+    'Basic Components': [
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.not),
+        widget: const LogicGate(
+          gateType: LogicGateType.not,
+          gateColor: Colors.white,
+        ),
         label: 'NOT',
         createComponent: (id) => NotGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.and),
+        widget: const LogicGate(
+          gateType: LogicGateType.and,
+          gateColor: Colors.white,
+        ),
         label: 'AND',
         createComponent: (id) => AndGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.or),
+        widget: const LogicGate(
+          gateType: LogicGateType.or,
+          gateColor: Colors.white,
+        ),
         label: 'OR',
         createComponent: (id) => OrGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.xor),
+        widget: const LogicGate(
+          gateType: LogicGateType.xor,
+          gateColor: Colors.white,
+        ),
         label: 'XOR',
         createComponent: (id) => XorGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.nand),
+        widget: const LogicGate(
+          gateType: LogicGateType.nand,
+          gateColor: Colors.white,
+        ),
         label: 'NAND',
         createComponent: (id) => NandGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.nor),
+        widget: const LogicGate(
+          gateType: LogicGateType.nor,
+          gateColor: Colors.white,
+        ),
         label: 'NOR',
         createComponent: (id) => NorGate(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
-        widget: const LogicGate(gateType: LogicGateType.xnor),
+        widget: const LogicGate(
+          gateType: LogicGateType.xnor,
+          gateColor: Colors.white,
+        ),
         label: 'XNOR',
         createComponent: (id) => XnorGate(position: Offset.zero, id: id),
       ),
     ],
-    'Complex': [
+    'Advanced Components': [
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
         label: 'COUNTER',
@@ -82,49 +103,60 @@ class _ToolbarState extends State<Toolbar> {
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'MUX 4:1',
+        label: 'MULTIPLEXER',
         createComponent: (id) => Multiplexer(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'COMP',
+        label: 'COMPARATOR',
         createComponent: (id) => Comparator(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'ENC 4x2',
+        label: 'ENCODER',
         createComponent: (id) => Encoder(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'DEC 2x4',
+        label: 'DECODER',
         createComponent: (id) => Decoder(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: '7-SEG DECODER',
+        createComponent: (id) =>
+            SevenSegmentDecoder(position: Offset.zero, id: id),
       ),
     ],
     'Memory': [
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'SHIFT REG',
+        label: 'MEMORY',
+        createComponent: (id) => Memory(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'SHIFT REGISTER',
         createComponent: (id) => ShiftRegister(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'D FF',
+        label: 'D FLIP-FLOP',
         createComponent: (id) => DFlipFlop(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'T FF',
+        label: 'T FLIP-FLOP',
         createComponent: (id) => TFlipFlop(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'SR FF',
+        label: 'SR FLIP-FLOP',
         createComponent: (id) => SRFlipFlop(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'JK FF',
+        label: 'JK FLIP-FLOP',
         createComponent: (id) => JKFlipFlop(position: Offset.zero, id: id),
       ),
     ],
@@ -136,13 +168,7 @@ class _ToolbarState extends State<Toolbar> {
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: '7-SEG DEC',
-        createComponent: (id) =>
-            SevenSegmentDecoder(position: Offset.zero, id: id),
-      ),
-      ComponentDefinition(
-        widget: const Icon(Icons.apps_rounded, size: 32),
-        label: '7-SEG',
+        label: '7-SEGMENT',
         createComponent: (id) => SevenSegment(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
@@ -235,7 +261,7 @@ class _ToolbarState extends State<Toolbar> {
             SizedBox(width: 60, height: 40, child: widget),
             Text(
               label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -244,7 +270,7 @@ class _ToolbarState extends State<Toolbar> {
             SizedBox(width: 60, height: 40, child: widget),
             Text(
               label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
             ),
           ],
         ),

@@ -53,7 +53,7 @@ class _WirePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isActive ? Colors.green : Colors.grey
+      ..color = isActive ? Colors.green : Colors.grey[200]!
       ..style = PaintingStyle.stroke
       ..strokeWidth = isSelected ? 4 : 2;
 

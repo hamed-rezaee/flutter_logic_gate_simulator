@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Input extends BaseLogicComponent {
+class Input extends BaseLogicComponent with PinNamingMixin {
   Input({required super.id, required super.position}) {
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
+    outputPins.add(Pin(index: 0, component: this, isOutput: true));
+
+    setupDefaultPinNames(outputNames: ['Y']);
   }
 
   bool isOn = false;
@@ -16,17 +18,7 @@ class Input extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: ScaleTransition(
-          scale: const AlwaysStoppedAnimation(0.7),
-          child: Switch(
-            value: isOn,
-            activeColor: Colors.green,
-            onChanged: (value) {
-              isOn = value;
-              onInputToggle();
-            },
-          ),
-        ),
+        child: _buildContent(onInputToggle),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -36,9 +28,18 @@ class Input extends BaseLogicComponent {
         onPinTap: onPinTap,
       );
 
-  @override
-  void calculateOutput() => outputPins[0].value = isOn;
+  Widget _buildContent(VoidCallback onInputToggle) => GestureDetector(
+        onTap: () {
+          isOn = !isOn;
+          onInputToggle();
+        },
+        child: Icon(
+          Icons.circle,
+          color: outputPins[0].value ? Colors.green : Colors.grey,
+          size: 25,
+        ),
+      );
 
   @override
-  BaseLogicComponent clone() => Input(position: position, id: id);
+  void calculateOutput() => outputPins[0].value = isOn;
 }

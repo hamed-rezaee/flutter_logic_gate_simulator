@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class SevenSegmentDecoder extends BaseLogicComponent {
+class SevenSegmentDecoder extends BaseLogicComponent with PinNamingMixin {
   SevenSegmentDecoder({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 7; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['A', 'B', 'C', 'D'],
+      outputNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 125);
+  Size get size => const Size(110, 115);
 
   @override
   Widget build({
@@ -23,15 +28,7 @@ class SevenSegmentDecoder extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          '7 SEG DEC',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
+        child: const ComponentLabel(title: '7-Segment Decoder'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -76,7 +73,4 @@ class SevenSegmentDecoder extends BaseLogicComponent {
       outputPins[i].value = segmentPatterns[binaryValue][i];
     }
   }
-
-  @override
-  BaseLogicComponent clone() => SevenSegmentDecoder(position: position, id: id);
 }

@@ -3,14 +3,16 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Oscilloscope extends BaseLogicComponent {
+class Oscilloscope extends BaseLogicComponent with PinNamingMixin {
   Oscilloscope({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
-      inputPins.add(Pin(index: i, isOutput: false, component: this));
+      inputPins.add(Pin(index: i, component: this));
     }
+
+    setupDefaultPinNames(inputNames: ['A', 'B', 'C', 'D']);
   }
 
-  static const sampleLength = 300;
+  static const sampleLength = 200;
 
   static const List<Color> _signalColors = [
     Colors.red,
@@ -25,7 +27,7 @@ class Oscilloscope extends BaseLogicComponent {
   );
 
   @override
-  Size get size => const Size(300, 80);
+  Size get size => const Size(200, 70);
 
   @override
   Widget build({
@@ -50,9 +52,6 @@ class Oscilloscope extends BaseLogicComponent {
 
   @override
   void calculateOutput() => _sampleInputs();
-
-  @override
-  BaseLogicComponent clone() => Oscilloscope(id: id, position: position);
 
   void _sampleInputs() {
     for (var i = 0; i < inputPins.length; i++) {

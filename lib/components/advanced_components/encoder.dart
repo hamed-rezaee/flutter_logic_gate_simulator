@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Encoder extends BaseLogicComponent {
+class Encoder extends BaseLogicComponent with PinNamingMixin {
   Encoder({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 2; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['I0', 'I1', 'I2', 'I3'],
+      outputNames: ['Y0', 'Y1'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(105, 75);
 
   @override
   Widget build({
@@ -23,15 +28,7 @@ class Encoder extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'ENC\n4x2',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
+        child: const ComponentLabel(title: 'Encoder'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -55,7 +52,4 @@ class Encoder extends BaseLogicComponent {
     outputPins[1].value = (value & 0x02) != 0;
     outputPins[0].value = (value & 0x01) != 0;
   }
-
-  @override
-  BaseLogicComponent clone() => Encoder(position: position, id: id);
 }

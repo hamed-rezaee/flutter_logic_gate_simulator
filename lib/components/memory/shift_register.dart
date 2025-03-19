@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class ShiftRegister extends BaseLogicComponent {
+class ShiftRegister extends BaseLogicComponent with PinNamingMixin {
   ShiftRegister({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
-      inputPins.add(Pin(index: i, isOutput: false, component: this));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 4; i++) {
-      outputPins.add(Pin(index: i, isOutput: true, component: this));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['IN', 'CLK', 'RST'],
+      outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
+    );
   }
 
   final List<bool> _register = [false, false, false, false];
@@ -17,7 +22,7 @@ class ShiftRegister extends BaseLogicComponent {
   bool _prevClockState = false;
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(120, 60);
 
   @override
   Widget build({
@@ -27,11 +32,7 @@ class ShiftRegister extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'SHIFT REG',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'Shift\nRegister'),
         position: position,
         size: size,
         isSelected: isSelected,
@@ -65,7 +66,4 @@ class ShiftRegister extends BaseLogicComponent {
 
     _prevClockState = clock;
   }
-
-  @override
-  BaseLogicComponent clone() => ShiftRegister(id: id, position: position);
 }

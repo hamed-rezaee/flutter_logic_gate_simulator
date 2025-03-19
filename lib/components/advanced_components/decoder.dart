@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Decoder extends BaseLogicComponent {
+class Decoder extends BaseLogicComponent with PinNamingMixin {
   Decoder({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 4; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['A0', 'A1'],
+      outputNames: ['Y0', 'Y1', 'Y2', 'Y3'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(105, 75);
 
   @override
   Widget build({
@@ -23,15 +28,7 @@ class Decoder extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'DEC\n2x4',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
+        child: const ComponentLabel(title: 'Decoder'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -51,7 +48,4 @@ class Decoder extends BaseLogicComponent {
       outputPins[i].value = i == index;
     }
   }
-
-  @override
-  BaseLogicComponent clone() => Decoder(position: position, id: id);
 }

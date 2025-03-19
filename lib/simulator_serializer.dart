@@ -163,6 +163,7 @@ class SimulatorSerializer {
       positionData['dx'] as double,
       positionData['dy'] as double,
     );
+    final properties = data['properties'] as Map<String, dynamic>? ?? {};
 
     switch (typeString) {
       case 'Input':
@@ -215,6 +216,22 @@ class SimulatorSerializer {
         return Comparator(id: id, position: position);
       case 'LedMatrix':
         return LedMatrix(id: id, position: position);
+      case 'Memory':
+        final memory = Memory(id: id, position: position);
+        if (properties.containsKey('memoryContent')) {
+          final memoryData = properties['memoryContent'] as List;
+          for (var i = 0;
+              i < memoryData.length && i < memory.memoryContent.length;
+              i++) {
+            final rowData = memoryData[i] as List;
+            for (var j = 0;
+                j < rowData.length && j < memory.memoryContent[i].length;
+                j++) {
+              memory.memoryContent[i][j] = rowData[j] as bool;
+            }
+          }
+        }
+        return memory;
 
       default:
         return null;
@@ -228,6 +245,8 @@ class SimulatorSerializer {
 
     if (component is Input) {
       properties['value'] = component.outputPins[0].value;
+    } else if (component is Memory) {
+      properties['memoryContent'] = component.memoryContent;
     }
 
     return properties;

@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Clock extends BaseLogicComponent {
+class Clock extends BaseLogicComponent with PinNamingMixin {
   Clock({required super.id, required super.position}) {
     for (var i = 0; i < 6; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 1; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['T0', 'T1', 'T2', 'T3', 'T4', 'EN'],
+      outputNames: ['Y'],
+    );
   }
 
   int _counter = 0;
 
   @override
-  Size get size => const Size(80, 110);
+  Size get size => const Size(90, 100);
 
   @override
   Widget build({
@@ -25,10 +30,7 @@ class Clock extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'CLOCK',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'Clock'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -54,9 +56,6 @@ class Clock extends BaseLogicComponent {
       _counter++;
     }
   }
-
-  @override
-  BaseLogicComponent clone() => Clock(position: position, id: id);
 
   int _binaryToDecimal(List<Pin> input) {
     var result = 0;

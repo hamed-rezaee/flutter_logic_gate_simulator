@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Output extends BaseLogicComponent {
+class Output extends BaseLogicComponent with PinNamingMixin {
   Output({required super.id, required super.position}) {
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
+    inputPins.add(Pin(index: 0, component: this));
+
+    setupDefaultPinNames(inputNames: const ['A']);
   }
 
   @override
@@ -14,11 +16,7 @@ class Output extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: Icon(
-          Icons.circle,
-          color: inputPins[0].value ? Colors.green : Colors.grey,
-          size: 25,
-        ),
+        child: _buildContent(),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -28,9 +26,12 @@ class Output extends BaseLogicComponent {
         onPinTap: onPinTap,
       );
 
-  @override
-  void calculateOutput() {}
+  Widget _buildContent() => Icon(
+        Icons.circle,
+        color: inputPins[0].value ? Colors.green : Colors.grey,
+        size: 25,
+      );
 
   @override
-  BaseLogicComponent clone() => Output(position: position, id: id);
+  void calculateOutput() {}
 }

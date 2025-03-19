@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class DFlipFlop extends BaseLogicComponent {
-  DFlipFlop({required super.id, required super.position}) {
-    for (var i = 0; i < 3; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+class SRFlipFlop extends BaseLogicComponent with PinNamingMixin {
+  SRFlipFlop({required super.id, required super.position}) {
+    for (var i = 0; i < 4; i++) {
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 2; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['S', 'R', 'CLK', 'RST'],
+      outputNames: ['Q', 'Q̅'],
+    );
   }
 
   bool state = false;
   bool previousClock = false;
 
   @override
-  Size get size => const Size(80, 65);
+  Size get size => const Size(125, 60);
 
   @override
   Widget build({
@@ -26,10 +31,7 @@ class DFlipFlop extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'D FF',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'SR\nFlip-Flop'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -41,14 +43,20 @@ class DFlipFlop extends BaseLogicComponent {
 
   @override
   void calculateOutput() {
-    final dInput = inputPins[0].value;
-    final clockInput = inputPins[1].value;
-    final resetInput = inputPins[2].value;
+    final sInput = inputPins[0].value;
+    final rInput = inputPins[1].value;
+    final clockInput = inputPins[2].value;
+    final resetInput = inputPins[3].value;
 
     if (!resetInput) {
       state = false;
     } else if (clockInput && !previousClock) {
-      state = dInput;
+      if (sInput && rInput) {
+      } else if (sInput) {
+        state = true;
+      } else if (rInput) {
+        state = false;
+      }
     }
 
     outputPins[0].value = state;
@@ -56,7 +64,4 @@ class DFlipFlop extends BaseLogicComponent {
 
     previousClock = clockInput;
   }
-
-  @override
-  BaseLogicComponent clone() => DFlipFlop(id: id, position: position);
 }

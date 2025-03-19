@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Adder extends BaseLogicComponent {
+class Adder extends BaseLogicComponent with PinNamingMixin {
   Adder({required super.id, required super.position}) {
     for (var i = 0; i < 5; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 3; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: ['A0', 'A1', 'B0', 'B1', 'Cin'],
+      outputNames: ['S0', 'S1', 'Cout'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 95);
+  Size get size => const Size(110, 95);
 
   @override
   Widget build({
@@ -23,11 +28,7 @@ class Adder extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'ADDER',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
+        child: const ComponentLabel(title: 'Adder'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -61,7 +62,4 @@ class Adder extends BaseLogicComponent {
 
     outputPins[2].value = carry;
   }
-
-  @override
-  BaseLogicComponent clone() => Adder(id: id, position: position);
 }

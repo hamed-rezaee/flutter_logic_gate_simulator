@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class NotGate extends BaseLogicComponent {
+class NotGate extends BaseLogicComponent with PinNamingMixin {
   NotGate({required super.id, required super.position}) {
-    inputPins.add(Pin(component: this, isOutput: false, index: 0));
+    inputPins.add(Pin(index: 0, component: this));
 
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
+    outputPins.add(Pin(index: 0, component: this, isOutput: true));
+
+    setupDefaultPinNames(inputNames: const ['A'], outputNames: ['Y']);
   }
 
   @override
@@ -16,7 +18,10 @@ class NotGate extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const LogicGate(gateType: LogicGateType.not),
+        child: LogicGate(
+          gateType: LogicGateType.not,
+          gateColor: Colors.grey[400]!,
+        ),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -28,7 +33,4 @@ class NotGate extends BaseLogicComponent {
 
   @override
   void calculateOutput() => outputPins[0].value = !inputPins[0].value;
-
-  @override
-  BaseLogicComponent clone() => NotGate(position: position, id: id);
 }

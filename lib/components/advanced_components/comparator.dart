@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Comparator extends BaseLogicComponent {
+class Comparator extends BaseLogicComponent with PinNamingMixin {
   Comparator({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
-      inputPins.add(Pin(index: i, isOutput: false, component: this));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 3; i++) {
       outputPins.add(Pin(index: i, isOutput: true, component: this));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['A0', 'A1', 'B0', 'B1'],
+      outputNames: ['LT', 'EQ', 'GT'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(120, 75);
 
   @override
   Widget build({
@@ -23,11 +28,7 @@ class Comparator extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'COMP',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'Comparator'),
         position: position,
         size: size,
         isSelected: isSelected,
@@ -46,7 +47,4 @@ class Comparator extends BaseLogicComponent {
     outputPins[1].value = valueA == valueB;
     outputPins[2].value = valueA > valueB;
   }
-
-  @override
-  BaseLogicComponent clone() => Comparator(id: id, position: position);
 }

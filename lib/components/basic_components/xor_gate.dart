@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class NandGate extends BaseLogicComponent {
-  NandGate({required super.id, required super.position}) {
-    inputPins
-      ..add(Pin(component: this, isOutput: false, index: 0))
-      ..add(Pin(component: this, isOutput: false, index: 1));
+class XorGate extends BaseLogicComponent with PinNamingMixin {
+  XorGate({required super.id, required super.position}) {
+    for (var i = 0; i < 2; i++) {
+      inputPins.add(Pin(index: i, component: this));
+    }
 
-    outputPins.add(Pin(component: this, isOutput: true, index: 0));
+    outputPins.add(Pin(index: 0, component: this, isOutput: true));
+
+    setupDefaultPinNames(inputNames: const ['A', 'B'], outputNames: ['Y']);
   }
 
   @override
@@ -18,7 +20,10 @@ class NandGate extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const LogicGate(gateType: LogicGateType.nand),
+        child: LogicGate(
+          gateType: LogicGateType.xor,
+          gateColor: Colors.grey[400]!,
+        ),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -30,8 +35,5 @@ class NandGate extends BaseLogicComponent {
 
   @override
   void calculateOutput() =>
-      outputPins[0].value = !(inputPins[0].value && inputPins[1].value);
-
-  @override
-  BaseLogicComponent clone() => NandGate(position: position, id: id);
+      outputPins[0].value = inputPins[0].value != inputPins[1].value;
 }

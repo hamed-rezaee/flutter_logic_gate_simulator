@@ -7,17 +7,23 @@ enum LogicGateType { and, or, not, nand, nor, xor, xnor }
 class LogicGate extends StatelessWidget {
   const LogicGate({
     required this.gateType,
-    this.gateColor = Colors.white,
-    this.strokeWidth = 3,
+    required this.gateColor,
+    this.width = 40,
+    this.height = 30,
+    this.strokeWidth = 2,
     super.key,
   });
 
   final LogicGateType gateType;
   final Color gateColor;
+  final double width;
+  final double height;
   final double strokeWidth;
 
   @override
-  Widget build(BuildContext context) => SizedBox.expand(
+  Widget build(BuildContext context) => SizedBox(
+        width: width,
+        height: height,
         child: CustomPaint(
           painter: _LogicGatesPainter(
             gateType: gateType,

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Multiplexer extends BaseLogicComponent {
+class Multiplexer extends BaseLogicComponent with PinNamingMixin {
   Multiplexer({required super.id, required super.position}) {
     for (var i = 0; i < 6; i++) {
-      inputPins.add(Pin(index: i, isOutput: false, component: this));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     outputPins.add(Pin(index: 0, isOutput: true, component: this));
+
+    setupDefaultPinNames(
+      inputNames: const ['I0', 'I1', 'I2', 'I3', 'S0', 'S1'],
+      outputNames: ['Y'],
+    );
   }
 
   @override
-  Size get size => const Size(80, 115);
+  Size get size => const Size(90, 105);
 
   @override
   Widget build({
@@ -21,11 +26,7 @@ class Multiplexer extends BaseLogicComponent {
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'MUX',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'Mux'),
         position: position,
         size: size,
         isSelected: isSelected,
@@ -46,7 +47,4 @@ class Multiplexer extends BaseLogicComponent {
         ? outputPins[0].value = inputPins[selectedInput].value
         : outputPins[0].value = false;
   }
-
-  @override
-  BaseLogicComponent clone() => Multiplexer(id: id, position: position);
 }

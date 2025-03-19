@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/base_logic_component.dart';
 
 class Pin {
-  Pin({required this.index, required this.isOutput, required this.component});
+  Pin({
+    required this.index,
+    required this.component,
+    this.isOutput = false,
+    this.name,
+  });
 
   final int index;
   final bool isOutput;
   final BaseLogicComponent component;
+  final String? name;
 
   bool value = false;
 
@@ -32,7 +38,7 @@ class Pin {
           width: 10,
           height: 10,
           decoration: BoxDecoration(
-            color: value ? Colors.green : Colors.white,
+            color: value ? Colors.green : Colors.grey[500]!,
             border: Border.all(color: Colors.grey[800]!, width: 3),
           ),
         ),

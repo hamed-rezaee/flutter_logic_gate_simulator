@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class SevenSegment extends BaseLogicComponent {
+class SevenSegment extends BaseLogicComponent with PinNamingMixin {
   SevenSegment({required super.id, required super.position}) {
     for (var i = 0; i < 7; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
+
+    setupDefaultPinNames(inputNames: const ['A', 'B', 'C', 'D', 'E', 'F', 'G']);
   }
 
   @override
-  Size get size => const Size(80, 125);
+  Size get size => const Size(100, 115);
 
   @override
   Widget build({
@@ -39,9 +41,6 @@ class SevenSegment extends BaseLogicComponent {
 
   @override
   void calculateOutput() {}
-
-  @override
-  BaseLogicComponent clone() => SevenSegment(position: position, id: id);
 }
 
 class _SevenSegmentView extends StatelessWidget {

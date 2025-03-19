@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class SRFlipFlop extends BaseLogicComponent {
-  SRFlipFlop({required super.id, required super.position}) {
+class JKFlipFlop extends BaseLogicComponent with PinNamingMixin {
+  JKFlipFlop({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
-      inputPins.add(Pin(component: this, isOutput: false, index: i));
+      inputPins.add(Pin(index: i, component: this));
     }
 
     for (var i = 0; i < 2; i++) {
-      outputPins.add(Pin(component: this, isOutput: true, index: i));
+      outputPins.add(Pin(index: i, component: this, isOutput: true));
     }
+
+    setupDefaultPinNames(
+      inputNames: const ['J', 'K', 'CLK', 'RST'],
+      outputNames: ['Q', 'Q̅'],
+    );
   }
 
   bool state = false;
-  bool previousClock = false;
+  bool _previousClock = false;
 
   @override
-  Size get size => const Size(80, 80);
+  Size get size => const Size(125, 60);
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
-    required void Function(Pin pin) onPinTap,
+    required void Function(Pin) onPinTap,
     bool isSelected = false,
   }) =>
       ComponentBuilder(
         id: id,
-        child: const Text(
-          'SR FF',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        child: const ComponentLabel(title: 'JK\nFlip-Flop'),
         inputPins: inputPins,
         outputPins: outputPins,
         isSelected: isSelected,
@@ -41,18 +43,19 @@ class SRFlipFlop extends BaseLogicComponent {
 
   @override
   void calculateOutput() {
-    final sInput = inputPins[0].value;
-    final rInput = inputPins[1].value;
+    final jInput = inputPins[0].value;
+    final kInput = inputPins[1].value;
     final clockInput = inputPins[2].value;
     final resetInput = inputPins[3].value;
 
     if (!resetInput) {
       state = false;
-    } else if (clockInput && !previousClock) {
-      if (sInput && rInput) {
-      } else if (sInput) {
+    } else if (clockInput && !_previousClock) {
+      if (jInput && kInput) {
+        state = !state;
+      } else if (jInput) {
         state = true;
-      } else if (rInput) {
+      } else if (kInput) {
         state = false;
       }
     }
@@ -60,9 +63,6 @@ class SRFlipFlop extends BaseLogicComponent {
     outputPins[0].value = state;
     outputPins[1].value = !state;
 
-    previousClock = clockInput;
+    _previousClock = clockInput;
   }
-
-  @override
-  BaseLogicComponent clone() => SRFlipFlop(id: id, position: position);
 }

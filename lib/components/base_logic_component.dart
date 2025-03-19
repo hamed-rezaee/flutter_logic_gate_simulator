@@ -11,7 +11,7 @@ abstract class BaseLogicComponent {
   Offset position;
   bool visited = false;
 
-  Size get size => const Size(80, 40);
+  Size get size => const Size(70, 40);
 
   Widget build({
     required VoidCallback onInputToggle,
@@ -22,9 +22,48 @@ abstract class BaseLogicComponent {
 
   void calculateOutput() => throw UnimplementedError();
 
-  BaseLogicComponent clone() => throw UnimplementedError();
-
   void resetVisited() => visited = false;
 
   void dispose() {}
+}
+
+mixin PinNamingMixin on BaseLogicComponent {
+  void setupDefaultPinNames({
+    List<String> inputNames = const [],
+    List<String> outputNames = const [],
+  }) {
+    assert(
+      inputNames.length == inputPins.length,
+      'Input names count must match input pins count',
+    );
+
+    assert(
+      outputNames.length == outputPins.length,
+      'Output names count must match output pins count',
+    );
+
+    for (var i = 0; i < inputPins.length; i++) {
+      final pin = inputPins[i];
+      final name = inputNames[i];
+
+      inputPins[i] = Pin(
+        index: pin.index,
+        isOutput: pin.isOutput,
+        component: pin.component,
+        name: name,
+      );
+    }
+
+    for (var i = 0; i < outputPins.length; i++) {
+      final pin = outputPins[i];
+      final name = outputNames[i];
+
+      outputPins[i] = Pin(
+        index: pin.index,
+        isOutput: pin.isOutput,
+        component: pin.component,
+        name: name,
+      );
+    }
+  }
 }
