@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/simulator_serializer.dart';
-import 'package:path_provider/path_provider.dart';
 
 class SimulatorFileHandler {
   static const String fileExtension = 'lgs';
@@ -22,19 +21,13 @@ class SimulatorFileHandler {
       final defaultFileName =
           'simulator_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
 
-      final exportFileName = fileName ?? defaultFileName;
-
-      if (kIsWeb) {
-        // TODO: Implement web file saving
-      } else {
-        final directory = await getDownloadsDirectory();
-
-        if (directory == null) return false;
-
-        await File('${directory.path}/$exportFileName').writeAsString(data);
-
-        return true;
-      }
+      await FilePicker.platform.saveFile(
+        dialogTitle: 'Export Simulator State',
+        fileName: fileName ?? defaultFileName,
+        type: FileType.custom,
+        allowedExtensions: [fileExtension],
+        bytes: utf8.encode(data),
+      );
     } on Exception catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +50,7 @@ class SimulatorFileHandler {
   ) async {
     try {
       final result = await FilePicker.platform.pickFiles(
+        dialogTitle: 'Import Simulator State',
         type: FileType.custom,
         allowedExtensions: [fileExtension],
       );
@@ -66,6 +60,7 @@ class SimulatorFileHandler {
       }
 
       String fileContent;
+
       if (kIsWeb) {
         final bytes = result.files.first.bytes;
 

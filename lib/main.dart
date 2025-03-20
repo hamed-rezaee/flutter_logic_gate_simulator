@@ -68,7 +68,7 @@ class Simulator extends StatelessWidget {
   Widget _buildToolbar() => Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.only(bottom: 30),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

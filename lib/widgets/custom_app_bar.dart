@@ -153,7 +153,7 @@ class ExportAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.file_download, size: 24, color: Colors.white),
+        child: const Icon(Icons.file_upload, size: 24, color: Colors.white),
         onPressed: () async {
           if (simulatorManager.components.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -164,17 +164,11 @@ class ExportAction extends StatelessWidget {
             return;
           }
 
-          final result = await showDialog<String?>(
-            context: context,
-            builder: (context) => _ExportDialog(),
-          );
-
-          if (result == null || !context.mounted) return;
-
           final success = await SimulatorFileHandler.exportToFile(
             context,
             simulatorManager,
-            fileName: result.isNotEmpty ? '$result.lgs' : null,
+            fileName:
+                'simulator_state_${DateTime.now().millisecondsSinceEpoch}.lgs',
           );
 
           if (context.mounted && success) {
@@ -195,7 +189,7 @@ class ImportAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.file_upload, size: 24, color: Colors.white),
+        child: const Icon(Icons.file_download, size: 24, color: Colors.white),
         onPressed: () async {
           if (simulatorManager.components.isNotEmpty) {
             final confirm = await showDialog<bool>(
@@ -244,60 +238,6 @@ class ImportAction extends StatelessWidget {
           }
         },
       );
-}
-
-class _ExportDialog extends StatefulWidget {
-  @override
-  _ExportDialogState createState() => _ExportDialogState();
-}
-
-class _ExportDialogState extends State<_ExportDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Export Simulator State'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Enter a name for your exported file:'),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'File name',
-                labelText: 'File name',
-                border: OutlineInputBorder(),
-              ),
-              autofocus: true,
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'File will be saved with .lgs extension',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          _buildActionButton(
-            context: context,
-            onPressed: () => Navigator.of(context).pop(_controller.text),
-            text: 'Export',
-          ),
-          _buildActionButton(
-            context: context,
-            onPressed: () => Navigator.of(context).pop(),
-            text: 'Cancel',
-          ),
-        ],
-      );
-
-  @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
 }
 
 class ClearAction extends StatelessWidget {
