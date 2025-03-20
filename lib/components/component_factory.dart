@@ -77,6 +77,8 @@ class ComponentFactory {
         return memory;
       case 'Register':
         return Register(id: id, position: position);
+      case 'ALU':
+        return ALU(id: id, position: position);
 
       default:
         return null;

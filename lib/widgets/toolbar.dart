@@ -127,6 +127,11 @@ class _ToolbarState extends State<Toolbar> {
         createComponent: (id) =>
             SevenSegmentDecoder(position: Offset.zero, id: id),
       ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'ALU',
+        createComponent: (id) => ALU(position: Offset.zero, id: id),
+      ),
     ],
     'Memory': [
       ComponentDefinition(

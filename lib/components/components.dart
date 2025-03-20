@@ -1,4 +1,5 @@
 export 'advanced_components/adder.dart';
+export 'advanced_components/alu.dart';
 export 'advanced_components/comparator.dart';
 export 'advanced_components/counter.dart';
 export 'advanced_components/decoder.dart';
