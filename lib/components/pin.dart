@@ -16,21 +16,16 @@ class Pin {
 
   bool value = false;
 
-  Offset get position => isOutput
-      ? component.position +
-          Offset(
-            component.size.width,
-            component.size.height /
-                (component.outputPins.length + 1) *
-                (index + 1),
-          )
-      : component.position +
-          Offset(
-            0,
-            component.size.height /
-                (component.inputPins.length + 1) *
-                (index + 1),
-          );
+  Offset get position {
+    final componentSize = component.size;
+    final pinCount =
+        isOutput ? component.outputPins.length : component.inputPins.length;
+    final pinSpacing = componentSize.height / (pinCount + 1);
+    final xPosition = isOutput ? componentSize.width : 0.0;
+    final yPosition = pinSpacing * (index + 1);
+
+    return component.position + Offset(xPosition, yPosition);
+  }
 
   Widget build({required void Function(Pin) onTap}) => GestureDetector(
         onTap: () => onTap(this),

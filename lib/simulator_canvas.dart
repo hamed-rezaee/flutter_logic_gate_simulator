@@ -71,7 +71,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 startPosition: _canvasToScreenPosition(wire.startPosition),
                 endPosition: _canvasToScreenPosition(wire.endPosition),
                 isActive: wire.startPin.value,
-                isSelected: wire == widget.simulatorManager.selectedWire,
+                isSelected: widget.simulatorManager.isWireSelected(wire),
                 wireSegments: segments.map(_canvasToScreenPosition).toList(),
                 onTap: () => widget.simulatorManager.selectWire(wire),
               ),
