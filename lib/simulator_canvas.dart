@@ -56,20 +56,104 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
         ),
       );
 
-  List<Widget> _buildWires() => widget.simulatorManager.wires
-      .map(
-        (wire) => Wire(
-          key: ValueKey(
-            'wire-${wire.startPin.component.id}-${wire.startPin.index}-${wire.endPin.component.id}-${wire.endPin.index}',
+  List<Widget> _buildWires() => widget.simulatorManager.wires.map(
+        (wire) {
+          final segments = wire.segments.isEmpty
+              ? wire.generateDefaultSegments()
+              : wire.segments;
+
+          return Stack(
+            children: [
+              Wire(
+                key: ValueKey(
+                  'wire-${wire.startPin.component.id}-${wire.startPin.index}-${wire.endPin.component.id}-${wire.endPin.index}',
+                ),
+                startPosition: _canvasToScreenPosition(wire.startPosition),
+                endPosition: _canvasToScreenPosition(wire.endPosition),
+                isActive: wire.startPin.value,
+                isSelected: wire == widget.simulatorManager.selectedWire,
+                wireSegments: segments.map(_canvasToScreenPosition).toList(),
+                onTap: () => widget.simulatorManager.selectWire(wire),
+              ),
+              if (wire == widget.simulatorManager.selectedWire)
+                ..._buildWireSegmentControls(wire, segments),
+            ],
+          );
+        },
+      ).toList();
+
+  List<Widget> _buildWireSegmentControls(
+    WireModel wire,
+    List<Offset> segments,
+  ) {
+    final controlPoints = <Widget>[];
+
+    for (var i = 0; i < segments.length; i++) {
+      final screenPos = _canvasToScreenPosition(segments[i]);
+
+      controlPoints.add(
+        Positioned(
+          left: screenPos.dx - 5,
+          top: screenPos.dy - 5,
+          child: GestureDetector(
+            onPanStart: (_) =>
+                widget.simulatorManager.startSegmentDrag(wire, i),
+            onPanUpdate: (details) {
+              final newPos = _screenToCanvasPosition(screenPos + details.delta);
+              widget.simulatorManager.updateDraggingSegment(newPos);
+            },
+            onPanEnd: (_) => widget.simulatorManager.endSegmentDrag(),
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
           ),
-          startPosition: _canvasToScreenPosition(wire.startPosition),
-          endPosition: _canvasToScreenPosition(wire.endPosition),
-          isActive: wire.startPin.value,
-          isSelected: wire == widget.simulatorManager.selectedWire,
-          onTap: () => widget.simulatorManager.selectWire(wire),
         ),
-      )
-      .toList();
+      );
+    }
+
+    if (segments.isNotEmpty) {
+      final allPoints = [wire.startPosition, ...segments, wire.endPosition];
+
+      for (var i = 0; i < allPoints.length - 1; i++) {
+        final start = _canvasToScreenPosition(allPoints[i]);
+        final end = _canvasToScreenPosition(allPoints[i + 1]);
+        final midpoint = Offset(
+          (start.dx + end.dx) / 2,
+          (start.dy + end.dy) / 2,
+        );
+
+        controlPoints.add(
+          Positioned(
+            left: midpoint.dx - 4,
+            top: midpoint.dy - 4,
+            child: GestureDetector(
+              onTap: () {
+                final canvasPos = _screenToCanvasPosition(midpoint);
+                widget.simulatorManager.addWireSegment(wire, i, canvasPos);
+              },
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return controlPoints;
+  }
 
   Widget _buildActiveWire() {
     if (widget.simulatorManager.wireStartPin == null ||
@@ -77,12 +161,19 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       return const SizedBox.shrink();
     }
 
+    final start = widget.simulatorManager.wireStartPin!.position;
+    final end = widget.simulatorManager.wireEndPosition!;
+    final midX = (start.dx + end.dx) / 2;
+
+    final segments = [
+      Offset(midX, start.dy),
+      Offset(midX, end.dy),
+    ];
+
     return Wire(
-      startPosition: _canvasToScreenPosition(
-        widget.simulatorManager.wireStartPin!.position,
-      ),
-      endPosition:
-          _canvasToScreenPosition(widget.simulatorManager.wireEndPosition!),
+      startPosition: _canvasToScreenPosition(start),
+      endPosition: _canvasToScreenPosition(end),
+      wireSegments: segments.map(_canvasToScreenPosition).toList(),
       isActive: widget.simulatorManager.wireStartPin!.value,
       isSelected: false,
       isDashed: true,
@@ -130,35 +221,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     if (!widget.simulatorManager.isDrawingWire) {
       widget.simulatorManager.startWireDrawing(pin);
     } else if (widget.simulatorManager.wireStartPin != null) {
-      _tryConnectWire(pin, component);
-    }
-  }
-
-  void _tryConnectWire(Pin pin, BaseLogicComponent component) {
-    final startPin = widget.simulatorManager.wireStartPin!;
-
-    if (startPin.component == component) {
-      widget.simulatorManager.cancelWireDrawing();
-
-      return;
-    }
-
-    if (startPin.isOutput && !pin.isOutput) {
-      final wire = WireModel(startPin: startPin, endPin: pin);
-
-      widget.simulatorManager.wires.add(wire);
-      widget.simulatorManager
-        ..cancelWireDrawing()
-        ..selectWire(wire);
-    } else if (!startPin.isOutput && pin.isOutput) {
-      final wire = WireModel(startPin: pin, endPin: startPin);
-
-      widget.simulatorManager.wires.add(wire);
-      widget.simulatorManager
-        ..cancelWireDrawing()
-        ..selectWire(wire);
-    } else {
-      widget.simulatorManager.cancelWireDrawing();
+      widget.simulatorManager.tryConnectWire(pin, component);
     }
   }
 }

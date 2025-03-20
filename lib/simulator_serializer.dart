@@ -56,103 +56,6 @@ class SimulatorSerializer {
     }
   }
 
-  static Map<String, dynamic> _serialize(SimulatorManager simulatorManager) {
-    final components = simulatorManager.components
-        .map(
-          (component) => {
-            'id': component.id,
-            'type': component.runtimeType.toString(),
-            'position': {
-              'dx': component.position.dx,
-              'dy': component.position.dy,
-            },
-            'properties': _serializeComponentProperties(component),
-          },
-        )
-        .toList();
-
-    final wires = simulatorManager.wires
-        .map(
-          (wire) => {
-            'startComponentId': wire.startPin.component.id,
-            'startPinIndex': wire.startPin.index,
-            'startPinIsOutput': wire.startPin.isOutput,
-            'endComponentId': wire.endPin.component.id,
-            'endPinIndex': wire.endPin.index,
-            'endPinIsOutput': wire.endPin.isOutput,
-          },
-        )
-        .toList();
-
-    return {
-      'components': components,
-      'wires': wires,
-      'version': '1.0',
-      'metadata': {
-        'created': DateTime.now().toIso8601String(),
-        'appVersion': '1.0.0',
-      },
-    };
-  }
-
-  static bool _deserialize(
-    SimulatorManager simulatorManager,
-    Map<String, dynamic> data,
-  ) {
-    simulatorManager.clearAll();
-
-    final idToComponent = <int, BaseLogicComponent>{};
-    final components = data['components'] as List;
-
-    for (final componentData in components) {
-      final component =
-          _createComponentFromData(componentData as Map<String, dynamic>);
-
-      if (component != null) {
-        simulatorManager.addComponent(component);
-        idToComponent[component.id] = component;
-      }
-    }
-
-    final wires = data['wires'] as List;
-
-    for (final wireData in wires) {
-      final startComponentId = wireData['startComponentId'] as int;
-      final endComponentId = wireData['endComponentId'] as int;
-      final startComponent = idToComponent[startComponentId];
-      final endComponent = idToComponent[endComponentId];
-
-      if (startComponent != null && endComponent != null) {
-        final startPinIndex = wireData['startPinIndex'] as int;
-        final endPinIndex = wireData['endPinIndex'] as int;
-
-        Pin? startPin;
-
-        if (wireData['startPinIsOutput'] as bool) {
-          startPin = startComponent.outputPins
-              .firstWhereOrNull((pin) => pin.index == startPinIndex);
-        }
-
-        Pin? endPin;
-
-        if (!(wireData['endPinIsOutput'] as bool)) {
-          endPin = endComponent.inputPins
-              .firstWhereOrNull((pin) => pin.index == endPinIndex);
-        }
-
-        if (startPin != null && endPin != null) {
-          final wire = WireModel(startPin: startPin, endPin: endPin);
-
-          simulatorManager.wires.add(wire);
-        }
-      }
-    }
-
-    simulatorManager.calculateAllOutputs();
-
-    return true;
-  }
-
   static BaseLogicComponent? _createComponentFromData(
     Map<String, dynamic> data,
   ) {
@@ -240,6 +143,48 @@ class SimulatorSerializer {
     }
   }
 
+  static Map<String, dynamic> _serialize(SimulatorManager simulatorManager) {
+    final components = simulatorManager.components
+        .map(
+          (component) => {
+            'id': component.id,
+            'type': component.runtimeType.toString(),
+            'position': {
+              'dx': component.position.dx,
+              'dy': component.position.dy,
+            },
+            'properties': _serializeComponentProperties(component),
+          },
+        )
+        .toList();
+
+    final wires = simulatorManager.wires
+        .map(
+          (wire) => {
+            'startComponentId': wire.startPin.component.id,
+            'startPinIndex': wire.startPin.index,
+            'startPinIsOutput': wire.startPin.isOutput,
+            'endComponentId': wire.endPin.component.id,
+            'endPinIndex': wire.endPin.index,
+            'endPinIsOutput': wire.endPin.isOutput,
+            'segments': wire.segments
+                .map((segment) => {'dx': segment.dx, 'dy': segment.dy})
+                .toList(),
+          },
+        )
+        .toList();
+
+    return {
+      'components': components,
+      'wires': wires,
+      'version': '1.0',
+      'metadata': {
+        'created': DateTime.now().toIso8601String(),
+        'appVersion': '1.0.0',
+      },
+    };
+  }
+
   static Map<String, dynamic> _serializeComponentProperties(
     BaseLogicComponent component,
   ) {
@@ -252,5 +197,79 @@ class SimulatorSerializer {
     }
 
     return properties;
+  }
+
+  static bool _deserialize(
+    SimulatorManager simulatorManager,
+    Map<String, dynamic> data,
+  ) {
+    simulatorManager.clearAll();
+
+    final idToComponent = <int, BaseLogicComponent>{};
+    final components = data['components'] as List;
+
+    for (final componentData in components) {
+      final component =
+          _createComponentFromData(componentData as Map<String, dynamic>);
+
+      if (component != null) {
+        simulatorManager.addComponent(component);
+        idToComponent[component.id] = component;
+      }
+    }
+
+    final wires = data['wires'] as List<dynamic>;
+
+    for (final wireData in wires) {
+      final startComponentId = wireData['startComponentId'] as int;
+      final endComponentId = wireData['endComponentId'] as int;
+      final startComponent = idToComponent[startComponentId];
+      final endComponent = idToComponent[endComponentId];
+
+      if (startComponent != null && endComponent != null) {
+        final startPinIndex = wireData['startPinIndex'] as int;
+        final endPinIndex = wireData['endPinIndex'] as int;
+
+        Pin? startPin;
+
+        if (wireData['startPinIsOutput'] as bool) {
+          startPin = startComponent.outputPins
+              .firstWhereOrNull((pin) => pin.index == startPinIndex);
+        }
+
+        Pin? endPin;
+
+        if (!(wireData['endPinIsOutput'] as bool)) {
+          endPin = endComponent.inputPins
+              .firstWhereOrNull((pin) => pin.index == endPinIndex);
+        }
+
+        if (startPin != null && endPin != null) {
+          List<Offset>? segments;
+
+          if ((wireData as Map).containsKey('segments')) {
+            final segmentsList = wireData['segments'] as List;
+            segments = segmentsList
+                .map<Offset>(
+                  (segData) =>
+                      Offset(segData['dx'] as double, segData['dy'] as double),
+                )
+                .toList();
+          }
+
+          final wire = WireModel(
+            startPin: startPin,
+            endPin: endPin,
+            segments: segments,
+          );
+
+          simulatorManager.wires.add(wire);
+        }
+      }
+    }
+
+    simulatorManager.calculateAllOutputs();
+
+    return true;
   }
 }

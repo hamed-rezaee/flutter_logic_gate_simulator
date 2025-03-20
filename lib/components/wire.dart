@@ -7,8 +7,9 @@ class Wire extends StatelessWidget {
     required this.endPosition,
     required this.isActive,
     required this.isSelected,
-    this.onTap,
+    this.wireSegments = const [],
     this.isDashed = false,
+    this.onTap,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class Wire extends StatelessWidget {
   final Offset endPosition;
   final bool isActive;
   final bool isSelected;
+  final List<Offset> wireSegments;
   final bool isDashed;
   final VoidCallback? onTap;
 
@@ -29,7 +31,12 @@ class Wire extends StatelessWidget {
             end: endPosition,
             isActive: isActive,
             isSelected: isSelected,
+            segments: wireSegments,
             isDashed: isDashed,
+          ),
+          size: Size(
+            MediaQuery.of(context).size.width,
+            MediaQuery.of(context).size.height,
           ),
         ),
       );
@@ -41,11 +48,13 @@ class _WirePainter extends CustomPainter {
     required this.end,
     required this.isActive,
     required this.isSelected,
+    this.segments = const [],
     this.isDashed = false,
   });
 
   final Offset start;
   final Offset end;
+  final List<Offset> segments;
   final bool isActive;
   final bool isSelected;
   final bool isDashed;
@@ -57,71 +66,83 @@ class _WirePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = isSelected ? 4 : 2;
 
-    final midX = (start.dx + end.dx) / 2;
+    final highlightPaint = Paint()
+      ..color = Colors.blue.withValues(alpha: 0.5)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6;
+
+    _drawSegmentedWire(canvas, paint, highlightPaint);
+  }
+
+  void _drawSegmentedWire(Canvas canvas, Paint paint, Paint highlightPaint) {
+    final path = Path()..moveTo(start.dx, start.dy);
+
+    for (final segment in segments) {
+      path.lineTo(segment.dx, segment.dy);
+    }
+
+    path.lineTo(end.dx, end.dy);
 
     if (isDashed) {
-      const dashWidth = 8;
-      const dashSpace = 4;
+      _drawDashedPath(canvas, path, paint);
+    } else {
+      canvas.drawPath(path, paint);
 
-      final path = Path()
-        ..moveTo(start.dx, start.dy)
-        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
-
-      var distance = 0.0;
-      var drawLine = true;
-
-      if (path.computeMetrics().isEmpty) {
-        return;
+      if (isSelected) {
+        canvas.drawPath(path, highlightPaint);
       }
+    }
+  }
 
-      final pathMetrics = path.computeMetrics().first;
-      final pathLength = pathMetrics.length;
+  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
+    const dashWidth = 8;
+    const dashSpace = 4;
 
-      while (distance < pathLength) {
-        final segmentLength = drawLine ? dashWidth : dashSpace;
-        final nextDistance = distance + segmentLength;
+    if (path.computeMetrics().isEmpty) {
+      return;
+    }
 
-        if (nextDistance > pathLength) {
-          if (drawLine) {
-            final start = pathMetrics.getTangentForOffset(distance)!.position;
-            final end = pathMetrics.getTangentForOffset(pathLength)!.position;
+    final pathMetrics = path.computeMetrics().first;
+    final pathLength = pathMetrics.length;
 
-            canvas.drawLine(start, end, paint);
-          }
+    var distance = 0.0;
+    var drawLine = true;
 
-          break;
-        }
+    while (distance < pathLength) {
+      final segmentLength = drawLine ? dashWidth : dashSpace;
+      final nextDistance = distance + segmentLength;
 
+      if (nextDistance > pathLength) {
         if (drawLine) {
           final start = pathMetrics.getTangentForOffset(distance)!.position;
-          final end = pathMetrics.getTangentForOffset(nextDistance)!.position;
+          final end = pathMetrics.getTangentForOffset(pathLength)!.position;
 
           canvas.drawLine(start, end, paint);
         }
 
-        distance = nextDistance;
-        drawLine = !drawLine;
+        break;
       }
-    } else {
-      final path = Path()
-        ..moveTo(start.dx, start.dy)
-        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
 
-      canvas.drawPath(path, paint);
+      if (drawLine) {
+        final start = pathMetrics.getTangentForOffset(distance)!.position;
+        final end = pathMetrics.getTangentForOffset(nextDistance)!.position;
+
+        canvas.drawLine(start, end, paint);
+      }
+
+      distance = nextDistance;
+      drawLine = !drawLine;
+    }
+  }
+
+  bool _listEquals(List<Offset> list1, List<Offset> list2) {
+    if (list1.length != list2.length) return false;
+
+    for (var i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
     }
 
-    if (isSelected) {
-      final highlightPaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.5)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6;
-
-      final path = Path()
-        ..moveTo(start.dx, start.dy)
-        ..cubicTo(midX, start.dy, midX, end.dy, end.dx, end.dy);
-
-      canvas.drawPath(path, highlightPaint);
-    }
+    return true;
   }
 
   @override
@@ -130,16 +151,67 @@ class _WirePainter extends CustomPainter {
       oldDelegate.end != end ||
       oldDelegate.isActive != isActive ||
       oldDelegate.isSelected != isSelected ||
-      oldDelegate.isDashed != isDashed;
+      oldDelegate.isDashed != isDashed ||
+      !_listEquals(oldDelegate.segments, segments);
 }
 
 class WireModel {
-  const WireModel({required this.startPin, required this.endPin});
+  WireModel({
+    required this.startPin,
+    required this.endPin,
+    List<Offset>? segments,
+  }) : segments = segments ?? [];
 
   final Pin startPin;
   final Pin endPin;
+  final List<Offset> segments;
 
   Offset get startPosition => startPin.position;
-
   Offset get endPosition => endPin.position;
+
+  List<Offset> generateDefaultSegments() {
+    if (this.segments.isNotEmpty) {
+      return this.segments;
+    }
+
+    final start = startPosition;
+    final end = endPosition;
+    final segments = <Offset>[];
+
+    final midX = (start.dx + end.dx) / 2;
+
+    segments
+      ..add(Offset(midX, start.dy))
+      ..add(Offset(midX, end.dy));
+
+    return segments;
+  }
+
+  void autoRoute() {
+    segments
+      ..clear()
+      ..addAll(generateDefaultSegments());
+  }
+
+  void addSegment(int index, Offset position) {
+    if (segments.isEmpty) {
+      segments.addAll(generateDefaultSegments());
+    }
+
+    if (index >= 0 && index <= segments.length) {
+      segments.insert(index, position);
+    }
+  }
+
+  void removeSegment(int index) {
+    if (index >= 0 && index < segments.length) {
+      segments.removeAt(index);
+    }
+  }
+
+  void moveSegment(int index, Offset newPosition) {
+    if (index >= 0 && index < segments.length) {
+      segments[index] = newPosition;
+    }
+  }
 }

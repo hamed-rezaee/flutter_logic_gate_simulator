@@ -78,37 +78,62 @@ class SimulatorManager {
     wireEndPosition = null;
   }
 
-  bool tryConnectWire(Pin endPin) {
-    if (!isDrawingWire || wireStartPin == null) return false;
+  void tryConnectWire(Pin pin, BaseLogicComponent component) {
+    final startPin = wireStartPin!;
 
-    if (wireStartPin!.component == endPin.component) {
+    if (startPin.component == component) {
       cancelWireDrawing();
-      return false;
+      return;
     }
 
-    if (wireStartPin!.isOutput && !endPin.isOutput) {
-      final wire = WireModel(startPin: wireStartPin!, endPin: endPin);
-      wires.add(wire);
-
-      cancelWireDrawing();
-      calculateAllOutputs();
-      selectWire(wire);
-
-      return true;
-    } else if (!wireStartPin!.isOutput && endPin.isOutput) {
-      final wire = WireModel(startPin: endPin, endPin: wireStartPin!);
+    if (startPin.isOutput && !pin.isOutput) {
+      final wire = WireModel(startPin: startPin, endPin: pin)..autoRoute();
 
       wires.add(wire);
       cancelWireDrawing();
-      calculateAllOutputs();
       selectWire(wire);
 
-      return true;
-    }
+      return;
+    } else if (!startPin.isOutput && pin.isOutput) {
+      final wire = WireModel(startPin: pin, endPin: startPin)..autoRoute();
 
-    cancelWireDrawing();
-    return false;
+      wires.add(wire);
+      cancelWireDrawing();
+      selectWire(wire);
+
+      return;
+    } else {
+      cancelWireDrawing();
+    }
   }
+
+  void startSegmentDrag(WireModel wire, int segmentIndex) {
+    isDraggingWireSegment = true;
+    draggingWire = wire;
+    draggingSegmentIndex = segmentIndex;
+  }
+
+  void endSegmentDrag() {
+    isDraggingWireSegment = false;
+    draggingWire = null;
+    draggingSegmentIndex = -1;
+  }
+
+  void updateDraggingSegment(Offset newPosition) {
+    if (isDraggingWireSegment &&
+        draggingWire != null &&
+        draggingSegmentIndex >= 0) {
+      draggingWire!.moveSegment(draggingSegmentIndex, newPosition);
+    }
+  }
+
+  void addWireSegment(WireModel wire, int segmentIndex, Offset position) {
+    wire.addSegment(segmentIndex, position);
+  }
+
+  bool isDraggingWireSegment = false;
+  WireModel? draggingWire;
+  int draggingSegmentIndex = -1;
 
   void removeWire(WireModel wire) {
     wires.remove(wire);
@@ -123,16 +148,19 @@ class SimulatorManager {
 
   int getNextId() {
     var maxId = 0;
+
     for (final component in components) {
       if (component.id > maxId) {
         maxId = component.id;
       }
     }
+
     return maxId + 1;
   }
 
   void _calculateOutput(BaseLogicComponent component) {
     if (component.visited) return;
+
     component.visited = true;
 
     for (final pin in component.inputPins) {
