@@ -9,3 +9,4 @@ linter:
     lines_longer_than_80_chars: false
     sort_child_properties_last: false
     avoid_dynamic_calls: false
+    flutter_style_todos: false

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_logic_gate_simulator/simulator_canvas.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
@@ -7,8 +8,28 @@ import 'package:google_fonts/google_fonts.dart';
 
 void main() => runApp(const LogicGateSimulator());
 
-class LogicGateSimulator extends StatelessWidget {
+class LogicGateSimulator extends StatefulWidget {
   const LogicGateSimulator({super.key});
+
+  @override
+  State<LogicGateSimulator> createState() => _LogicGateSimulatorState();
+}
+
+class _LogicGateSimulatorState extends State<LogicGateSimulator> {
+  final SimulatorManager simulatorManager = SimulatorManager();
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+
+    Stream<void>.periodic(const Duration(milliseconds: 16))
+        .listen((_) => setState(simulatorManager.calculateAllOutputs));
+  }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -19,38 +40,25 @@ class LogicGateSimulator extends StatelessWidget {
           brightness: Brightness.dark,
           fontFamily: GoogleFonts.spaceMono().fontFamily,
         ),
-        home: const Simulator(),
+        home: SafeArea(child: Simulator(simulatorManager: simulatorManager)),
         debugShowCheckedModeBanner: false,
       );
 }
 
-class Simulator extends StatefulWidget {
-  const Simulator({super.key});
+class Simulator extends StatelessWidget {
+  const Simulator({required this.simulatorManager, super.key});
 
-  @override
-  State<Simulator> createState() => _SimulatorState();
-}
-
-class _SimulatorState extends State<Simulator> {
-  final SimulatorManager _simulatorManager = SimulatorManager();
-
-  @override
-  void initState() {
-    super.initState();
-
-    Stream<void>.periodic(const Duration(milliseconds: 16))
-        .listen((_) => setState(_simulatorManager.calculateAllOutputs));
-  }
+  final SimulatorManager simulatorManager;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Colors.black,
-        appBar: CustomAppBar(simulatorManager: _simulatorManager),
+        appBar: CustomAppBar(simulatorManager: simulatorManager),
         body: Stack(
           children: [
             SimulatorCanvas(
               appBarHeight: CustomAppBar.height,
-              simulatorManager: _simulatorManager,
+              simulatorManager: simulatorManager,
             ),
             _buildToolbar(),
           ],
@@ -66,13 +74,13 @@ class _SimulatorState extends State<Simulator> {
             children: [
               AnimatedOpacity(
                 duration: const Duration(milliseconds: 150),
-                opacity: _simulatorManager.selectedComponent != null ||
-                        _simulatorManager.selectedWire != null
+                opacity: simulatorManager.selectedComponent != null ||
+                        simulatorManager.selectedWire != null
                     ? 1
                     : 0,
                 child: _buildDeleteButton(),
               ),
-              Toolbar(simulatorManager: _simulatorManager),
+              Toolbar(simulatorManager: simulatorManager),
             ],
           ),
         ),
@@ -91,12 +99,12 @@ class _SimulatorState extends State<Simulator> {
           ),
         ),
         onTap: () {
-          if (_simulatorManager.selectedComponent != null) {
-            _simulatorManager.removeComponent(
-              _simulatorManager.selectedComponent!,
+          if (simulatorManager.selectedComponent != null) {
+            simulatorManager.removeComponent(
+              simulatorManager.selectedComponent!,
             );
-          } else if (_simulatorManager.selectedWire != null) {
-            _simulatorManager.removeWire(_simulatorManager.selectedWire!);
+          } else if (simulatorManager.selectedWire != null) {
+            simulatorManager.removeWire(simulatorManager.selectedWire!);
           }
         },
       );

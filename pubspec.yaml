@@ -15,7 +15,6 @@ dependencies:
     sdk: flutter
   google_fonts: ^6.2.1
   path_provider: ^2.1.5
-  share_plus: ^10.1.4
   shared_preferences: ^2.5.2
 
 dev_dependencies:

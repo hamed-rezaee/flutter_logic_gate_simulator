@@ -25,11 +25,11 @@ class CustomAppBar extends PreferredSize {
                 ),
                 const Spacer(),
                 if (simulatorManager != null) ...[
-                  ClearButton(simulatorManager: simulatorManager),
-                  SaveButton(simulatorManager: simulatorManager),
-                  LoadButton(simulatorManager: simulatorManager),
-                  ExportButton(simulatorManager: simulatorManager),
-                  ImportButton(simulatorManager: simulatorManager),
+                  SaveAction(simulatorManager: simulatorManager),
+                  LoadAction(simulatorManager: simulatorManager),
+                  ExportAction(simulatorManager: simulatorManager),
+                  ImportAction(simulatorManager: simulatorManager),
+                  ClearAction(simulatorManager: simulatorManager),
                 ],
               ],
             ),
@@ -42,61 +42,8 @@ class CustomAppBar extends PreferredSize {
   static const double height = 60;
 }
 
-class ClearButton extends StatelessWidget {
-  const ClearButton({required this.simulatorManager, super.key});
-
-  final SimulatorManager simulatorManager;
-
-  @override
-  Widget build(BuildContext context) => TextButton(
-        child:
-            const Icon(Icons.cleaning_services, size: 24, color: Colors.white),
-        onPressed: () async {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              content: const Text(
-                'Are you sure you want to clear the current simulator state?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text(
-                    'Clear',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          );
-
-          if (confirm != true) {
-            return;
-          }
-
-          simulatorManager.clearAll();
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Simulator state cleared successfully.'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        },
-      );
-}
-
-class SaveButton extends StatelessWidget {
-  const SaveButton({required this.simulatorManager, super.key});
+class SaveAction extends StatelessWidget {
+  const SaveAction({required this.simulatorManager, super.key});
 
   final SimulatorManager simulatorManager;
 
@@ -111,17 +58,15 @@ class SaveButton extends StatelessWidget {
                 'Are you sure you want to save the current simulator state?',
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                TextButton(
+                _buildActionButton(
+                  context: context,
                   onPressed: () => Navigator.of(context).pop(true),
-                  child:
-                      const Text('Save', style: TextStyle(color: Colors.white)),
+                  text: 'Save',
+                ),
+                _buildActionButton(
+                  context: context,
+                  onPressed: () => Navigator.of(context).pop(false),
+                  text: 'Cancel',
                 ),
               ],
             ),
@@ -141,7 +86,6 @@ class SaveButton extends StatelessWidget {
                       ? 'Simulator state saved successfully.'
                       : 'Failed to save simulator state.',
                 ),
-                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -149,8 +93,8 @@ class SaveButton extends StatelessWidget {
       );
 }
 
-class LoadButton extends StatelessWidget {
-  const LoadButton({required this.simulatorManager, super.key});
+class LoadAction extends StatelessWidget {
+  const LoadAction({required this.simulatorManager, super.key});
 
   final SimulatorManager simulatorManager;
 
@@ -166,19 +110,15 @@ class LoadButton extends StatelessWidget {
                   'Loading will replace your current simulator state, are you sure?',
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  TextButton(
+                  _buildActionButton(
+                    context: context,
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text(
-                      'Load',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    text: 'Load',
+                  ),
+                  _buildActionButton(
+                    context: context,
+                    onPressed: () => Navigator.of(context).pop(false),
+                    text: 'Cancel',
                   ),
                 ],
               ),
@@ -199,7 +139,6 @@ class LoadButton extends StatelessWidget {
                       ? 'Simulator state loaded successfully.'
                       : 'Failed to load simulator state.',
                 ),
-                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -207,8 +146,8 @@ class LoadButton extends StatelessWidget {
       );
 }
 
-class ExportButton extends StatelessWidget {
-  const ExportButton({required this.simulatorManager, super.key});
+class ExportAction extends StatelessWidget {
+  const ExportAction({required this.simulatorManager, super.key});
 
   final SimulatorManager simulatorManager;
 
@@ -220,7 +159,6 @@ class ExportButton extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Nothing to export. Create a simulation first.'),
-                duration: Duration(seconds: 2),
               ),
             );
             return;
@@ -243,7 +181,6 @@ class ExportButton extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Simulator state exported successfully.'),
-                duration: Duration(seconds: 2),
               ),
             );
           }
@@ -251,8 +188,8 @@ class ExportButton extends StatelessWidget {
       );
 }
 
-class ImportButton extends StatelessWidget {
-  const ImportButton({required this.simulatorManager, super.key});
+class ImportAction extends StatelessWidget {
+  const ImportAction({required this.simulatorManager, super.key});
 
   final SimulatorManager simulatorManager;
 
@@ -268,19 +205,15 @@ class ImportButton extends StatelessWidget {
                   'Importing will replace your current simulator state, are you sure?',
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  TextButton(
+                  _buildActionButton(
+                    context: context,
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text(
-                      'Import',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    text: 'Import',
+                  ),
+                  _buildActionButton(
+                    context: context,
+                    onPressed: () => Navigator.of(context).pop(false),
+                    text: 'Cancel',
                   ),
                 ],
               ),
@@ -306,7 +239,6 @@ class ImportButton extends StatelessWidget {
                       ? 'Simulator state imported successfully.'
                       : 'Failed to import simulator state.',
                 ),
-                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -347,13 +279,15 @@ class _ExportDialogState extends State<_ExportDialog> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
+          _buildActionButton(
+            context: context,
             onPressed: () => Navigator.of(context).pop(_controller.text),
-            child: const Text('Export', style: TextStyle(color: Colors.white)),
+            text: 'Export',
+          ),
+          _buildActionButton(
+            context: context,
+            onPressed: () => Navigator.of(context).pop(),
+            text: 'Cancel',
           ),
         ],
       );
@@ -365,3 +299,68 @@ class _ExportDialogState extends State<_ExportDialog> {
     super.dispose();
   }
 }
+
+class ClearAction extends StatelessWidget {
+  const ClearAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        child:
+            const Icon(Icons.cleaning_services, size: 24, color: Colors.white),
+        onPressed: () async {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: const Text(
+                'Are you sure you want to clear the current simulator state?',
+              ),
+              actions: [
+                _buildActionButton(
+                  context: context,
+                  onPressed: () => Navigator.of(context).pop(true),
+                  text: 'Clear',
+                ),
+                _buildActionButton(
+                  context: context,
+                  onPressed: () => Navigator.of(context).pop(false),
+                  text: 'Cancel',
+                ),
+              ],
+            ),
+          );
+
+          if (confirm != true) {
+            return;
+          }
+
+          simulatorManager.clearAll();
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Simulator state cleared successfully.'),
+              ),
+            );
+          }
+        },
+      );
+}
+
+Widget _buildActionButton({
+  required BuildContext context,
+  required String text,
+  required VoidCallback onPressed,
+}) =>
+    TextButton(
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+    );
