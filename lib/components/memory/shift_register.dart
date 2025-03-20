@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class ShiftRegister extends BaseLogicComponent with PinNamingMixin {
+class ShiftRegister extends BaseLogicComponent
+    with PinNamingMixin, TooltipMixin {
   ShiftRegister({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -25,22 +26,45 @@ class ShiftRegister extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(120, 60);
 
   @override
+  String get tooltipTitle => 'Shift Register';
+
+  @override
+  String get tooltipDescription =>
+      'The shift register component stores 4-bit data and shifts the data on each rising edge of the clock input.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'IN, CLK, CLR',
+        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Operation':
+            'When CLR is high, the register is cleared. When CLK is high, the data is shifted to the right.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Shift\nRegister'),
-        position: position,
-        size: size,
-        isSelected: isSelected,
-        inputPins: inputPins,
-        outputPins: outputPins,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Shift\nRegister'),
+      position: position,
+      size: size,
+      isSelected: isSelected,
+      inputPins: inputPins,
+      outputPins: outputPins,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

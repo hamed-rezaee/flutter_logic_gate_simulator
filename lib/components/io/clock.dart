@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Clock extends BaseLogicComponent with PinNamingMixin {
+class Clock extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Clock({required super.id, required super.position}) {
     for (var i = 0; i < 6; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -23,22 +23,45 @@ class Clock extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(90, 100);
 
   @override
+  String get tooltipTitle => 'Clock';
+
+  @override
+  String get tooltipDescription =>
+      'The clock component outputs a pulse on each rising edge of the clock input.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'T0, T1, T2, T3, T4, EN',
+        'Outputs': 'Y',
+        'Operation':
+            'To adjust the clock frequency, set the input pins to the desired binary value.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Clock'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Clock'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

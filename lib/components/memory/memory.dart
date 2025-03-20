@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Memory extends BaseLogicComponent with PinNamingMixin {
+class Memory extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Memory({required super.id, required super.position}) {
     for (var i = 0; i < 10; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -29,22 +29,45 @@ class Memory extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(140, 230);
 
   @override
+  String get tooltipTitle => 'Memory';
+
+  @override
+  String get tooltipDescription =>
+      'The memory component stores 4-bit data at 16 different addresses.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A0, A1, A2, A3, D0, D1, D2, D3, WE, RE',
+        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Operation':
+            'WE: Write Enable, RE: Read Enable. When WE is high, the data at the address is set to the input data. When RE is high, the output is the data at the address.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: _buildMemoryDisplay(onInputToggle),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: _buildMemoryDisplay(onInputToggle),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   Widget _buildMemoryDisplay(VoidCallback onInputToggle) {
     _activeAddress = (inputPins[3].value ? 8 : 0) +

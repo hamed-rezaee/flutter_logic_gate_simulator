@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Adder extends BaseLogicComponent with PinNamingMixin {
+class Adder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Adder({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -21,22 +21,43 @@ class Adder extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(110, 65);
 
   @override
+  String get tooltipTitle => 'Adder';
+
+  @override
+  String get tooltipDescription =>
+      'The adder component adds two 1-bit inputs and a carry input.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A, B, Cin',
+        'Outputs': 'S, Cout',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Adder'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Adder'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

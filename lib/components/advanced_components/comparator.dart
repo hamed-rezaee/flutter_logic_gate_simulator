@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Comparator extends BaseLogicComponent with PinNamingMixin {
+class Comparator extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Comparator({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -18,25 +18,47 @@ class Comparator extends BaseLogicComponent with PinNamingMixin {
   }
 
   @override
-  Size get size => const Size(120, 75);
+  Size get size => const Size(125, 75);
+
+  @override
+  String get tooltipTitle => 'Comparator';
+
+  @override
+  String get tooltipDescription =>
+      'The comparator component compares two 2-bit inputs.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A0, A1, B0, B1',
+        'Outputs': 'LT, EQ, GT',
+        'Operations': 'LT: A < B, EQ: A == B, GT: A > B',
+      };
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Comparator'),
-        position: position,
-        size: size,
-        isSelected: isSelected,
-        inputPins: inputPins,
-        outputPins: outputPins,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Comparator'),
+      position: position,
+      size: size,
+      isSelected: isSelected,
+      inputPins: inputPins,
+      outputPins: outputPins,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

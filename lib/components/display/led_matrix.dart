@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class LedMatrix extends BaseLogicComponent with PinNamingMixin {
+class LedMatrix extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   LedMatrix({required super.id, required super.position}) {
     for (var i = 0; i < 8; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -16,22 +16,45 @@ class LedMatrix extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(140, 125);
 
   @override
+  String get tooltipTitle => 'LED Matrix';
+
+  @override
+  String get tooltipDescription =>
+      'The LED matrix component displays a 4x4 grid of LEDs.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'R1, R2, R3, R4, C1, C2, C3, C4',
+        'Outputs': 'None',
+        'Operation':
+            'The LED at row R and column C is active if Rn and Cn are high.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: _buildContent(),
-        position: position,
-        size: size,
-        isSelected: isSelected,
-        inputPins: inputPins,
-        outputPins: outputPins,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: _buildContent(),
+      position: position,
+      size: size,
+      isSelected: isSelected,
+      inputPins: inputPins,
+      outputPins: outputPins,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   Widget _buildContent() => Column(
         mainAxisAlignment: MainAxisAlignment.center,

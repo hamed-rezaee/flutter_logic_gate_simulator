@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Encoder extends BaseLogicComponent with PinNamingMixin {
+class Encoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Encoder({required super.id, required super.position}) {
     for (var i = 0; i < 5; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -18,25 +18,48 @@ class Encoder extends BaseLogicComponent with PinNamingMixin {
   }
 
   @override
-  Size get size => const Size(105, 85);
+  Size get size => const Size(110, 85);
+
+  @override
+  String get tooltipTitle => 'Encoder';
+
+  @override
+  String get tooltipDescription =>
+      'The encoder component encodes a 4-bit input into a 2-bit output.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'I0, I1, I2, I3, EN',
+        'Outputs': 'Y0, Y1',
+        'Operation':
+            'When EN is high, the output is the index of the input value.',
+      };
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Encoder'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Encoder'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

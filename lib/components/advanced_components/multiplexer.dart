@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Multiplexer extends BaseLogicComponent with PinNamingMixin {
+class Multiplexer extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Multiplexer({required super.id, required super.position}) {
     for (var i = 0; i < 6; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -19,22 +19,45 @@ class Multiplexer extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(90, 105);
 
   @override
+  String get tooltipTitle => 'Multiplexer';
+
+  @override
+  String get tooltipDescription =>
+      'The multiplexer component selects one of the input values based on the select inputs.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'I0, I1, I2, I3, S0, S1',
+        'Outputs': 'Y',
+        'Operation':
+            'S0 and S1 are used to select the input value and output it.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Mux'),
-        position: position,
-        size: size,
-        isSelected: isSelected,
-        inputPins: inputPins,
-        outputPins: outputPins,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Mux'),
+      position: position,
+      size: size,
+      isSelected: isSelected,
+      inputPins: inputPins,
+      outputPins: outputPins,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

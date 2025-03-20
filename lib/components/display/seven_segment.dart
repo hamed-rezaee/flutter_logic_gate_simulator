@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class SevenSegment extends BaseLogicComponent with PinNamingMixin {
+class SevenSegment extends BaseLogicComponent
+    with PinNamingMixin, TooltipMixin {
   SevenSegment({required super.id, required super.position}) {
     for (var i = 0; i < 7; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -14,30 +15,53 @@ class SevenSegment extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(100, 115);
 
   @override
+  String get tooltipTitle => '7-Segment Display';
+
+  @override
+  String get tooltipDescription =>
+      'The 7-segment display component displays a 4-bit input as a 7-segment pattern.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A, B, C, D, E, F, G',
+        'Outputs': 'None',
+        'Operation':
+            'Displays the 7-segment pattern of the input value. Use 7-segment decoders to convert binary to 7-segment pattern.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: _SevenSegmentView(
-          a: inputPins[0].value,
-          b: inputPins[1].value,
-          c: inputPins[2].value,
-          d: inputPins[3].value,
-          e: inputPins[4].value,
-          f: inputPins[5].value,
-          g: inputPins[6].value,
-        ),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: _SevenSegmentView(
+        a: inputPins[0].value,
+        b: inputPins[1].value,
+        c: inputPins[2].value,
+        d: inputPins[3].value,
+        e: inputPins[4].value,
+        f: inputPins[5].value,
+        g: inputPins[6].value,
+      ),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {}

@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Oscilloscope extends BaseLogicComponent with PinNamingMixin {
+class Oscilloscope extends BaseLogicComponent
+    with PinNamingMixin, TooltipMixin {
   Oscilloscope({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -30,25 +31,47 @@ class Oscilloscope extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(200, 70);
 
   @override
+  String get tooltipTitle => 'Oscilloscope';
+
+  @override
+  String get tooltipDescription =>
+      'The oscilloscope component displays the input signals over time.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A, B, C, D',
+        'Outputs': 'None',
+        'Operation': 'Displays the input signals over time.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: OscilloscopeDisplay(
-          signalHistory: _signalHistory,
-          signalColors: _signalColors,
-        ),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: OscilloscopeDisplay(
+        signalHistory: _signalHistory,
+        signalColors: _signalColors,
+      ),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() => _sampleInputs();

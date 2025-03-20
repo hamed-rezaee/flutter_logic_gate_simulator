@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Decoder extends BaseLogicComponent with PinNamingMixin {
+class Decoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Decoder({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -18,25 +18,48 @@ class Decoder extends BaseLogicComponent with PinNamingMixin {
   }
 
   @override
-  Size get size => const Size(105, 70);
+  Size get size => const Size(110, 70);
+
+  @override
+  String get tooltipTitle => 'Decoder';
+
+  @override
+  String get tooltipDescription =>
+      'The decoder component decodes a 2-bit input into a 4-bit output.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A0, A1, EN',
+        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Operation':
+            'When EN is high, the output is 1 at the index of the input value.',
+      };
 
   @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'Decoder'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'Decoder'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

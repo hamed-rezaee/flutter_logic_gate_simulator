@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class XorGate extends BaseLogicComponent with PinNamingMixin {
+class XorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   XorGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,25 +13,47 @@ class XorGate extends BaseLogicComponent with PinNamingMixin {
   }
 
   @override
+  String get tooltipTitle => 'XOR Gate';
+
+  @override
+  String get tooltipDescription =>
+      'The XOR gate component outputs true if the inputs are different.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A, B',
+        'Outputs': 'Y',
+        'Operation': 'Y = A XOR B',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: LogicGate(
-          gateType: LogicGateType.xor,
-          gateColor: Colors.grey[400]!,
-        ),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: LogicGate(
+        gateType: LogicGateType.xor,
+        gateColor: Colors.grey[400]!,
+      ),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() =>

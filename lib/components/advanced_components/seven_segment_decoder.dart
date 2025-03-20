@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class SevenSegmentDecoder extends BaseLogicComponent with PinNamingMixin {
+class SevenSegmentDecoder extends BaseLogicComponent
+    with PinNamingMixin, TooltipMixin {
   SevenSegmentDecoder({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -21,22 +22,44 @@ class SevenSegmentDecoder extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(110, 115);
 
   @override
+  String get tooltipTitle => '7-Segment Decoder';
+
+  @override
+  String get tooltipDescription =>
+      'The 7-segment decoder component decodes a 4-bit input into a 7-bit output.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A, B, C, D',
+        'Outputs': 'A, B, C, D, E, F, G',
+        'Operation': 'The output is the 7-segment pattern of the input value.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: '7-Segment Decoder'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: '7-Segment Decoder'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {

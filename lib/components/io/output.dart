@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Output extends BaseLogicComponent with PinNamingMixin {
+class Output extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Output({required super.id, required super.position}) {
     inputPins.add(Pin(index: 0, component: this));
 
@@ -9,22 +9,44 @@ class Output extends BaseLogicComponent with PinNamingMixin {
   }
 
   @override
+  String get tooltipTitle => 'Output';
+
+  @override
+  String get tooltipDescription =>
+      'The output component outputs the input value.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'A',
+        'Outputs': 'Y',
+        'Operation': 'Y = A',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: _buildContent(),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: _buildContent(),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   Widget _buildContent() => Icon(
         Icons.circle,

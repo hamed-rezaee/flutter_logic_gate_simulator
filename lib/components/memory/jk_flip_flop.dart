@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class JKFlipFlop extends BaseLogicComponent with PinNamingMixin {
+class JKFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   JKFlipFlop({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -24,22 +24,45 @@ class JKFlipFlop extends BaseLogicComponent with PinNamingMixin {
   Size get size => const Size(125, 60);
 
   @override
+  String get tooltipTitle => 'JK Flip-Flop';
+
+  @override
+  String get tooltipDescription =>
+      'The JK flip-flop component stores a single bit of data.';
+
+  @override
+  Map<String, String> get tooltipProperties => {
+        'Inputs': 'J, K, CLK, RST',
+        'Outputs': 'Q, Q̅',
+        'Operation':
+            'When RST is high, the output is reset to 0. When CLK is high, the output is set to the value of J or K.',
+      };
+
+  @override
   Widget build({
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) =>
-      ComponentBuilder(
-        id: id,
-        child: const ComponentLabel(title: 'JK\nFlip-Flop'),
-        inputPins: inputPins,
-        outputPins: outputPins,
-        isSelected: isSelected,
-        position: position,
-        size: size,
-        onInputToggle: onInputToggle,
-        onPinTap: onPinTap,
-      );
+  }) {
+    final componentBuilder = ComponentBuilder(
+      id: id,
+      child: const ComponentLabel(title: 'JK\nFlip-Flop'),
+      inputPins: inputPins,
+      outputPins: outputPins,
+      isSelected: isSelected,
+      position: position,
+      size: size,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+    );
+
+    return buildWithTooltip(
+      child: componentBuilder,
+      onInputToggle: onInputToggle,
+      onPinTap: onPinTap,
+      isSelected: isSelected,
+    );
+  }
 
   @override
   void calculateOutput() {
