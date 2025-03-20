@@ -52,26 +52,19 @@ class ALU extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) {
-    final componentBuilder = ComponentBuilder(
-      id: id,
-      child: const ComponentLabel(title: 'ALU'),
-      inputPins: inputPins,
-      outputPins: outputPins,
-      isSelected: isSelected,
-      position: position,
-      size: size,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-
-    return buildWithTooltip(
-      child: componentBuilder,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-      isSelected: isSelected,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: const ComponentLabel(title: 'ALU'),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        tooltip: tooltip,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {

@@ -91,27 +91,7 @@ mixin TooltipMixin on BaseLogicComponent {
 
   Map<String, String> get tooltipProperties => {};
 
-  Widget buildWithTooltip({
-    required Widget child,
-    required VoidCallback onInputToggle,
-    required void Function(Pin pin) onPinTap,
-    bool isSelected = false,
-  }) =>
-      Tooltip(
-        preferBelow: false,
-        message: _formatTooltipText(),
-        padding: const EdgeInsets.all(8),
-        textStyle: const TextStyle(fontSize: 10, color: Colors.white),
-        decoration: BoxDecoration(
-          color: Colors.grey[850],
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Colors.grey[700]!),
-        ),
-        waitDuration: const Duration(milliseconds: 500),
-        child: child,
-      );
-
-  String _formatTooltipText() {
+  String get tooltip {
     final buffer = StringBuffer()
       ..writeln('$tooltipTitle:')
       ..writeln('\t$tooltipDescription');

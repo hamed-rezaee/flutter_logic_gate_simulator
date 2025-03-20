@@ -34,34 +34,27 @@ class SevenSegment extends BaseLogicComponent
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) {
-    final componentBuilder = ComponentBuilder(
-      id: id,
-      child: _SevenSegmentView(
-        a: inputPins[0].value,
-        b: inputPins[1].value,
-        c: inputPins[2].value,
-        d: inputPins[3].value,
-        e: inputPins[4].value,
-        f: inputPins[5].value,
-        g: inputPins[6].value,
-      ),
-      inputPins: inputPins,
-      outputPins: outputPins,
-      isSelected: isSelected,
-      position: position,
-      size: size,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-
-    return buildWithTooltip(
-      child: componentBuilder,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-      isSelected: isSelected,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: _SevenSegmentView(
+          a: inputPins[0].value,
+          b: inputPins[1].value,
+          c: inputPins[2].value,
+          d: inputPins[3].value,
+          e: inputPins[4].value,
+          f: inputPins[5].value,
+          g: inputPins[6].value,
+        ),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        tooltip: tooltip,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {}

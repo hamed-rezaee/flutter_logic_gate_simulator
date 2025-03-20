@@ -45,26 +45,19 @@ class ShiftRegister extends BaseLogicComponent
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) {
-    final componentBuilder = ComponentBuilder(
-      id: id,
-      child: const ComponentLabel(title: 'Shift\nRegister'),
-      position: position,
-      size: size,
-      isSelected: isSelected,
-      inputPins: inputPins,
-      outputPins: outputPins,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-
-    return buildWithTooltip(
-      child: componentBuilder,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-      isSelected: isSelected,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: const ComponentLabel(title: 'Shift\nRegister'),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        tooltip: tooltip,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   @override
   void calculateOutput() {

@@ -27,26 +27,19 @@ class Output extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
     required VoidCallback onInputToggle,
     required void Function(Pin) onPinTap,
     bool isSelected = false,
-  }) {
-    final componentBuilder = ComponentBuilder(
-      id: id,
-      child: _buildContent(),
-      inputPins: inputPins,
-      outputPins: outputPins,
-      isSelected: isSelected,
-      position: position,
-      size: size,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-
-    return buildWithTooltip(
-      child: componentBuilder,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-      isSelected: isSelected,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: _buildContent(),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        tooltip: tooltip,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   Widget _buildContent() => Icon(
         Icons.circle,

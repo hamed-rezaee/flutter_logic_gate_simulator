@@ -48,26 +48,19 @@ class Memory extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
     required VoidCallback onInputToggle,
     required void Function(Pin pin) onPinTap,
     bool isSelected = false,
-  }) {
-    final componentBuilder = ComponentBuilder(
-      id: id,
-      child: _buildMemoryDisplay(onInputToggle),
-      inputPins: inputPins,
-      outputPins: outputPins,
-      isSelected: isSelected,
-      position: position,
-      size: size,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-    );
-
-    return buildWithTooltip(
-      child: componentBuilder,
-      onInputToggle: onInputToggle,
-      onPinTap: onPinTap,
-      isSelected: isSelected,
-    );
-  }
+  }) =>
+      ComponentBuilder(
+        id: id,
+        child: _buildMemoryDisplay(onInputToggle),
+        inputPins: inputPins,
+        outputPins: outputPins,
+        tooltip: tooltip,
+        isSelected: isSelected,
+        position: position,
+        size: size,
+        onInputToggle: onInputToggle,
+        onPinTap: onPinTap,
+      );
 
   Widget _buildMemoryDisplay(VoidCallback onInputToggle) {
     _activeAddress = (inputPins[3].value ? 8 : 0) +
