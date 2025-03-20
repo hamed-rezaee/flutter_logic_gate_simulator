@@ -3,20 +3,20 @@ import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class SimulatorManager {
   final List<BaseLogicComponent> components = [];
-  final List<WireModel> wires = [];
+  final List<Wire> wires = [];
 
   bool isDrawingWire = false;
   Pin? wireStartPin;
   Offset? wireEndPosition;
 
   bool isDraggingWireSegment = false;
-  WireModel? draggingWire;
+  Wire? draggingWire;
   int draggingSegmentIndex = -1;
 
   bool isDeleteMode = false;
 
   BaseLogicComponent? selectedComponent;
-  WireModel? selectedWire;
+  Wire? selectedWire;
 
   void calculateAllOutputs() {
     for (final component in components) {
@@ -54,9 +54,9 @@ class SimulatorManager {
     selectedWire = null;
   }
 
-  bool isWireSelected(WireModel wire) => selectedWire == wire;
+  bool isWireSelected(Wire wire) => selectedWire == wire;
 
-  void selectWire(WireModel wire) {
+  void selectWire(Wire wire) {
     selectedWire = wire;
     selectedComponent = null;
   }
@@ -96,8 +96,7 @@ class SimulatorManager {
       final outputPin = startPin.isOutput ? startPin : pin;
       final inputPin = startPin.isOutput ? pin : startPin;
 
-      final wire = WireModel(startPin: outputPin, endPin: inputPin)
-        ..autoRoute();
+      final wire = Wire(startPin: outputPin, endPin: inputPin)..autoRoute();
 
       wires.add(wire);
       cancelWireDrawing();
@@ -107,7 +106,7 @@ class SimulatorManager {
     }
   }
 
-  void startSegmentDrag(WireModel wire, int segmentIndex) {
+  void startSegmentDrag(Wire wire, int segmentIndex) {
     isDraggingWireSegment = true;
     draggingWire = wire;
     draggingSegmentIndex = segmentIndex;
@@ -127,11 +126,11 @@ class SimulatorManager {
     }
   }
 
-  void addWireSegment(WireModel wire, int segmentIndex, Offset position) {
+  void addWireSegment(Wire wire, int segmentIndex, Offset position) {
     wire.addSegment(segmentIndex, position);
   }
 
-  void removeWire(WireModel wire) {
+  void removeWire(Wire wire) {
     wires.remove(wire);
 
     if (selectedWire == wire) {

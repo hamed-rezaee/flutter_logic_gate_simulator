@@ -11,6 +11,10 @@ class SimulatorSerializer {
 
   static Future<bool> save(SimulatorManager simulatorManager) async {
     try {
+      for (final wire in simulatorManager.wires) {
+        wire.optimize();
+      }
+
       final prefs = await SharedPreferences.getInstance();
       final data = _serialize(simulatorManager);
 
@@ -38,6 +42,10 @@ class SimulatorSerializer {
   }
 
   static String serializeToJson(SimulatorManager simulatorManager) {
+    for (final wire in simulatorManager.wires) {
+      wire.optimize();
+    }
+
     final data = _serialize(simulatorManager);
 
     return jsonEncode(data);
@@ -190,7 +198,7 @@ class SimulatorSerializer {
                 .toList();
           }
 
-          final wire = WireModel(
+          final wire = Wire(
             startPin: startPin,
             endPin: endPin,
             segments: segments,

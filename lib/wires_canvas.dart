@@ -12,7 +12,7 @@ class WiresCanvas extends StatelessWidget {
 
   final SimulatorManager simulatorManager;
   final Offset panOffset;
-  final void Function(WireModel?, Offset) onWireTap;
+  final void Function(Wire?, Offset) onWireTap;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -60,7 +60,7 @@ class WiresCanvas extends StatelessWidget {
     final canvasPosition = position - panOffset;
 
     const threshold = 10.0;
-    WireModel? tappedWire;
+    Wire? tappedWire;
 
     for (final wire in simulatorManager.wires) {
       final isPointNearWirePath = wire.isPointNearWirePath(
@@ -86,8 +86,8 @@ class _WiresCanvasPainter extends CustomPainter {
     this.activeWire,
   });
 
-  final List<WireModel> wires;
-  final WireModel? selectedWire;
+  final List<Wire> wires;
+  final Wire? selectedWire;
   final Offset panOffset;
   final Map<String, dynamic>? activeWire;
 
@@ -103,7 +103,7 @@ class _WiresCanvasPainter extends CustomPainter {
     }
   }
 
-  void _drawWire(Canvas canvas, WireModel wire, bool isSelected) {
+  void _drawWire(Canvas canvas, Wire wire, bool isSelected) {
     final path = _createWirePath(
       wire.startPosition + panOffset,
       wire.endPosition + panOffset,
@@ -121,9 +121,9 @@ class _WiresCanvasPainter extends CustomPainter {
 
     if (isSelected) {
       final highlightPaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.5)
+        ..color = Colors.red.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
+        ..strokeWidth = 4
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round;
 
@@ -176,31 +176,12 @@ class _WiresCanvasPainter extends CustomPainter {
         final segment = segments[i];
 
         if (i == 0) {
-          path.quadraticBezierTo(
-            (start.dx + segment.dx) / 2,
-            (start.dy + segment.dy) / 2,
-            segment.dx,
-            segment.dy,
-          );
-        }
-
-        if (i < segments.length - 1) {
-          final nextSegment = segments[i + 1];
-          path.quadraticBezierTo(
-            (segment.dx + nextSegment.dx) / 2,
-            (segment.dy + nextSegment.dy) / 2,
-            nextSegment.dx,
-            nextSegment.dy,
-          );
+          path.lineTo(segment.dx, segment.dy);
         } else {
-          path.quadraticBezierTo(
-            (segment.dx + end.dx) / 2,
-            (segment.dy + end.dy) / 2,
-            end.dx,
-            end.dy,
-          );
+          path.lineTo(segment.dx, segment.dy);
         }
       }
+      path.lineTo(end.dx, end.dy);
     }
 
     return path;

@@ -75,8 +75,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
       controlPoints.add(
         Positioned(
-          left: screenPos.dx - 5,
-          top: screenPos.dy - 5,
+          left: screenPos.dx - 6,
+          top: screenPos.dy - 6,
           child: GestureDetector(
             onPanStart: (_) =>
                 widget.simulatorManager.startSegmentDrag(wire, i),
@@ -86,12 +86,11 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             },
             onPanEnd: (_) => widget.simulatorManager.endSegmentDrag(),
             child: Container(
-              width: 10,
-              height: 10,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(
-                color: Colors.blue,
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(5),
+                color: Colors.green,
+                border: Border.all(color: Colors.white, width: 2),
               ),
             ),
           ),
@@ -112,19 +111,19 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
         controlPoints.add(
           Positioned(
-            left: midpoint.dx - 4,
-            top: midpoint.dy - 4,
+            left: midpoint.dx - 5,
+            top: midpoint.dy - 5,
             child: GestureDetector(
               onTap: () {
                 final canvasPos = _screenToCanvasPosition(midpoint);
                 widget.simulatorManager.addWireSegment(wire, i, canvasPos);
               },
               child: Container(
-                width: 8,
-                height: 8,
+                width: 10,
+                height: 10,
                 decoration: BoxDecoration(
-                  color: Colors.orange,
-                  border: Border.all(color: Colors.white),
+                  color: Colors.red,
+                  border: Border.all(color: Colors.red),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -182,7 +181,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     }
   }
 
-  void _handleWireTap(WireModel? wire, Offset position) {
+  void _handleWireTap(Wire? wire, Offset position) {
     if (wire != null) {
       widget.simulatorManager.selectWire(wire);
     } else if (!widget.simulatorManager.isDrawingWire) {
