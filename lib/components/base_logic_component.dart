@@ -66,6 +66,23 @@ mixin PinNamingMixin on BaseLogicComponent {
       );
     }
   }
+
+  List<String?> get inputPinNames => inputPins.map((pin) => pin.name).toList();
+
+  List<String?> get outputPinNames =>
+      outputPins.map((pin) => pin.name).toList();
+
+  String get inputNames {
+    final names = inputPinNames.join(', ').trim();
+
+    return names.isEmpty ? 'None' : names;
+  }
+
+  String get outputNames {
+    final names = outputPinNames.join(', ').trim();
+
+    return names.isEmpty ? 'None' : names;
+  }
 }
 
 mixin TooltipMixin on BaseLogicComponent {

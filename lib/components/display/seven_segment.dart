@@ -23,8 +23,8 @@ class SevenSegment extends BaseLogicComponent
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A, B, C, D, E, F, G',
-        'Outputs': 'None',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'Displays the 7-segment pattern of the input value. Use 7-segment decoders to convert binary to 7-segment pattern.',
       };

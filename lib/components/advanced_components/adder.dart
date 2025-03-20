@@ -29,8 +29,10 @@ class Adder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A, B, Cin',
-        'Outputs': 'S, Cout',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
+        'Operation':
+            'S = A XOR B XOR Cin, Cout = (A AND B) OR (A AND Cin) OR (B AND Cin)',
       };
 
   @override

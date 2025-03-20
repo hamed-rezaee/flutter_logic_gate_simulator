@@ -30,8 +30,8 @@ class SevenSegmentDecoder extends BaseLogicComponent
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A, B, C, D',
-        'Outputs': 'A, B, C, D, E, F, G',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation': 'The output is the 7-segment pattern of the input value.',
       };
 

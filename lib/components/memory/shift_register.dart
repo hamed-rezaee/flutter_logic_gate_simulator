@@ -34,8 +34,8 @@ class ShiftRegister extends BaseLogicComponent
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'IN, CLK, CLR',
-        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'When CLR is high, the register is cleared. When CLK is high, the data is shifted to the right.',
       };

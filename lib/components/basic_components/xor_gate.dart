@@ -21,8 +21,8 @@ class XorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A, B',
-        'Outputs': 'Y',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation': 'Y = A XOR B',
       };
 

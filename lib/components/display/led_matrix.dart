@@ -24,8 +24,8 @@ class LedMatrix extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'R1, R2, R3, R4, C1, C2, C3, C4',
-        'Outputs': 'None',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'The LED at row R and column C is active if Rn and Cn are high.',
       };

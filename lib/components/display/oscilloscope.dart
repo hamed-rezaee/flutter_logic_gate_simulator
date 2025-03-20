@@ -39,8 +39,8 @@ class Oscilloscope extends BaseLogicComponent
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A, B, C, D',
-        'Outputs': 'None',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation': 'Displays the input signals over time.',
       };
 

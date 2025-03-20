@@ -29,8 +29,8 @@ class Comparator extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A0, A1, B0, B1',
-        'Outputs': 'LT, EQ, GT',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operations': 'LT: A < B, EQ: A == B, GT: A > B',
       };
 

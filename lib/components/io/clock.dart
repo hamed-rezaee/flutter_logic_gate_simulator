@@ -31,8 +31,8 @@ class Clock extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'T0, T1, T2, T3, T4, EN',
-        'Outputs': 'Y',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'To adjust the clock frequency, set the input pins to the desired binary value.',
       };

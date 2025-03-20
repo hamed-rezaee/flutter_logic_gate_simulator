@@ -27,8 +27,8 @@ class Multiplexer extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'I0, I1, I2, I3, S0, S1',
-        'Outputs': 'Y',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'S0 and S1 are used to select the input value and output it.',
       };

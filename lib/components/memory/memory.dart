@@ -37,8 +37,8 @@ class Memory extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A0, A1, A2, A3, D0, D1, D2, D3, WE, RE',
-        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'WE: Write Enable, RE: Read Enable. When WE is high, the data at the address is set to the input data. When RE is high, the output is the data at the address.',
       };

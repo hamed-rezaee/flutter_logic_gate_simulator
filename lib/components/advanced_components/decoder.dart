@@ -29,8 +29,8 @@ class Decoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A0, A1, EN',
-        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'When EN is high, the output is 1 at the index of the input value.',
       };

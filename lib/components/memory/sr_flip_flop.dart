@@ -32,8 +32,8 @@ class SRFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'S, R, CLK, RST',
-        'Outputs': 'Q, Q̅',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'When RST is high, the output is reset to 0. When CLK is high, the output is set to the value of S or R.',
       };

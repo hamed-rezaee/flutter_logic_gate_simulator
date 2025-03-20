@@ -19,8 +19,8 @@ class NotGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A',
-        'Outputs': 'Y',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation': 'Y = NOT A',
       };
 

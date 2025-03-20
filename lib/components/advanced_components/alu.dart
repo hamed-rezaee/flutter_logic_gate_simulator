@@ -41,8 +41,8 @@ class ALU extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'A0, A1, A2, A3, B0, B1, B2, B3, OP0, OP1, OP2',
-        'Outputs': 'R0, R1, R2, R3, Carry, Zero, Neg, Overflow',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operations':
             '0: ADD, 1: SUB, 2: AND, 3: OR, 4: XOR, 5: NOT, 6: SHL, 7: SHR',
       };

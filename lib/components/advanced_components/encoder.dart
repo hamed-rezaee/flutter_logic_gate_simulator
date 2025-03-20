@@ -29,8 +29,8 @@ class Encoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'I0, I1, I2, I3, EN',
-        'Outputs': 'Y0, Y1',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'When EN is high, the output is the index of the input value.',
       };

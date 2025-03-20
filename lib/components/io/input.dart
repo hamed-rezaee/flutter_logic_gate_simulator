@@ -19,8 +19,8 @@ class Input extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'None',
-        'Outputs': 'Y',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation': 'Toggle the switch to change the output value.',
       };
 

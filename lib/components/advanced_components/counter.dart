@@ -32,8 +32,8 @@ class Counter extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'CLK, RST',
-        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
       };
 
   @override

@@ -32,8 +32,8 @@ class Register extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
 
   @override
   Map<String, String> get tooltipProperties => {
-        'Inputs': 'D0, D1, D2, D3, CLK, LD, INC, CLR',
-        'Outputs': 'Y0, Y1, Y2, Y3',
+        'Inputs': inputNames,
+        'Outputs': outputNames,
         'Operation':
             'When LD is high, the input data is loaded into the register. When INC is high, the value is incremented by 1. When CLR is high, the register is cleared.',
       };
