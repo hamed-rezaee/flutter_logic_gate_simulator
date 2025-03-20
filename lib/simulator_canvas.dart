@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
+import 'package:flutter_logic_gate_simulator/wires_canvas.dart';
 
 class SimulatorCanvas extends StatefulWidget {
   const SimulatorCanvas({
@@ -47,8 +48,12 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             builder: (context, candidateData, rejectedData) => Stack(
               children: [
                 BackgroundGrid(panOffset: _panOffset),
-                ..._buildWires(),
-                if (widget.simulatorManager.isDrawingWire) _buildActiveWire(),
+                WiresCanvas(
+                  simulatorManager: widget.simulatorManager,
+                  panOffset: _panOffset,
+                  onWireTap: _handleWireTap,
+                ),
+                ..._buildWireSegmentControls(),
                 ..._buildComponents(),
               ],
             ),
@@ -56,36 +61,13 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
         ),
       );
 
-  List<Widget> _buildWires() => widget.simulatorManager.wires.map(
-        (wire) {
-          final segments = wire.segments.isEmpty
-              ? wire.generateDefaultSegments()
-              : wire.segments;
+  List<Widget> _buildWireSegmentControls() {
+    final wire = widget.simulatorManager.selectedWire;
+    if (wire == null) return [];
 
-          return Stack(
-            children: [
-              Wire(
-                key: ValueKey(
-                  'wire-${wire.startPin.component.id}-${wire.startPin.index}-${wire.endPin.component.id}-${wire.endPin.index}',
-                ),
-                startPosition: _canvasToScreenPosition(wire.startPosition),
-                endPosition: _canvasToScreenPosition(wire.endPosition),
-                isActive: wire.startPin.value,
-                isSelected: widget.simulatorManager.isWireSelected(wire),
-                wireSegments: segments.map(_canvasToScreenPosition).toList(),
-                onTap: () => widget.simulatorManager.selectWire(wire),
-              ),
-              if (wire == widget.simulatorManager.selectedWire)
-                ..._buildWireSegmentControls(wire, segments),
-            ],
-          );
-        },
-      ).toList();
+    final segments =
+        wire.segments.isEmpty ? wire.generateDefaultSegments() : wire.segments;
 
-  List<Widget> _buildWireSegmentControls(
-    WireModel wire,
-    List<Offset> segments,
-  ) {
     final controlPoints = <Widget>[];
 
     for (var i = 0; i < segments.length; i++) {
@@ -155,31 +137,6 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     return controlPoints;
   }
 
-  Widget _buildActiveWire() {
-    if (widget.simulatorManager.wireStartPin == null ||
-        widget.simulatorManager.wireEndPosition == null) {
-      return const SizedBox.shrink();
-    }
-
-    final start = widget.simulatorManager.wireStartPin!.position;
-    final end = widget.simulatorManager.wireEndPosition!;
-    final midX = (start.dx + end.dx) / 2;
-
-    final segments = [
-      Offset(midX, start.dy),
-      Offset(midX, end.dy),
-    ];
-
-    return Wire(
-      startPosition: _canvasToScreenPosition(start),
-      endPosition: _canvasToScreenPosition(end),
-      wireSegments: segments.map(_canvasToScreenPosition).toList(),
-      isActive: widget.simulatorManager.wireStartPin!.value,
-      isSelected: false,
-      isDashed: true,
-    );
-  }
-
   List<Widget> _buildComponents() => widget.simulatorManager.components
       .map(
         (component) => Positioned(
@@ -222,6 +179,14 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       widget.simulatorManager.startWireDrawing(pin);
     } else if (widget.simulatorManager.wireStartPin != null) {
       widget.simulatorManager.tryConnectWire(pin, component);
+    }
+  }
+
+  void _handleWireTap(WireModel? wire, Offset position) {
+    if (wire != null) {
+      widget.simulatorManager.selectWire(wire);
+    } else if (!widget.simulatorManager.isDrawingWire) {
+      widget.simulatorManager.clearSelection();
     }
   }
 }

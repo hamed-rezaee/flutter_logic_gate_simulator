@@ -71,20 +71,68 @@ class _WirePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6;
 
-    _drawSegmentedWire(canvas, paint, highlightPaint);
+    _drawCurvedWire(
+      canvas: canvas,
+      paint: paint,
+      highlightPaint: highlightPaint,
+    );
   }
 
-  void _drawSegmentedWire(Canvas canvas, Paint paint, Paint highlightPaint) {
+  void _drawCurvedWire({
+    required Canvas canvas,
+    required Paint paint,
+    required Paint highlightPaint,
+  }) {
     final path = Path()..moveTo(start.dx, start.dy);
 
-    for (final segment in segments) {
-      path.lineTo(segment.dx, segment.dy);
+    if (segments.isEmpty) {
+      final controlPointDistance = (end.dx - start.dx) / 2;
+      final controlPoint1 = Offset(start.dx + controlPointDistance, start.dy);
+      final controlPoint2 = Offset(end.dx - controlPointDistance, end.dy);
+
+      path.cubicTo(
+        controlPoint1.dx,
+        controlPoint1.dy,
+        controlPoint2.dx,
+        controlPoint2.dy,
+        end.dx,
+        end.dy,
+      );
+    } else {
+      for (var i = 0; i < segments.length; i++) {
+        final segment = segments[i];
+
+        if (i == 0) {
+          path.quadraticBezierTo(
+            (start.dx + segment.dx) / 2,
+            (start.dy + segment.dy) / 2,
+            segment.dx,
+            segment.dy,
+          );
+        }
+
+        if (i < segments.length - 1) {
+          final nextSegment = segments[i + 1];
+
+          path.quadraticBezierTo(
+            (segment.dx + nextSegment.dx) / 2,
+            (segment.dy + nextSegment.dy) / 2,
+            nextSegment.dx,
+            nextSegment.dy,
+          );
+        } else {
+          path.quadraticBezierTo(
+            (segment.dx + end.dx) / 2,
+            (segment.dy + end.dy) / 2,
+            end.dx,
+            end.dy,
+          );
+        }
+      }
     }
 
-    path.lineTo(end.dx, end.dy);
-
     if (isDashed) {
-      _drawDashedPath(canvas, path, paint);
+      _drawDashedPath(canvas: canvas, path: path, paint: paint);
     } else {
       canvas.drawPath(path, paint);
 
@@ -94,7 +142,11 @@ class _WirePainter extends CustomPainter {
     }
   }
 
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
+  void _drawDashedPath({
+    required Canvas canvas,
+    required Path path,
+    required Paint paint,
+  }) {
     const dashWidth = 8;
     const dashSpace = 4;
 
@@ -135,7 +187,10 @@ class _WirePainter extends CustomPainter {
     }
   }
 
-  bool _listEquals(List<Offset> list1, List<Offset> list2) {
+  bool _listEquals({
+    required List<Offset> list1,
+    required List<Offset> list2,
+  }) {
     if (list1.length != list2.length) return false;
 
     for (var i = 0; i < list1.length; i++) {
@@ -152,7 +207,7 @@ class _WirePainter extends CustomPainter {
       oldDelegate.isActive != isActive ||
       oldDelegate.isSelected != isSelected ||
       oldDelegate.isDashed != isDashed ||
-      !_listEquals(oldDelegate.segments, segments);
+      !_listEquals(list1: oldDelegate.segments, list2: segments);
 }
 
 class WireModel {
@@ -213,5 +268,56 @@ class WireModel {
     if (index >= 0 && index < segments.length) {
       segments[index] = newPosition;
     }
+  }
+
+  bool isPointNearWirePath({required Offset point, required double threshold}) {
+    final allPoints = [startPosition, ...segments, endPosition];
+
+    for (var i = 0; i < allPoints.length - 1; i++) {
+      final start = allPoints[i];
+      final end = allPoints[i + 1];
+      final isPointNearLine = _isPointNearLine(
+        point: point,
+        lineStart: start,
+        lineEnd: end,
+        threshold: threshold,
+      );
+
+      if (isPointNearLine) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isPointNearLine({
+    required Offset point,
+    required Offset lineStart,
+    required Offset lineEnd,
+    required double threshold,
+  }) {
+    final lengthSquared = (lineEnd - lineStart).distanceSquared;
+
+    if (lengthSquared == 0) {
+      return (point - lineStart).distance <= threshold;
+    }
+
+    final t = ((point.dx - lineStart.dx) * (lineEnd.dx - lineStart.dx) +
+            (point.dy - lineStart.dy) * (lineEnd.dy - lineStart.dy)) /
+        lengthSquared;
+
+    if (t < 0) {
+      return (point - lineStart).distance <= threshold;
+    } else if (t > 1) {
+      return (point - lineEnd).distance <= threshold;
+    }
+
+    final closestPoint = Offset(
+      lineStart.dx + t * (lineEnd.dx - lineStart.dx),
+      lineStart.dy + t * (lineEnd.dy - lineStart.dy),
+    );
+
+    return (point - closestPoint).distance <= threshold;
   }
 }
