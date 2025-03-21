@@ -11,10 +11,6 @@ class SimulatorSerializer {
 
   static Future<bool> save(SimulatorManager simulatorManager) async {
     try {
-      for (final wire in simulatorManager.wires) {
-        wire.optimize();
-      }
-
       final prefs = await SharedPreferences.getInstance();
       final data = _serialize(simulatorManager);
 
@@ -41,15 +37,8 @@ class SimulatorSerializer {
     }
   }
 
-  static String serializeToJson(SimulatorManager simulatorManager) {
-    for (final wire in simulatorManager.wires) {
-      wire.optimize();
-    }
-
-    final data = _serialize(simulatorManager);
-
-    return jsonEncode(data);
-  }
+  static String serializeToJson(SimulatorManager simulatorManager) =>
+      jsonEncode(_serialize(simulatorManager));
 
   static bool deserializeFromJson(
     SimulatorManager simulatorManager,
@@ -91,8 +80,8 @@ class SimulatorSerializer {
             'id': component.id,
             'type': component.runtimeType.toString(),
             'position': {
-              'dx': component.position.dx,
-              'dy': component.position.dy,
+              'dx': component.position.dx.roundToDouble(),
+              'dy': component.position.dy.roundToDouble(),
             },
             'properties': _serializeComponentProperties(component),
           },
@@ -109,7 +98,12 @@ class SimulatorSerializer {
             'endPinIndex': wire.endPin.index,
             'endPinIsOutput': wire.endPin.isOutput,
             'segments': wire.segments
-                .map((segment) => {'dx': segment.dx, 'dy': segment.dy})
+                .map(
+                  (segment) => {
+                    'dx': segment.dx.roundToDouble(),
+                    'dy': segment.dy.roundToDouble(),
+                  },
+                )
                 .toList(),
           },
         )

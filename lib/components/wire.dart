@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/pin.dart';
 
@@ -113,6 +115,74 @@ class Wire {
   }
 
   void optimize() {
-    // TODO: Implement this method to optimize the wire path
+    if (segments.length <= 1) return;
+
+    const epsilon = 5.0;
+
+    final points = [startPosition, ...segments, endPosition];
+    final simplified = _ramerDouglasPeucker(points: points, epsilon: epsilon);
+
+    segments
+      ..clear()
+      ..addAll(simplified.sublist(1, simplified.length - 1));
+  }
+
+  List<Offset> _ramerDouglasPeucker({
+    required List<Offset> points,
+    required double epsilon,
+  }) {
+    if (points.length < 3) return points;
+
+    var maxDistance = 0.0;
+    var index = 0;
+
+    for (var i = 1; i < points.length - 1; i++) {
+      final distance = _perpendicularDistance(
+        point: points[i],
+        lineStart: points.first,
+        lineEnd: points.last,
+      );
+      if (distance > maxDistance) {
+        index = i;
+        maxDistance = distance;
+      }
+    }
+
+    if (maxDistance > epsilon) {
+      final left = _ramerDouglasPeucker(
+        points: points.sublist(0, index + 1),
+        epsilon: epsilon,
+      );
+      final right = _ramerDouglasPeucker(
+        points: points.sublist(index),
+        epsilon: epsilon,
+      );
+
+      return [...left.sublist(0, left.length - 1), ...right];
+    } else {
+      return [points.first, points.last];
+    }
+  }
+
+  double _perpendicularDistance({
+    required Offset point,
+    required Offset lineStart,
+    required Offset lineEnd,
+  }) {
+    final dx = lineEnd.dx - lineStart.dx;
+    final dy = lineEnd.dy - lineStart.dy;
+
+    if (dx == 0 && dy == 0) {
+      return (point - lineStart).distance;
+    }
+
+    final numerator = ((dy * point.dx) -
+            (dx * point.dy) +
+            (lineEnd.dx * lineStart.dy) -
+            (lineEnd.dy * lineStart.dx))
+        .abs();
+    final denominator = sqrt(dx * dx + dy * dy);
+
+    return numerator / denominator;
   }
 }

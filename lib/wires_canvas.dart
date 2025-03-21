@@ -121,7 +121,7 @@ class _WiresCanvasPainter extends CustomPainter {
 
     if (isSelected) {
       final highlightPaint = Paint()
-        ..color = Colors.red.withValues(alpha: 0.5)
+        ..color = Colors.purple.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 4
         ..strokeCap = StrokeCap.round

@@ -29,6 +29,7 @@ class CustomAppBar extends PreferredSize {
                   LoadAction(simulatorManager: simulatorManager),
                   ExportAction(simulatorManager: simulatorManager),
                   ImportAction(simulatorManager: simulatorManager),
+                  OptimizeWireAction(simulatorManager: simulatorManager),
                   ClearAction(simulatorManager: simulatorManager),
                 ],
               ],
@@ -240,6 +241,31 @@ class ImportAction extends StatelessWidget {
       );
 }
 
+class OptimizeWireAction extends StatelessWidget {
+  const OptimizeWireAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        child:
+            const Icon(Icons.account_tree_sharp, size: 24, color: Colors.white),
+        onPressed: () {
+          for (final wire in simulatorManager.wires) {
+            wire.optimize();
+          }
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Wire paths optimized successfully.'),
+              ),
+            );
+          }
+        },
+      );
+}
+
 class ClearAction extends StatelessWidget {
   const ClearAction({required this.simulatorManager, super.key});
 
@@ -247,8 +273,7 @@ class ClearAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton(
-        child:
-            const Icon(Icons.cleaning_services, size: 24, color: Colors.white),
+        child: const Icon(Icons.delete_outline, size: 24, color: Colors.white),
         onPressed: () async {
           final confirm = await showDialog<bool>(
             context: context,

@@ -42,6 +42,11 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 ? widget.simulatorManager.cancelWireDrawing()
                 : widget.simulatorManager.clearSelection();
           },
+          onSecondaryTapUp: (details) {
+            if (widget.simulatorManager.isDrawingWire) {
+              widget.simulatorManager.cancelWireDrawing();
+            }
+          },
           child: DragTarget<BaseLogicComponent>(
             onWillAcceptWithDetails: (data) => true,
             onAcceptWithDetails: _handleComponentDrop,
@@ -75,8 +80,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
       controlPoints.add(
         Positioned(
-          left: screenPos.dx - 6,
-          top: screenPos.dy - 6,
+          left: screenPos.dx - 7,
+          top: screenPos.dy - 7,
           child: GestureDetector(
             onPanStart: (_) =>
                 widget.simulatorManager.startSegmentDrag(wire, i),
@@ -86,11 +91,12 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             },
             onPanEnd: (_) => widget.simulatorManager.endSegmentDrag(),
             child: Container(
-              width: 12,
-              height: 12,
+              width: 14,
+              height: 14,
               decoration: BoxDecoration(
                 color: Colors.green,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: Colors.white, width: 3),
+                borderRadius: BorderRadius.circular(6),
               ),
             ),
           ),
@@ -111,21 +117,17 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
         controlPoints.add(
           Positioned(
-            left: midpoint.dx - 5,
-            top: midpoint.dy - 5,
+            left: midpoint.dx - 4,
+            top: midpoint.dy - 4,
             child: GestureDetector(
               onTap: () {
                 final canvasPos = _screenToCanvasPosition(midpoint);
                 widget.simulatorManager.addWireSegment(wire, i, canvasPos);
               },
               child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(color: Colors.purple),
               ),
             ),
           ),
