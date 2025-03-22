@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Counter extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Counter extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Counter({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -24,14 +25,14 @@ class Counter extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(110, 70);
 
   @override
-  String get tooltipTitle => 'Counter';
+  String get title => 'Counter';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The counter component increments its output by 1 on each rising edge of the clock input.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
       };
@@ -47,7 +48,7 @@ class Counter extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Counter'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

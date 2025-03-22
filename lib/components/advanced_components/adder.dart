@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Adder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Adder extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Adder({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -21,14 +22,14 @@ class Adder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(110, 65);
 
   @override
-  String get tooltipTitle => 'Adder';
+  String get title => 'Adder';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The adder component adds two 1-bit inputs and a carry input.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -46,7 +47,7 @@ class Adder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Adder'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

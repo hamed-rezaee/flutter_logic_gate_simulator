@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Output extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Output extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Output({required super.id, required super.position}) {
     inputPins.add(Pin(index: 0, component: this));
 
@@ -9,14 +10,13 @@ class Output extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'Output';
+  String get title => 'Output';
 
   @override
-  String get tooltipDescription =>
-      'The output component outputs the input value.';
+  String get description => 'The output component outputs the input value.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = A',
@@ -33,7 +33,7 @@ class Output extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: _buildContent(),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

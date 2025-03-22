@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class NandGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class NandGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   NandGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,14 +14,14 @@ class NandGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'NAND Gate';
+  String get title => 'NAND Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The NAND gate component outputs false if both inputs are true.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = NOT (A AND B)',
@@ -40,7 +41,7 @@ class NandGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

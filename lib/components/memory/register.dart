@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Register extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Register extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Register({required super.id, required super.position}) {
     for (var i = 0; i < 8; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -24,14 +25,14 @@ class Register extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(120, 130);
 
   @override
-  String get tooltipTitle => 'Register';
+  String get title => 'Register';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The register component stores 4-bit data and can increment the value by 1.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -49,7 +50,7 @@ class Register extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Register'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

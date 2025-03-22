@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class AndGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class AndGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   AndGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,14 +14,14 @@ class AndGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'AND Gate';
+  String get title => 'AND Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The AND gate component outputs true if both inputs are true.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = A AND B',
@@ -40,7 +41,7 @@ class AndGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

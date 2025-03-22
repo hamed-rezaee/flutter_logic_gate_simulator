@@ -16,6 +16,7 @@ export 'basic_components/xnor_gate.dart';
 export 'basic_components/xor_gate.dart';
 export 'component_builder.dart';
 export 'component_factory.dart';
+export 'component_information.dart';
 export 'component_label.dart';
 export 'display/led_matrix.dart';
 export 'display/oscilloscope.dart';

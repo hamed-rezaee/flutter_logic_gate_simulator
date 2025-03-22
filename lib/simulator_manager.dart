@@ -18,7 +18,7 @@ class SimulatorManager {
   BaseLogicComponent? selectedComponent;
   Wire? selectedWire;
 
-  bool showMinimap = true;
+  bool showMinimap = false;
 
   void calculateAllOutputs() {
     for (final component in components) {

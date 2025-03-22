@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Decoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Decoder extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Decoder({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -21,14 +22,14 @@ class Decoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(110, 70);
 
   @override
-  String get tooltipTitle => 'Decoder';
+  String get title => 'Decoder';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The decoder component decodes a 2-bit input into a 4-bit output.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -46,7 +47,7 @@ class Decoder extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Decoder'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

@@ -15,7 +15,7 @@ class CanvasMinimap extends StatelessWidget {
     this.componentColor = Colors.white70,
     this.wireColor = Colors.grey,
     this.activeWireColor = Colors.green,
-    this.viewportColor = Colors.orange,
+    this.viewportColor = Colors.blueGrey,
     this.textColor = Colors.white,
     super.key,
   });
@@ -41,9 +41,8 @@ class CanvasMinimap extends StatelessWidget {
       width: size.width,
       height: size.height,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundColor.withValues(alpha: 0.7),
         border: Border.all(color: borderColor),
-        borderRadius: BorderRadius.circular(4),
       ),
       child: GestureDetector(
         onTapDown: (details) =>
@@ -74,10 +73,7 @@ class CanvasMinimap extends StatelessWidget {
 
   (Rect, double) _calculateContentBounds() {
     if (simulatorManager.components.isEmpty) {
-      return (
-        Rect.fromLTWH(0, 0, viewportSize.width, viewportSize.height),
-        1.0,
-      );
+      return (Rect.zero, 0);
     }
 
     var minX = double.infinity;
@@ -278,12 +274,12 @@ class _MinimapPainter extends CustomPainter {
     );
 
     final paint = Paint()
-      ..color = viewportColor.withValues(alpha: 0.2)
+      ..color = viewportColor.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     canvas.drawRect(viewportRect, paint);
 
     final borderPaint = Paint()
-      ..color = viewportColor.withValues(alpha: 0.5)
+      ..color = viewportColor.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawRect(viewportRect, borderPaint);

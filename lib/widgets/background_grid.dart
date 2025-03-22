@@ -22,7 +22,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.withValues(alpha: 0.2)
+      ..color = Colors.grey.withValues(alpha: 0.4)
       ..strokeWidth = 0.5;
 
     final xOffset = panOffset.dx % gridSize;

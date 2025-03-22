@@ -7,7 +7,7 @@ class ComponentBuilder extends StatelessWidget {
     required this.child,
     required this.inputPins,
     required this.outputPins,
-    required this.tooltip,
+    required this.information,
     required this.isSelected,
     required this.position,
     required this.size,
@@ -21,7 +21,7 @@ class ComponentBuilder extends StatelessWidget {
   final Widget child;
   final List<Pin> inputPins;
   final List<Pin> outputPins;
-  final String tooltip;
+  final String information;
   final bool isSelected;
   final Offset position;
   final Size size;
@@ -47,27 +47,20 @@ class ComponentBuilder extends StatelessWidget {
                     width: 2,
                   ),
                 ),
-                child: Tooltip(
-                  preferBelow: false,
-                  message: tooltip,
-                  padding: const EdgeInsets.all(8),
-                  textStyle: const TextStyle(fontSize: 10, color: Colors.white),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[850],
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Colors.grey[700]!),
-                  ),
-                  waitDuration: const Duration(milliseconds: 500),
-                  child: Center(child: child),
+                child: Stack(
+                  children: [
+                    Center(child: child),
+                    Positioned(
+                      top: 1,
+                      right: 1,
+                      child: ComponentInformation(information: information),
+                    ),
+                  ],
                 ),
               ),
             ),
-            ...inputPins.map(
-              (pin) => _buildPinWithLabel(pin, isInput: true),
-            ),
-            ...outputPins.map(
-              (pin) => _buildPinWithLabel(pin, isInput: false),
-            ),
+            ...inputPins.map((pin) => _buildPinWithLabel(pin, isInput: true)),
+            ...outputPins.map((pin) => _buildPinWithLabel(pin, isInput: false)),
           ],
         ),
       );

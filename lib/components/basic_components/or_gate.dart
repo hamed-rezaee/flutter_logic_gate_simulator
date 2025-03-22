@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class OrGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class OrGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   OrGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,14 +14,14 @@ class OrGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'OR Gate';
+  String get title => 'OR Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The OR gate component outputs true if at least one input is true.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = A OR B',
@@ -40,7 +41,7 @@ class OrGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

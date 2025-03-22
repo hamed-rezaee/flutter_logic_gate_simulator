@@ -113,19 +113,15 @@ class _WiresCanvasPainter extends CustomPainter {
     final paint = Paint()
       ..color = wire.startPin.value ? Colors.green : Colors.grey[200]!
       ..style = PaintingStyle.stroke
-      ..strokeWidth = isSelected ? 4 : 2
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+      ..strokeWidth = 2;
 
     canvas.drawPath(path, paint);
 
     if (isSelected) {
       final highlightPaint = Paint()
-        ..color = Colors.purple.withValues(alpha: 0.5)
+        ..color = Colors.blueGrey
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 4
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round;
+        ..strokeWidth = 2;
 
       canvas.drawPath(path, highlightPaint);
     }
@@ -141,12 +137,9 @@ class _WiresCanvasPainter extends CustomPainter {
     final path = _createWirePath(start, end, segments);
 
     final paint = Paint()
-      ..color =
-          (activeWire!['isActive'] as bool) ? Colors.green : Colors.grey[200]!
+      ..color = Colors.grey[200]!
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+      ..strokeWidth = 2;
 
     if (activeWire!['isDashed'] as bool) {
       _drawDashedPath(canvas, path, paint);

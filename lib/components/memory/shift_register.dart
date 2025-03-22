@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class ShiftRegister extends BaseLogicComponent
-    with PinNamingMixin, TooltipMixin {
+    with PinNamingMixin, ComponentInformationMixin {
   ShiftRegister({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -26,14 +26,14 @@ class ShiftRegister extends BaseLogicComponent
   Size get size => const Size(120, 60);
 
   @override
-  String get tooltipTitle => 'Shift Register';
+  String get title => 'Shift Register';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The shift register component stores 4-bit data and shifts the data on each rising edge of the clock input.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -51,7 +51,7 @@ class ShiftRegister extends BaseLogicComponent
         child: const ComponentLabel(title: 'Shift\nRegister'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

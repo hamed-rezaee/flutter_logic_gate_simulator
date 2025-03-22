@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class SevenSegmentDecoder extends BaseLogicComponent
-    with PinNamingMixin, TooltipMixin {
+    with PinNamingMixin, ComponentInformationMixin {
   SevenSegmentDecoder({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -22,14 +22,14 @@ class SevenSegmentDecoder extends BaseLogicComponent
   Size get size => const Size(110, 115);
 
   @override
-  String get tooltipTitle => '7-Segment Decoder';
+  String get title => '7-Segment Decoder';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The 7-segment decoder component decodes a 4-bit input into a 7-bit output.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'The output is the 7-segment pattern of the input value.',
@@ -46,7 +46,7 @@ class SevenSegmentDecoder extends BaseLogicComponent
         child: const ComponentLabel(title: '7-Segment Decoder'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

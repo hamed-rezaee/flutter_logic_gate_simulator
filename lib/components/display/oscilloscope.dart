@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class Oscilloscope extends BaseLogicComponent
-    with PinNamingMixin, TooltipMixin {
+    with PinNamingMixin, ComponentInformationMixin {
   Oscilloscope({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -31,14 +31,14 @@ class Oscilloscope extends BaseLogicComponent
   Size get size => const Size(200, 70);
 
   @override
-  String get tooltipTitle => 'Oscilloscope';
+  String get title => 'Oscilloscope';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The oscilloscope component displays the input signals over time.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Displays the input signals over time.',
@@ -58,7 +58,7 @@ class Oscilloscope extends BaseLogicComponent
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

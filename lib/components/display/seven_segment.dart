@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
 class SevenSegment extends BaseLogicComponent
-    with PinNamingMixin, TooltipMixin {
+    with PinNamingMixin, ComponentInformationMixin {
   SevenSegment({required super.id, required super.position}) {
     for (var i = 0; i < 7; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -15,14 +15,14 @@ class SevenSegment extends BaseLogicComponent
   Size get size => const Size(100, 115);
 
   @override
-  String get tooltipTitle => '7-Segment Display';
+  String get title => '7-Segment Display';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The 7-segment display component displays a 4-bit input as a 7-segment pattern.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -48,7 +48,7 @@ class SevenSegment extends BaseLogicComponent
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

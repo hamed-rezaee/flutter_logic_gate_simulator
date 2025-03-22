@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Memory16x4 extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Memory16x4 extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Memory16x4({required super.id, required super.position}) {
     for (var i = 0; i < 10; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -29,14 +30,14 @@ class Memory16x4 extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(140, 230);
 
   @override
-  String get tooltipTitle => 'Memory';
+  String get title => 'Memory';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The memory component stores 4-bit data at 16 different addresses.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -54,7 +55,7 @@ class Memory16x4 extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: _buildMemoryDisplay(onInputToggle),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

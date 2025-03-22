@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Multiplexer extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Multiplexer extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Multiplexer({required super.id, required super.position}) {
     for (var i = 0; i < 6; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -19,14 +20,14 @@ class Multiplexer extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(90, 105);
 
   @override
-  String get tooltipTitle => 'Multiplexer';
+  String get title => 'Multiplexer';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The multiplexer component selects one of the input values based on the select inputs.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -44,7 +45,7 @@ class Multiplexer extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Mux'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

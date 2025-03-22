@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class ALU extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class ALU extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   ALU({required super.id, required super.position}) {
     for (var i = 0; i < 11; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -33,14 +34,14 @@ class ALU extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(120, 175);
 
   @override
-  String get tooltipTitle => 'Arithmetic Logic Unit (ALU)';
+  String get title => 'Arithmetic Logic Unit (ALU)';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The ALU performs arithmetic and logic operations on two 4-bit inputs. ';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operations':
@@ -58,7 +59,7 @@ class ALU extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'ALU'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

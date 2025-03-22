@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class XorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class XorGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   XorGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,14 +14,14 @@ class XorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'XOR Gate';
+  String get title => 'XOR Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The XOR gate component outputs true if the inputs are different.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = A XOR B',
@@ -40,7 +41,7 @@ class XorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

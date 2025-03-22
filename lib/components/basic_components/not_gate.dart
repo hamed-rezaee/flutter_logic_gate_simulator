@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class NotGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class NotGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   NotGate({required super.id, required super.position}) {
     inputPins.add(Pin(index: 0, component: this));
 
@@ -11,14 +12,14 @@ class NotGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'NOT Gate';
+  String get title => 'NOT Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The NOT gate component outputs the opposite of the input.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = NOT A',
@@ -38,7 +39,7 @@ class NotGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

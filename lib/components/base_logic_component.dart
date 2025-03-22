@@ -85,22 +85,21 @@ mixin PinNamingMixin on BaseLogicComponent {
   }
 }
 
-mixin TooltipMixin on BaseLogicComponent {
-  String get tooltipTitle => throw UnimplementedError();
-  String get tooltipDescription => throw UnimplementedError();
+mixin ComponentInformationMixin on BaseLogicComponent {
+  String get title => throw UnimplementedError();
+  String get description => throw UnimplementedError();
 
-  Map<String, String> get tooltipProperties => {};
+  Map<String, String> get properties => {};
 
-  String get tooltip {
+  String get information {
     final buffer = StringBuffer()
-      ..writeln('$tooltipTitle:')
-      ..writeln('\t$tooltipDescription');
+      ..writeln('$title:')
+      ..writeln('\t$description');
 
-    if (tooltipProperties.isNotEmpty) {
-      buffer.writeln('Properties:');
+    if (properties.isNotEmpty) {
+      buffer.writeln('Description:');
 
-      tooltipProperties
-          .forEach((key, value) => buffer.writeln('\t• $key: $value'));
+      properties.forEach((key, value) => buffer.writeln('$key: \n$value'));
     }
 
     return buffer.toString().trim();

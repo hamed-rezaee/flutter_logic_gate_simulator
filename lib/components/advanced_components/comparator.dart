@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Comparator extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class Comparator extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   Comparator({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -21,14 +22,14 @@ class Comparator extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(125, 75);
 
   @override
-  String get tooltipTitle => 'Comparator';
+  String get title => 'Comparator';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The comparator component compares two 2-bit inputs.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operations': 'LT: A < B, EQ: A == B, GT: A > B',
@@ -45,7 +46,7 @@ class Comparator extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'Comparator'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

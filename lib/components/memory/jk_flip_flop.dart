@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class JKFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class JKFlipFlop extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   JKFlipFlop({required super.id, required super.position}) {
     for (var i = 0; i < 4; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -24,14 +25,14 @@ class JKFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(125, 60);
 
   @override
-  String get tooltipTitle => 'JK Flip-Flop';
+  String get title => 'JK Flip-Flop';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The JK flip-flop component stores a single bit of data.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -49,7 +50,7 @@ class JKFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'JK\nFlip-Flop'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

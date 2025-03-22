@@ -82,8 +82,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
 
       controlPoints.add(
         Positioned(
-          left: screenPos.dx - 7,
-          top: screenPos.dy - 7,
+          left: screenPos.dx - 5,
+          top: screenPos.dy - 5,
           child: GestureDetector(
             onPanStart: (_) =>
                 widget.simulatorManager.startSegmentDrag(wire, i),
@@ -93,11 +93,11 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             },
             onPanEnd: (_) => widget.simulatorManager.endSegmentDrag(),
             child: Container(
-              width: 14,
-              height: 14,
+              width: 10,
+              height: 10,
               decoration: BoxDecoration(
-                color: Colors.green,
-                border: Border.all(color: Colors.white, width: 3),
+                color: Colors.blueGrey,
+                border: Border.all(color: Colors.white, width: 2),
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
@@ -129,7 +129,10 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
               child: Container(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(color: Colors.purple),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey,
+                  borderRadius: BorderRadius.circular(6),
+                ),
               ),
             ),
           ),

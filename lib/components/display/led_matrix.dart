@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class LedMatrix extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class LedMatrix extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   LedMatrix({required super.id, required super.position}) {
     for (var i = 0; i < 8; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -16,14 +17,14 @@ class LedMatrix extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(140, 125);
 
   @override
-  String get tooltipTitle => 'LED Matrix';
+  String get title => 'LED Matrix';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The LED matrix component displays a 4x4 grid of LEDs.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -41,7 +42,7 @@ class LedMatrix extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: _buildContent(),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

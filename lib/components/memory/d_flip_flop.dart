@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class DFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class DFlipFlop extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   DFlipFlop({required super.id, required super.position}) {
     for (var i = 0; i < 3; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -24,14 +25,14 @@ class DFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   Size get size => const Size(125, 60);
 
   @override
-  String get tooltipTitle => 'D Flip-Flop';
+  String get title => 'D Flip-Flop';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The D flip-flop component stores the value of the D input on the rising edge of the clock input.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation':
@@ -49,7 +50,7 @@ class DFlipFlop extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         child: const ComponentLabel(title: 'D\nFlip-Flop'),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,

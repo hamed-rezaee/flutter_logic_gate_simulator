@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class NorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+class NorGate extends BaseLogicComponent
+    with PinNamingMixin, ComponentInformationMixin {
   NorGate({required super.id, required super.position}) {
     for (var i = 0; i < 2; i++) {
       inputPins.add(Pin(index: i, component: this));
@@ -13,14 +14,14 @@ class NorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
   }
 
   @override
-  String get tooltipTitle => 'NOR Gate';
+  String get title => 'NOR Gate';
 
   @override
-  String get tooltipDescription =>
+  String get description =>
       'The NOR gate component outputs true if both inputs are false.';
 
   @override
-  Map<String, String> get tooltipProperties => {
+  Map<String, String> get properties => {
         'Inputs': inputNames,
         'Outputs': outputNames,
         'Operation': 'Y = NOT (A OR B)',
@@ -40,7 +41,7 @@ class NorGate extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
         ),
         inputPins: inputPins,
         outputPins: outputPins,
-        tooltip: tooltip,
+        information: information,
         isSelected: isSelected,
         position: position,
         size: size,
