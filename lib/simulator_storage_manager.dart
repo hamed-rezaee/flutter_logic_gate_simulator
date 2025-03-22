@@ -4,76 +4,114 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_logic_gate_simulator/storage_service.dart';
 
-class SimulatorSerializer {
-  static const String _simulatorSerializerKey = 'simulator_serializer_key';
+class SimulatorStorageManager {
+  SimulatorStorageManager(this.storageService);
 
-  static Future<bool> save(SimulatorManager simulatorManager) async {
+  final BaseStorageService storageService;
+
+  static const String fileExtension = 'lgs';
+  static const String fileType = 'Logic Gate Simulator';
+  static const String preferencesKey = 'simulator_serializer_key';
+
+  static Future<SimulatorStorageManager> create() async =>
+      SimulatorStorageManager(await DefaultStorageService.create());
+
+  Future<bool> exportToFile(
+    BuildContext context,
+    SimulatorManager simulatorManager, {
+    String? fileName,
+  }) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final data = _serialize(simulatorManager);
+      final data = serializeToJson(simulatorManager);
+      final defaultFileName =
+          'simulator_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
 
-      return await prefs.setString(_simulatorSerializerKey, jsonEncode(data));
+      final success = await storageService.saveFile(
+        dialogTitle: 'Export Simulator State',
+        fileName: fileName ?? defaultFileName,
+        fileExtension: fileExtension,
+        bytes: utf8.encode(data),
+      );
+
+      return success;
+    } on Exception catch (e) {
+      if (context.mounted) {
+        _showErrorMessage(context, 'Failed to export simulator state: $e');
+      }
+
+      return false;
+    }
+  }
+
+  Future<bool> importFromFile(
+    BuildContext context,
+    SimulatorManager simulatorManager,
+  ) async {
+    try {
+      final fileContent = await storageService.pickFile(
+        dialogTitle: 'Import Simulator State',
+        fileExtension: fileExtension,
+      );
+
+      if (fileContent == null) {
+        return false;
+      }
+
+      return deserializeFromJson(simulatorManager, fileContent);
+    } on Exception catch (e) {
+      if (context.mounted) {
+        _showErrorMessage(context, 'Failed to import circuit: $e');
+      }
+
+      return false;
+    }
+  }
+
+  Future<bool> saveToPreferences(SimulatorManager simulatorManager) async {
+    try {
+      return await storageService.saveToPreferences(
+        preferencesKey,
+        serializeToJson(simulatorManager),
+      );
     } on Exception catch (_) {
       return false;
     }
   }
 
-  static Future<bool> load(SimulatorManager simulatorManager) async {
+  Future<bool> loadFromPreferences(SimulatorManager simulatorManager) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final json = prefs.getString(_simulatorSerializerKey);
+      final json = await storageService.loadFromPreferences(preferencesKey);
 
       if (json == null) {
         return false;
       }
 
-      final data = jsonDecode(json) as Map<String, dynamic>;
-
-      return _deserialize(simulatorManager, data);
+      return deserializeFromJson(simulatorManager, json);
     } on Exception catch (_) {
       return false;
     }
   }
 
-  static String serializeToJson(SimulatorManager simulatorManager) =>
+  String serializeToJson(SimulatorManager simulatorManager) =>
       jsonEncode(_serialize(simulatorManager));
 
-  static bool deserializeFromJson(
+  bool deserializeFromJson(
     SimulatorManager simulatorManager,
     String jsonString,
   ) {
     try {
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
-
-      return _deserialize(simulatorManager, data);
+      return _deserialize(
+        simulatorManager,
+        jsonDecode(jsonString) as Map<String, dynamic>,
+      );
     } on Exception catch (_) {
       return false;
     }
   }
 
-  static BaseLogicComponent? _createComponentFromData(
-    Map<String, dynamic> data,
-  ) {
-    final id = data['id'] as int;
-    final type = data['type'] as String;
-    final positionData = data['position'] as Map<String, dynamic>;
-    final position = Offset(
-      positionData['dx'] as double,
-      positionData['dy'] as double,
-    );
-    final properties = data['properties'] as Map<String, dynamic>? ?? {};
-
-    return ComponentFactory.createFromType(
-      type: type,
-      id: id,
-      position: position,
-      properties: properties,
-    );
-  }
-
-  static Map<String, dynamic> _serialize(SimulatorManager simulatorManager) {
+  Map<String, dynamic> _serialize(SimulatorManager simulatorManager) {
     final components = simulatorManager.components
         .map(
           (component) => {
@@ -120,7 +158,7 @@ class SimulatorSerializer {
     };
   }
 
-  static Map<String, dynamic> _serializeComponentProperties(
+  Map<String, dynamic> _serializeComponentProperties(
     BaseLogicComponent component,
   ) {
     final properties = <String, dynamic>{};
@@ -136,7 +174,7 @@ class SimulatorSerializer {
     return properties;
   }
 
-  static bool _deserialize(
+  bool _deserialize(
     SimulatorManager simulatorManager,
     Map<String, dynamic> data,
   ) {
@@ -194,11 +232,8 @@ class SimulatorSerializer {
                 .toList();
           }
 
-          final wire = Wire(
-            startPin: startPin,
-            endPin: endPin,
-            segments: segments,
-          );
+          final wire =
+              Wire(startPin: startPin, endPin: endPin, segments: segments);
 
           simulatorManager.wires.add(wire);
         }
@@ -208,5 +243,30 @@ class SimulatorSerializer {
     simulatorManager.calculateAllOutputs();
 
     return true;
+  }
+
+  BaseLogicComponent? _createComponentFromData(Map<String, dynamic> data) {
+    final id = data['id'] as int;
+    final type = data['type'] as String;
+    final positionData = data['position'] as Map<String, dynamic>;
+    final position = Offset(
+      positionData['dx'] as double,
+      positionData['dy'] as double,
+    );
+    final properties = data['properties'] as Map<String, dynamic>? ?? {};
+
+    return ComponentFactory.createFromType(
+      type: type,
+      id: id,
+      position: position,
+      properties: properties,
+    );
+  }
+
+  void _showErrorMessage(BuildContext context, String message) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 }

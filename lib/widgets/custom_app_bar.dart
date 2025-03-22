@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logic_gate_simulator/simulator_file_handler.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
-import 'package:flutter_logic_gate_simulator/simulator_serializer.dart';
+import 'package:flutter_logic_gate_simulator/simulator_storage_manager.dart';
 
 class CustomAppBar extends PreferredSize {
   CustomAppBar({
+    required this.simulatorManager,
+    required this.storageManager,
     this.title = 'Logic Gate Simulator',
-    this.simulatorManager,
     super.key,
   }) : super(
           preferredSize: const Size.fromHeight(height),
@@ -24,11 +24,23 @@ class CustomAppBar extends PreferredSize {
                   ),
                 ),
                 const Spacer(),
-                if (simulatorManager != null) ...[
-                  SaveAction(simulatorManager: simulatorManager),
-                  LoadAction(simulatorManager: simulatorManager),
-                  ExportAction(simulatorManager: simulatorManager),
-                  ImportAction(simulatorManager: simulatorManager),
+                ...[
+                  SaveAction(
+                    simulatorManager: simulatorManager,
+                    storageManager: storageManager,
+                  ),
+                  LoadAction(
+                    simulatorManager: simulatorManager,
+                    storageManager: storageManager,
+                  ),
+                  ExportAction(
+                    simulatorManager: simulatorManager,
+                    storageManager: storageManager,
+                  ),
+                  ImportAction(
+                    simulatorManager: simulatorManager,
+                    storageManager: storageManager,
+                  ),
                   OptimizeWireAction(simulatorManager: simulatorManager),
                   ShowMinimapAction(simulatorManager: simulatorManager),
                   ClearAction(simulatorManager: simulatorManager),
@@ -39,15 +51,21 @@ class CustomAppBar extends PreferredSize {
         );
 
   final String title;
-  final SimulatorManager? simulatorManager;
+  final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   static const double height = 60;
 }
 
 class SaveAction extends StatelessWidget {
-  const SaveAction({required this.simulatorManager, super.key});
+  const SaveAction({
+    required this.simulatorManager,
+    required this.storageManager,
+    super.key,
+  });
 
   final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -80,7 +98,8 @@ class SaveAction extends StatelessWidget {
               return;
             }
 
-            final success = await SimulatorSerializer.save(simulatorManager);
+            final success =
+                await storageManager.saveToPreferences(simulatorManager);
 
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -99,9 +118,14 @@ class SaveAction extends StatelessWidget {
 }
 
 class LoadAction extends StatelessWidget {
-  const LoadAction({required this.simulatorManager, super.key});
+  const LoadAction({
+    required this.simulatorManager,
+    required this.storageManager,
+    super.key,
+  });
 
   final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -136,7 +160,8 @@ class LoadAction extends StatelessWidget {
               }
             }
 
-            final success = await SimulatorSerializer.load(simulatorManager);
+            final success =
+                await storageManager.loadFromPreferences(simulatorManager);
 
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -155,9 +180,14 @@ class LoadAction extends StatelessWidget {
 }
 
 class ExportAction extends StatelessWidget {
-  const ExportAction({required this.simulatorManager, super.key});
+  const ExportAction({
+    required this.simulatorManager,
+    required this.storageManager,
+    super.key,
+  });
 
   final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -175,7 +205,7 @@ class ExportAction extends StatelessWidget {
               return;
             }
 
-            final success = await SimulatorFileHandler.exportToFile(
+            final success = await storageManager.exportToFile(
               context,
               simulatorManager,
               fileName:
@@ -195,9 +225,14 @@ class ExportAction extends StatelessWidget {
 }
 
 class ImportAction extends StatelessWidget {
-  const ImportAction({required this.simulatorManager, super.key});
+  const ImportAction({
+    required this.simulatorManager,
+    required this.storageManager,
+    super.key,
+  });
 
   final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -234,10 +269,8 @@ class ImportAction extends StatelessWidget {
 
             if (!context.mounted) return;
 
-            final success = await SimulatorFileHandler.importFromFile(
-              context,
-              simulatorManager,
-            );
+            final success =
+                await storageManager.importFromFile(context, simulatorManager);
 
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(

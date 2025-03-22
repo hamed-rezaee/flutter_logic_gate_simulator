@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_logic_gate_simulator/simulator_canvas.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
+import 'package:flutter_logic_gate_simulator/simulator_storage_manager.dart';
+import 'package:flutter_logic_gate_simulator/storage_service.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
 import 'package:flutter_logic_gate_simulator/widgets/toolbar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const LogicGateSimulator());
 
@@ -17,6 +20,7 @@ class LogicGateSimulator extends StatefulWidget {
 
 class _LogicGateSimulatorState extends State<LogicGateSimulator> {
   final SimulatorManager simulatorManager = SimulatorManager();
+  late final SimulatorStorageManager storageManager;
 
   @override
   void initState() {
@@ -27,12 +31,18 @@ class _LogicGateSimulatorState extends State<LogicGateSimulator> {
       DeviceOrientation.landscapeLeft,
     ]);
 
+    SharedPreferences.getInstance().then(
+      (preferences) async => storageManager =
+          SimulatorStorageManager(DefaultStorageService(preferences)),
+    );
+
     Stream<void>.periodic(const Duration(milliseconds: 16))
         .listen((_) => setState(simulatorManager.calculateAllOutputs));
   }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Logic Gate Simulator',
         theme: ThemeData(
           useMaterial3: false,
@@ -40,20 +50,32 @@ class _LogicGateSimulatorState extends State<LogicGateSimulator> {
           brightness: Brightness.dark,
           fontFamily: GoogleFonts.spaceMono().fontFamily,
         ),
-        home: SafeArea(child: Simulator(simulatorManager: simulatorManager)),
-        debugShowCheckedModeBanner: false,
+        home: SafeArea(
+          child: Simulator(
+            simulatorManager: simulatorManager,
+            storageManager: storageManager,
+          ),
+        ),
       );
 }
 
 class Simulator extends StatelessWidget {
-  const Simulator({required this.simulatorManager, super.key});
+  const Simulator({
+    required this.simulatorManager,
+    required this.storageManager,
+    super.key,
+  });
 
   final SimulatorManager simulatorManager;
+  final SimulatorStorageManager storageManager;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Colors.black,
-        appBar: CustomAppBar(simulatorManager: simulatorManager),
+        appBar: CustomAppBar(
+          simulatorManager: simulatorManager,
+          storageManager: storageManager,
+        ),
         body: Stack(
           children: [
             SimulatorCanvas(
