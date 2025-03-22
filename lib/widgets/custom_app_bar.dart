@@ -50,48 +50,51 @@ class SaveAction extends StatelessWidget {
   final SimulatorManager simulatorManager;
 
   @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.save, size: 24, color: Colors.white),
-        onPressed: () async {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              content: const Text(
-                'Are you sure you want to save the current simulator state?',
-              ),
-              actions: [
-                _buildActionButton(
-                  context: context,
-                  onPressed: () => Navigator.of(context).pop(true),
-                  text: 'Save',
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Save simulation',
+        child: TextButton(
+          child: const Icon(Icons.save, size: 24, color: Colors.white),
+          onPressed: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                content: const Text(
+                  'Are you sure you want to save the current simulator state?',
                 ),
-                _buildActionButton(
-                  context: context,
-                  onPressed: () => Navigator.of(context).pop(false),
-                  text: 'Cancel',
-                ),
-              ],
-            ),
-          );
-
-          if (confirm != true) {
-            return;
-          }
-
-          final success = await SimulatorSerializer.save(simulatorManager);
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  success
-                      ? 'Simulator state saved successfully.'
-                      : 'Failed to save simulator state.',
-                ),
+                actions: [
+                  _buildActionButton(
+                    context: context,
+                    onPressed: () => Navigator.of(context).pop(true),
+                    text: 'Save',
+                  ),
+                  _buildActionButton(
+                    context: context,
+                    onPressed: () => Navigator.of(context).pop(false),
+                    text: 'Cancel',
+                  ),
+                ],
               ),
             );
-          }
-        },
+
+            if (confirm != true) {
+              return;
+            }
+
+            final success = await SimulatorSerializer.save(simulatorManager);
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Simulator state saved successfully.'
+                        : 'Failed to save simulator state.',
+                  ),
+                ),
+              );
+            }
+          },
+        ),
       );
 }
 
@@ -101,50 +104,53 @@ class LoadAction extends StatelessWidget {
   final SimulatorManager simulatorManager;
 
   @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.folder_open, size: 24, color: Colors.white),
-        onPressed: () async {
-          if (simulatorManager.components.isNotEmpty) {
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (context) => AlertDialog(
-                content: const Text(
-                  'Loading will replace your current simulator state, are you sure?',
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Load saved simulation',
+        child: TextButton(
+          child: const Icon(Icons.folder_open, size: 24, color: Colors.white),
+          onPressed: () async {
+            if (simulatorManager.components.isNotEmpty) {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  content: const Text(
+                    'Loading will replace your current simulator state, are you sure?',
+                  ),
+                  actions: [
+                    _buildActionButton(
+                      context: context,
+                      onPressed: () => Navigator.of(context).pop(true),
+                      text: 'Load',
+                    ),
+                    _buildActionButton(
+                      context: context,
+                      onPressed: () => Navigator.of(context).pop(false),
+                      text: 'Cancel',
+                    ),
+                  ],
                 ),
-                actions: [
-                  _buildActionButton(
-                    context: context,
-                    onPressed: () => Navigator.of(context).pop(true),
-                    text: 'Load',
-                  ),
-                  _buildActionButton(
-                    context: context,
-                    onPressed: () => Navigator.of(context).pop(false),
-                    text: 'Cancel',
-                  ),
-                ],
-              ),
-            );
+              );
 
-            if (confirm != true) {
-              return;
+              if (confirm != true) {
+                return;
+              }
             }
-          }
 
-          final success = await SimulatorSerializer.load(simulatorManager);
+            final success = await SimulatorSerializer.load(simulatorManager);
 
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  success
-                      ? 'Simulator state loaded successfully.'
-                      : 'Failed to load simulator state.',
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Simulator state loaded successfully.'
+                        : 'Failed to load simulator state.',
+                  ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       );
 }
 
@@ -154,33 +160,37 @@ class ExportAction extends StatelessWidget {
   final SimulatorManager simulatorManager;
 
   @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.file_upload, size: 24, color: Colors.white),
-        onPressed: () async {
-          if (simulatorManager.components.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Nothing to export. Create a simulation first.'),
-              ),
-            );
-            return;
-          }
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Export simulation to file',
+        child: TextButton(
+          child: const Icon(Icons.file_upload, size: 24, color: Colors.white),
+          onPressed: () async {
+            if (simulatorManager.components.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('Nothing to export. Create a simulation first.'),
+                ),
+              );
+              return;
+            }
 
-          final success = await SimulatorFileHandler.exportToFile(
-            context,
-            simulatorManager,
-            fileName:
-                'simulator_state_${DateTime.now().millisecondsSinceEpoch}.lgs',
-          );
-
-          if (context.mounted && success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Simulator state exported successfully.'),
-              ),
+            final success = await SimulatorFileHandler.exportToFile(
+              context,
+              simulatorManager,
+              fileName:
+                  'simulator_state_${DateTime.now().millisecondsSinceEpoch}.lgs',
             );
-          }
-        },
+
+            if (context.mounted && success) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Simulator state exported successfully.'),
+                ),
+              );
+            }
+          },
+        ),
       );
 }
 
@@ -190,21 +200,131 @@ class ImportAction extends StatelessWidget {
   final SimulatorManager simulatorManager;
 
   @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.file_download, size: 24, color: Colors.white),
-        onPressed: () async {
-          if (simulatorManager.components.isNotEmpty) {
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Import simulation from file',
+        child: TextButton(
+          child: const Icon(Icons.file_download, size: 24, color: Colors.white),
+          onPressed: () async {
+            if (simulatorManager.components.isNotEmpty) {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  content: const Text(
+                    'Importing will replace your current simulator state, are you sure?',
+                  ),
+                  actions: [
+                    _buildActionButton(
+                      context: context,
+                      onPressed: () => Navigator.of(context).pop(true),
+                      text: 'Import',
+                    ),
+                    _buildActionButton(
+                      context: context,
+                      onPressed: () => Navigator.of(context).pop(false),
+                      text: 'Cancel',
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm != true) {
+                return;
+              }
+            }
+
+            if (!context.mounted) return;
+
+            final success = await SimulatorFileHandler.importFromFile(
+              context,
+              simulatorManager,
+            );
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Simulator state imported successfully.'
+                        : 'Failed to import simulator state.',
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      );
+}
+
+class OptimizeWireAction extends StatelessWidget {
+  const OptimizeWireAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Optimize wire paths',
+        child: TextButton(
+          child: const Icon(
+            Icons.account_tree_sharp,
+            size: 24,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            for (final wire in simulatorManager.wires) {
+              wire.optimize();
+            }
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Wire paths optimized successfully.'),
+                ),
+              );
+            }
+          },
+        ),
+      );
+}
+
+class ShowMinimapAction extends StatelessWidget {
+  const ShowMinimapAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Toggle minimap',
+        child: TextButton(
+          child: const Icon(Icons.map_outlined, size: 24, color: Colors.white),
+          onPressed: () =>
+              simulatorManager.showMinimap = !simulatorManager.showMinimap,
+        ),
+      );
+}
+
+class ClearAction extends StatelessWidget {
+  const ClearAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: 'Clear simulation',
+        child: TextButton(
+          child:
+              const Icon(Icons.delete_outline, size: 24, color: Colors.white),
+          onPressed: () async {
             final confirm = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
                 content: const Text(
-                  'Importing will replace your current simulator state, are you sure?',
+                  'Are you sure you want to clear the current simulator state?',
                 ),
                 actions: [
                   _buildActionButton(
                     context: context,
                     onPressed: () => Navigator.of(context).pop(true),
-                    text: 'Import',
+                    text: 'Clear',
                   ),
                   _buildActionButton(
                     context: context,
@@ -218,112 +338,18 @@ class ImportAction extends StatelessWidget {
             if (confirm != true) {
               return;
             }
-          }
 
-          if (!context.mounted) return;
+            simulatorManager.clearAll();
 
-          final success = await SimulatorFileHandler.importFromFile(
-            context,
-            simulatorManager,
-          );
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  success
-                      ? 'Simulator state imported successfully.'
-                      : 'Failed to import simulator state.',
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Simulator state cleared successfully.'),
                 ),
-              ),
-            );
-          }
-        },
-      );
-}
-
-class OptimizeWireAction extends StatelessWidget {
-  const OptimizeWireAction({required this.simulatorManager, super.key});
-
-  final SimulatorManager simulatorManager;
-
-  @override
-  Widget build(BuildContext context) => TextButton(
-        child:
-            const Icon(Icons.account_tree_sharp, size: 24, color: Colors.white),
-        onPressed: () {
-          for (final wire in simulatorManager.wires) {
-            wire.optimize();
-          }
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Wire paths optimized successfully.'),
-              ),
-            );
-          }
-        },
-      );
-}
-
-class ShowMinimapAction extends StatelessWidget {
-  const ShowMinimapAction({required this.simulatorManager, super.key});
-
-  final SimulatorManager simulatorManager;
-
-  @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.map_outlined, size: 24, color: Colors.white),
-        onPressed: () =>
-            simulatorManager.showMinimap = !simulatorManager.showMinimap,
-      );
-}
-
-class ClearAction extends StatelessWidget {
-  const ClearAction({required this.simulatorManager, super.key});
-
-  final SimulatorManager simulatorManager;
-
-  @override
-  Widget build(BuildContext context) => TextButton(
-        child: const Icon(Icons.delete_outline, size: 24, color: Colors.white),
-        onPressed: () async {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              content: const Text(
-                'Are you sure you want to clear the current simulator state?',
-              ),
-              actions: [
-                _buildActionButton(
-                  context: context,
-                  onPressed: () => Navigator.of(context).pop(true),
-                  text: 'Clear',
-                ),
-                _buildActionButton(
-                  context: context,
-                  onPressed: () => Navigator.of(context).pop(false),
-                  text: 'Cancel',
-                ),
-              ],
-            ),
-          );
-
-          if (confirm != true) {
-            return;
-          }
-
-          simulatorManager.clearAll();
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Simulator state cleared successfully.'),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       );
 }
 
