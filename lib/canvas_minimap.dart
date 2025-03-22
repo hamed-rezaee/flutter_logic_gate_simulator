@@ -10,12 +10,13 @@ class CanvasMinimap extends StatelessWidget {
     required this.panOffset,
     required this.onPositionChanged,
     this.size = const Size(250, 150),
-    this.backgroundColor = Colors.black54,
+    this.backgroundColor = Colors.black,
     this.borderColor = Colors.grey,
     this.componentColor = Colors.white70,
     this.wireColor = Colors.grey,
     this.activeWireColor = Colors.green,
     this.viewportColor = Colors.orange,
+    this.textColor = Colors.white,
     super.key,
   });
 
@@ -30,6 +31,7 @@ class CanvasMinimap extends StatelessWidget {
   final Color wireColor;
   final Color activeWireColor;
   final Color viewportColor;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,8 @@ class CanvasMinimap extends StatelessWidget {
               componentColor: componentColor,
               wireColor: wireColor,
               activeWireColor: activeWireColor,
-              viewportColor: viewportColor.withValues(alpha: 0.5),
+              viewportColor: viewportColor,
+              textColor: textColor,
             ),
           ),
         ),
@@ -73,7 +76,7 @@ class CanvasMinimap extends StatelessWidget {
     if (simulatorManager.components.isEmpty) {
       return (
         Rect.fromLTWH(0, 0, viewportSize.width, viewportSize.height),
-        1.0
+        1.0,
       );
     }
 
@@ -154,6 +157,7 @@ class _MinimapPainter extends CustomPainter {
     required this.wireColor,
     required this.activeWireColor,
     required this.viewportColor,
+    required this.textColor,
   });
 
   final SimulatorManager simulatorManager;
@@ -165,6 +169,7 @@ class _MinimapPainter extends CustomPainter {
   final Color wireColor;
   final Color activeWireColor;
   final Color viewportColor;
+  final Color textColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -178,6 +183,17 @@ class _MinimapPainter extends CustomPainter {
       ..color = componentColor
       ..style = PaintingStyle.fill;
 
+    final borderPaint = Paint()
+      ..color = componentColor.withValues(alpha: 0.8)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final textStyle = TextStyle(
+      color: textColor,
+      fontSize: 4,
+      fontWeight: FontWeight.bold,
+    );
+
     for (final component in simulatorManager.components) {
       final minimapX = (component.position.dx - contentBounds.left) * scale;
       final minimapY = (component.position.dy - contentBounds.top) * scale;
@@ -186,7 +202,25 @@ class _MinimapPainter extends CustomPainter {
 
       final rect =
           Rect.fromLTWH(minimapX, minimapY, minimapWidth, minimapHeight);
-      canvas.drawRect(rect, paint);
+      canvas
+        ..drawRect(rect, paint)
+        ..drawRect(rect, borderPaint);
+
+      final textSpan = TextSpan(
+        text: '${component.runtimeType}',
+        style: textStyle,
+      );
+
+      final textPainter = TextPainter(
+        text: textSpan,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: minimapWidth);
+
+      final textX = minimapX + (minimapWidth - textPainter.width) / 2;
+      final textY = minimapY + (minimapHeight - textPainter.height) / 2;
+
+      textPainter.paint(canvas, Offset(textX, textY));
     }
   }
 
@@ -249,9 +283,9 @@ class _MinimapPainter extends CustomPainter {
     canvas.drawRect(viewportRect, paint);
 
     final borderPaint = Paint()
-      ..color = viewportColor
+      ..color = viewportColor.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = 1.5;
     canvas.drawRect(viewportRect, borderPaint);
   }
 

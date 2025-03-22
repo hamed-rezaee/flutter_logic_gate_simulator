@@ -168,7 +168,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
         bottom: 60,
         child: CanvasMinimap(
           simulatorManager: widget.simulatorManager,
-          viewportSize: const Size(800, 600),
+          viewportSize: MediaQuery.sizeOf(context),
           panOffset: _panOffset,
           onPositionChanged: (position) =>
               setState(() => _panOffset = position),
