@@ -23,7 +23,7 @@ class ShiftRegister extends BaseLogicComponent
   bool _prevClockState = false;
 
   @override
-  Size get size => const Size(120, 60);
+  Size get size => const Size(130, 80);
 
   @override
   String get title => 'Shift Register';

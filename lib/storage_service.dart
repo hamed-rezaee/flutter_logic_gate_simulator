@@ -21,23 +21,22 @@ abstract class BaseStorageService {
 }
 
 class DefaultStorageService implements BaseStorageService {
-  const DefaultStorageService(this.preferences);
-
-  final SharedPreferences preferences;
-
-  static Future<DefaultStorageService> create() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return DefaultStorageService(prefs);
+  DefaultStorageService() {
+    _initialize();
   }
+
+  late SharedPreferences _preferences;
+
+  Future<void> _initialize() async =>
+      _preferences = await SharedPreferences.getInstance();
 
   @override
   Future<String?> loadFromPreferences(String key) async =>
-      preferences.getString(key);
+      _preferences.getString(key);
 
   @override
   Future<bool> saveToPreferences(String key, String data) async =>
-      preferences.setString(key, data);
+      _preferences.setString(key, data);
 
   @override
   Future<String?> pickFile({

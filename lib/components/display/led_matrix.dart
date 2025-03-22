@@ -14,7 +14,7 @@ class LedMatrix extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(140, 125);
+  Size get size => const Size(140, 130);
 
   @override
   String get title => 'LED Matrix';

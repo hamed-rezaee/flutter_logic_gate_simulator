@@ -11,7 +11,7 @@ abstract class BaseLogicComponent {
   Offset position;
   bool visited = false;
 
-  Size get size => const Size(70, 40);
+  Size get size => const Size(80, 50);
 
   Widget build({
     required VoidCallback onInputToggle,

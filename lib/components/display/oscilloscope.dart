@@ -28,7 +28,7 @@ class Oscilloscope extends BaseLogicComponent
   );
 
   @override
-  Size get size => const Size(200, 70);
+  Size get size => const Size(200, 80);
 
   @override
   String get title => 'Oscilloscope';

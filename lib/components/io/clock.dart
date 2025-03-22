@@ -21,7 +21,7 @@ class Clock extends BaseLogicComponent
   int _counter = 0;
 
   @override
-  Size get size => const Size(90, 100);
+  Size get size => const Size(100, 110);
 
   @override
   String get title => 'Clock';

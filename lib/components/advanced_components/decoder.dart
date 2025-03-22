@@ -19,7 +19,7 @@ class Decoder extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(110, 70);
+  Size get size => const Size(110, 85);
 
   @override
   String get title => 'Decoder';

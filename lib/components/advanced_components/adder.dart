@@ -19,7 +19,7 @@ class Adder extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(110, 65);
+  Size get size => const Size(120, 65);
 
   @override
   String get title => 'Adder';

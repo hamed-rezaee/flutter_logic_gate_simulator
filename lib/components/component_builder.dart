@@ -51,8 +51,8 @@ class ComponentBuilder extends StatelessWidget {
                   children: [
                     Center(child: child),
                     Positioned(
-                      top: 1,
-                      right: 1,
+                      top: 2,
+                      right: 2,
                       child: ComponentInformation(information: information),
                     ),
                   ],

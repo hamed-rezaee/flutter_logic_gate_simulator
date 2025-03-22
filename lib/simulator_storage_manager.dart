@@ -15,9 +15,6 @@ class SimulatorStorageManager {
   static const String fileType = 'Logic Gate Simulator';
   static const String preferencesKey = 'simulator_serializer_key';
 
-  static Future<SimulatorStorageManager> create() async =>
-      SimulatorStorageManager(await DefaultStorageService.create());
-
   Future<bool> exportToFile(
     BuildContext context,
     SimulatorManager simulatorManager, {

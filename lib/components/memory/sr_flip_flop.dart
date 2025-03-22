@@ -22,7 +22,7 @@ class SRFlipFlop extends BaseLogicComponent
   bool previousClock = false;
 
   @override
-  Size get size => const Size(125, 60);
+  Size get size => const Size(130, 80);
 
   @override
   String get title => 'SR Flip-Flop';

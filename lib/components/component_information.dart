@@ -12,7 +12,7 @@ class ComponentInformation extends StatelessWidget {
         onTap: () => _showInformationDialog(context),
         borderRadius: BorderRadius.circular(4),
         child: Center(
-          child: Icon(Icons.info_rounded, size: 8, color: Colors.grey[400]),
+          child: Icon(Icons.info_rounded, size: 10, color: Colors.grey[400]),
         ),
       );
 

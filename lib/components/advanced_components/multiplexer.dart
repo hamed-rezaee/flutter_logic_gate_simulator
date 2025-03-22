@@ -17,7 +17,7 @@ class Multiplexer extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(90, 105);
+  Size get size => const Size(100, 110);
 
   @override
   String get title => 'Multiplexer';

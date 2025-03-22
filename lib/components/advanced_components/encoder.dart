@@ -19,7 +19,7 @@ class Encoder extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(110, 85);
+  Size get size => const Size(110, 90);
 
   @override
   String get title => 'Encoder';

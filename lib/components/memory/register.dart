@@ -22,7 +22,7 @@ class Register extends BaseLogicComponent
   bool previousClock = false;
 
   @override
-  Size get size => const Size(120, 130);
+  Size get size => const Size(130, 140);
 
   @override
   String get title => 'Register';

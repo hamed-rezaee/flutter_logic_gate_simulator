@@ -22,7 +22,7 @@ class DFlipFlop extends BaseLogicComponent
   bool previousClock = false;
 
   @override
-  Size get size => const Size(125, 60);
+  Size get size => const Size(130, 65);
 
   @override
   String get title => 'D Flip-Flop';

@@ -19,7 +19,7 @@ class Comparator extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(125, 75);
+  Size get size => const Size(130, 75);
 
   @override
   String get title => 'Comparator';

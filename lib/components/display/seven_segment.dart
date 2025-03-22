@@ -12,7 +12,7 @@ class SevenSegment extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(100, 115);
+  Size get size => const Size(100, 125);
 
   @override
   String get title => '7-Segment Display';

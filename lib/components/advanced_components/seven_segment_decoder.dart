@@ -19,7 +19,7 @@ class SevenSegmentDecoder extends BaseLogicComponent
   }
 
   @override
-  Size get size => const Size(110, 115);
+  Size get size => const Size(115, 125);
 
   @override
   String get title => '7-Segment Decoder';

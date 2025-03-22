@@ -7,7 +7,6 @@ import 'package:flutter_logic_gate_simulator/storage_service.dart';
 import 'package:flutter_logic_gate_simulator/widgets/custom_app_bar.dart';
 import 'package:flutter_logic_gate_simulator/widgets/toolbar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const LogicGateSimulator());
 
@@ -20,7 +19,8 @@ class LogicGateSimulator extends StatefulWidget {
 
 class _LogicGateSimulatorState extends State<LogicGateSimulator> {
   final SimulatorManager simulatorManager = SimulatorManager();
-  late final SimulatorStorageManager storageManager;
+  final SimulatorStorageManager storageManager =
+      SimulatorStorageManager(DefaultStorageService());
 
   @override
   void initState() {
@@ -30,11 +30,6 @@ class _LogicGateSimulatorState extends State<LogicGateSimulator> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-
-    SharedPreferences.getInstance().then(
-      (preferences) async => storageManager =
-          SimulatorStorageManager(DefaultStorageService(preferences)),
-    );
 
     Stream<void>.periodic(const Duration(milliseconds: 16))
         .listen((_) => setState(simulatorManager.calculateAllOutputs));
