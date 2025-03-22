@@ -59,22 +59,14 @@ class ComponentFactory {
         return Comparator(id: id, position: position);
       case 'LedMatrix':
         return LedMatrix(id: id, position: position);
-      case 'Memory':
-        final memory = Memory(id: id, position: position);
-        if (properties.containsKey('memoryContent')) {
-          final memoryData = properties['memoryContent'] as List;
-          for (var i = 0;
-              i < memoryData.length && i < memory.memoryContent.length;
-              i++) {
-            final rowData = memoryData[i] as List;
-            for (var j = 0;
-                j < rowData.length && j < memory.memoryContent[i].length;
-                j++) {
-              memory.memoryContent[i][j] = rowData[j] as bool;
-            }
-          }
-        }
-        return memory;
+      case 'Memory16x4':
+      case 'Memory32x8':
+        return _createMemoryComponent(
+          id: id,
+          type: type,
+          properties: properties,
+          position: position,
+        );
       case 'Register':
         return Register(id: id, position: position);
       case 'ALU':
@@ -83,5 +75,52 @@ class ComponentFactory {
       default:
         return null;
     }
+  }
+
+  static BaseLogicComponent? _createMemoryComponent({
+    required int id,
+    required String type,
+    required Map<String, dynamic> properties,
+    required Offset position,
+  }) {
+    if (properties.containsKey('memoryContent')) {
+      final memoryData = properties['memoryContent'] as List;
+
+      if (type == 'Memory16x4') {
+        final memory = Memory16x4(id: id, position: position);
+
+        for (var i = 0;
+            i < memoryData.length && i < memory.memoryContent.length;
+            i++) {
+          final rowData = memoryData[i] as List;
+          for (var j = 0;
+              j < rowData.length && j < memory.memoryContent[i].length;
+              j++) {
+            memory.memoryContent[i][j] = rowData[j] as bool;
+          }
+        }
+
+        return memory;
+      }
+
+      if (type == 'Memory32x8') {
+        final memory = Memory32x8(id: id, position: position);
+
+        for (var i = 0;
+            i < memoryData.length && i < memory.memoryContent.length;
+            i++) {
+          final rowData = memoryData[i] as List;
+          for (var j = 0;
+              j < rowData.length && j < memory.memoryContent[i].length;
+              j++) {
+            memory.memoryContent[i][j] = rowData[j] as bool;
+          }
+        }
+
+        return memory;
+      }
+    }
+
+    return null;
   }
 }

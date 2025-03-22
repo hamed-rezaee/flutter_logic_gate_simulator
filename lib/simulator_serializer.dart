@@ -127,7 +127,9 @@ class SimulatorSerializer {
 
     if (component is Input) {
       properties['value'] = component.outputPins[0].value;
-    } else if (component is Memory) {
+    } else if (component is Memory16x4) {
+      properties['memoryContent'] = component.memoryContent;
+    } else if (component is Memory32x8) {
       properties['memoryContent'] = component.memoryContent;
     }
 

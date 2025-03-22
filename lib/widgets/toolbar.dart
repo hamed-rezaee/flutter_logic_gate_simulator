@@ -136,8 +136,13 @@ class _ToolbarState extends State<Toolbar> {
     'Memory': [
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),
-        label: 'MEMORY',
-        createComponent: (id) => Memory(position: Offset.zero, id: id),
+        label: 'MEMORY 16x4',
+        createComponent: (id) => Memory16x4(position: Offset.zero, id: id),
+      ),
+      ComponentDefinition(
+        widget: const Icon(Icons.apps_rounded, size: 32),
+        label: 'MEMORY 32x8',
+        createComponent: (id) => Memory32x8(position: Offset.zero, id: id),
       ),
       ComponentDefinition(
         widget: const Icon(Icons.apps_rounded, size: 32),

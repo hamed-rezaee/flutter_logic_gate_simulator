@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 
-class Memory extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
-  Memory({required super.id, required super.position}) {
+class Memory16x4 extends BaseLogicComponent with PinNamingMixin, TooltipMixin {
+  Memory16x4({required super.id, required super.position}) {
     for (var i = 0; i < 10; i++) {
       inputPins.add(Pin(index: i, component: this));
     }
