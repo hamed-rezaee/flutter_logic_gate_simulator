@@ -18,6 +18,8 @@ class SimulatorManager {
   BaseLogicComponent? selectedComponent;
   Wire? selectedWire;
 
+  bool showMinimap = true;
+
   void calculateAllOutputs() {
     for (final component in components) {
       component.resetVisited();

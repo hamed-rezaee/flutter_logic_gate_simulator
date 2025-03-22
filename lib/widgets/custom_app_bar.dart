@@ -30,6 +30,7 @@ class CustomAppBar extends PreferredSize {
                   ExportAction(simulatorManager: simulatorManager),
                   ImportAction(simulatorManager: simulatorManager),
                   OptimizeWireAction(simulatorManager: simulatorManager),
+                  ShowMinimapAction(simulatorManager: simulatorManager),
                   ClearAction(simulatorManager: simulatorManager),
                 ],
               ],
@@ -263,6 +264,19 @@ class OptimizeWireAction extends StatelessWidget {
             );
           }
         },
+      );
+}
+
+class ShowMinimapAction extends StatelessWidget {
+  const ShowMinimapAction({required this.simulatorManager, super.key});
+
+  final SimulatorManager simulatorManager;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        child: const Icon(Icons.map_outlined, size: 24, color: Colors.white),
+        onPressed: () =>
+            simulatorManager.showMinimap = !simulatorManager.showMinimap,
       );
 }
 

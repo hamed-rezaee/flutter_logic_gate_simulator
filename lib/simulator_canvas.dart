@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_logic_gate_simulator/canvas_minimap.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
 import 'package:flutter_logic_gate_simulator/widgets/background_grid.dart';
@@ -60,6 +61,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
                 ),
                 ..._buildWireSegmentControls(),
                 ..._buildComponents(),
+                if (widget.simulatorManager.showMinimap) _buildMinimap(),
               ],
             ),
           ),
@@ -160,6 +162,18 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
         ),
       )
       .toList();
+
+  Widget _buildMinimap() => Positioned(
+        right: 30,
+        bottom: 60,
+        child: CanvasMinimap(
+          simulatorManager: widget.simulatorManager,
+          viewportSize: const Size(800, 600),
+          panOffset: _panOffset,
+          onPositionChanged: (position) =>
+              setState(() => _panOffset = position),
+        ),
+      );
 
   Offset _screenToCanvasPosition(Offset screenPosition) =>
       screenPosition - _panOffset;
