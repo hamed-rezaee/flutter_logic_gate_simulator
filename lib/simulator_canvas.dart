@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_logic_gate_simulator/canvas_coordinate_system.dart';
 import 'package:flutter_logic_gate_simulator/canvas_minimap.dart';
 import 'package:flutter_logic_gate_simulator/components/components.dart';
 import 'package:flutter_logic_gate_simulator/simulator_manager.dart';
@@ -21,20 +22,28 @@ class SimulatorCanvas extends StatefulWidget {
 
 class _SimulatorCanvasState extends State<SimulatorCanvas> {
   bool _isPanning = false;
-  Offset _panOffset = Offset.zero;
+  late CanvasCoordinateSystem _coordinateSystem;
+
+  @override
+  void initState() {
+    super.initState();
+    _coordinateSystem = CanvasCoordinateSystem();
+  }
 
   @override
   Widget build(BuildContext context) => MouseRegion(
         onHover: (event) {
           if (widget.simulatorManager.isDrawingWire) {
             widget.simulatorManager.wireEndPosition =
-                _screenToCanvasPosition(event.localPosition);
+                _coordinateSystem.screenToCanvas(event.localPosition);
           }
         },
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onPanStart: (_) => _isPanning = true,
-          onPanUpdate: (details) => setState(() => _panOffset += details.delta),
+          onPanUpdate: (details) => setState(() {
+            _coordinateSystem.addPanDelta(details.delta);
+          }),
           onPanEnd: (_) => _isPanning = false,
           onTapUp: (details) {
             if (_isPanning) return;
@@ -53,10 +62,10 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             onAcceptWithDetails: _handleComponentDrop,
             builder: (context, candidateData, rejectedData) => Stack(
               children: [
-                BackgroundGrid(panOffset: _panOffset),
+                BackgroundGrid(panOffset: _coordinateSystem.panOffset),
                 WiresCanvas(
                   simulatorManager: widget.simulatorManager,
-                  panOffset: _panOffset,
+                  panOffset: _coordinateSystem.panOffset,
                   onWireTap: _handleWireTap,
                 ),
                 ..._buildWireSegmentControls(),
@@ -78,7 +87,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
     final controlPoints = <Widget>[];
 
     for (var i = 0; i < segments.length; i++) {
-      final screenPos = _canvasToScreenPosition(segments[i]);
+      final screenPos = _coordinateSystem.canvasToScreen(segments[i]);
 
       controlPoints.add(
         Positioned(
@@ -88,7 +97,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             onPanStart: (_) =>
                 widget.simulatorManager.startSegmentDrag(wire, i),
             onPanUpdate: (details) {
-              final newPos = _screenToCanvasPosition(screenPos + details.delta);
+              final newPos =
+                  _coordinateSystem.screenToCanvas(screenPos + details.delta);
               widget.simulatorManager.updateDraggingSegment(newPos);
             },
             onPanEnd: (_) => widget.simulatorManager.endSegmentDrag(),
@@ -110,8 +120,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
       final allPoints = [wire.startPosition, ...segments, wire.endPosition];
 
       for (var i = 0; i < allPoints.length - 1; i++) {
-        final start = _canvasToScreenPosition(allPoints[i]);
-        final end = _canvasToScreenPosition(allPoints[i + 1]);
+        final start = _coordinateSystem.canvasToScreen(allPoints[i]);
+        final end = _coordinateSystem.canvasToScreen(allPoints[i + 1]);
         final midpoint = Offset(
           (start.dx + end.dx) / 2,
           (start.dy + end.dy) / 2,
@@ -123,7 +133,7 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
             top: midpoint.dy - 4,
             child: GestureDetector(
               onTap: () {
-                final canvasPos = _screenToCanvasPosition(midpoint);
+                final canvasPos = _coordinateSystem.screenToCanvas(midpoint);
                 widget.simulatorManager.addWireSegment(wire, i, canvasPos);
               },
               child: Container(
@@ -146,8 +156,8 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
   List<Widget> _buildComponents() => widget.simulatorManager.components
       .map(
         (component) => Positioned(
-          left: component.position.dx + _panOffset.dx,
-          top: component.position.dy + _panOffset.dy,
+          left: component.position.dx + _coordinateSystem.panOffset.dx,
+          top: component.position.dy + _coordinateSystem.panOffset.dy,
           child: GestureDetector(
             onTap: () => widget.simulatorManager.selectComponent(component),
             onPanUpdate: (details) {
@@ -172,21 +182,15 @@ class _SimulatorCanvasState extends State<SimulatorCanvas> {
         child: CanvasMinimap(
           simulatorManager: widget.simulatorManager,
           viewportSize: MediaQuery.sizeOf(context),
-          panOffset: _panOffset,
+          panOffset: _coordinateSystem.panOffset,
           onPositionChanged: (position) =>
-              setState(() => _panOffset = position),
+              setState(() => _coordinateSystem.panOffset = position),
         ),
       );
 
-  Offset _screenToCanvasPosition(Offset screenPosition) =>
-      screenPosition - _panOffset;
-
-  Offset _canvasToScreenPosition(Offset canvasPosition) =>
-      canvasPosition + _panOffset;
-
   void _handleComponentDrop(DragTargetDetails<BaseLogicComponent> details) {
     final newComponent = details.data
-      ..position = _screenToCanvasPosition(details.offset) -
+      ..position = _coordinateSystem.screenToCanvas(details.offset) -
           Offset(0, widget.appBarHeight);
 
     widget.simulatorManager.addComponent(newComponent);
